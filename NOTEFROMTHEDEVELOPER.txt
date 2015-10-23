@@ -1,0 +1,79 @@
+-----------------------------------
+----SUMMARY OF CODING STANDARDS----
+-----------------------------------
+
+Variables beginning l_ indicate local scope
+Variables beginning m_ indicalte modular scope
+No prefix for repeatedly used variables e.g. f ui.Form, w ui.Window
+
+
+
+Each database table has a unique two character code associated with it.
+e.g. jh = job_header
+Column names have a two character prefix indicating the database table they 
+belong to. 
+
+
+
+Each form has a corresponding 4gl module with the same name.  Order of 
+functions in this 4gl is
+- entry point
+- ui functions
+- db functions 
+Order of function calls is top down, a function should not call a funciton
+above it in the code
+
+Functions beginning ui_ indicate userinterface operation.  These include 
+ui_edit - INPUT
+ui_view - DISPLAY + MENU
+ui_list - DISPLAY ARRAY
+
+Functions beginning db_ indicate database operation.  These include
+db_populate - populate an array based on an SQL
+db_insert - insert a single record
+db_update - update a record
+db_delete - delete a record
+
+
+
+Unless handled by TRY/CATCH, errors and exception handling are catered for
+by ...
+
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL serious_error
+END FUNCTION
+
+... which will call the function serious_error in lib_error.4gl if an
+exception occurs.
+
+
+-------------------
+---- ALSO NOTE ----
+-------------------
+
+This program is intended as an illustration of a Genero Mobile application for
+someone new to Genero.
+
+To simplify the code, some functionality has been removed that would be in a
+commercially avaialble application.
+
+This includes ...
+
+    A settings table and screen so that user can configure the application for
+    their individual requirements.
+
+    The sync process has been simplified, synchronization process should 
+    consider how to ensure only one person working on a job at a time
+
+    A reset of the error-log so that it doesn't grow ad-infitum
+
+    More detail around the auxiliar codes used in job_detail and job_timesheet
+
+    A version number for subsequents upgrades and changes to the database.
+
+
+
+Similarly the code has some simplification in order to reduce error handling
+complexity, unused variables,  empty functions.  The 4gl's would also be split
+into smaller 4gl's so that the code can be re-used with the web server and/or
+desktop and/or web client versions of the same application.

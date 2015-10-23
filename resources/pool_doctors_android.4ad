@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ANSI_X3.4-1968"?>
+<!-- 
+#
+#       (c) Copyright 2014, Blue J Software - www.bluejs.com
+#
+#       MIT License (http://www.opensource.org/licenses/mit-license.php)
+#
+#       Permission is hereby granted, free of charge, to any person
+#       obtaining a copy of this software and associated documentation
+#       files (the "Software"), to deal in the Software without restriction,
+#       including without limitation the rights to use, copy, modify, merge,
+#       publish, distribute, sublicense, and/or sell copies of the Software,
+#       and to permit persons to whom the Software is furnished to do so,
+#       subject to the following conditions:
+#
+#       The above copyright notice and this permission notice shall be
+#       included in all copies or substantial portions of the Software.
+#
+#       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+#       EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+#       OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#       NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+#       BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+#       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+#       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#       THE SOFTWARE.
+ -->
+
+<ActionDefaultList>
+ 
+  <ActionDefault name="toggle" text="Detail" image="details_60x60" />
+  <ActionDefault name="order" text="Sort" image="sort_60x60"/>
+  <ActionDefault name="filter" text="Filter" image="filter_60x60" />
+  
+  <ActionDefault name="settings" text="Settings" image="setting_60x60" />
+  <ActionDefault name="refresh" text="Sync" />
+
+  <ActionDefault name="call" text="Phone" image="phone_60x60" />
+  <ActionDefault name="sms" text="SMS" image="SMS_60x60" />
+  <ActionDefault name="email" text="Email" image="mail_60x60" />
+  <ActionDefault name="map" text="Map" image="map_60x60" />
+  
+  <ActionDefault name="start" text="Start" image="start_60x60"/>
+  <ActionDefault name="complete" text="Complete" image="finish_60x60"/>
+  <ActionDefault name="finish" text="Finish" image="finish_60x60"/>
+
+  <ActionDefault name="lines" text="Parts" image="parts_60x60"  />
+  <ActionDefault name="photo" text="Photo" image="camera_60x60"  />
+  <ActionDefault name="notes" text="Notes" image="note_60x60" />
+  <ActionDefault name="time" text="Time" image="timesheet_60x60" />
+  <ActionDefault name="customer" text="Customer" image="name_60x60" />
+  <ActionDefault name="product" text="Product"  />
+
+  <ActionDefault name="view" text="View" image="magnifying_glass60x60"  />
+  <ActionDefault name="barcode" text="Barcode" image="barcode_60x60" />
+
+  <ActionDefault name="append" text="Append" defaultView="no" />
+  <ActionDefault name="delete" text="Delete" defaultView="no" />
+  <ActionDefault name="select" defaultView="no" />
+
+  <ActionDefault name="help" text="Help" defaultView="auto" />
+  <ActionDefault name="video" text="Video" defaultView="auto" />
+  <ActionDefault name="about" text="About" defaultView="auto" />
+
+  <ActionDefault name="accept" text="OK" defaultView="auto" />
+  <ActionDefault name="cancel" text="Cancel" defaultView="auto" />
+</ActionDefaultList>

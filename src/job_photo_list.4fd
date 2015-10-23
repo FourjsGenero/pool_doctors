@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ManagedForm fileVersion="23200" gstVersion="10000" name="ManagedForm" uid="{f5ac1e75-bcfc-484d-a3a4-6a32b7950be4}">
+  <AGSettings/>
+  <Record additionalTables="" joinLeft="" joinOperator="" joinRight="" name="scr" order="" uid="{fcc03d95-0a11-4e59-89f2-7b760840e7d6}" where="">
+    <RecordField colName="major" fieldIdRef="0" name="major" sqlTabName="formonly" table_alias_name="" uid="{06815471-84bf-46de-8c44-b41902228bd4}"/>
+    <RecordField colName="minor" fieldIdRef="1" name="minor" sqlTabName="formonly" table_alias_name="" uid="{060e9eb1-0510-476c-b2d0-e73242a040a7}"/>
+    <RecordField colName="img" fieldIdRef="2" name="img" sqlTabName="formonly" table_alias_name="" uid="{c48f04b0-426d-44ac-970a-5fc4e59a415d}"/>
+  </Record>
+  <Form gridHeight="11" gridWidth="24" name="job_photo_list" text="Job Photos">
+    <Grid gridHeight="11" gridWidth="24" name="grid1" posX="0" posY="0">
+      <Table gridHeight="11" gridWidth="23" name="tab_job_photo_list" posX="1" posY="0" totalRows="10">
+        <Edit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="major" columnCount="" fieldId="0" gridHeight="1" gridWidth="10" imageColumn="img" name="major" posX="0" posY="0" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="1" table_alias_name="" widget="Edit"/>
+        <Edit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="minor" columnCount="" fieldId="1" gridHeight="1" gridWidth="10" name="minor" posX="10" posY="0" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="2" table_alias_name="" widget="Edit"/>
+        <Phantom colName="img" fieldId="2" name="img" sqlTabName="formonly" table_alias_name="" widget="Phantom"/>
+      </Table>
+    </Grid>
+  </Form>
+</ManagedForm>

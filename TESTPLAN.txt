@@ -1,0 +1,43 @@
+-----------------------
+----Quick Test Plan----
+-----------------------
+
+From splash screen ...
+Video - plays video from you-tube
+Help - shows PDF (Note: currently this takes 30 seconds to download, consider moving server ...)
+About - shows message
+
+Tap Image - should show list with 0 entries, message indicating what to do with 0 entries
+Tap back to return to splash screen
+
+Tap Settings - tap create random job - note: job number created
+Tap Sync - dialog should appear with details on whatis loaded.  First 3 numbers should be non-zero
+
+Tap Image - should now show list of jobs
+Tap 3 entries along toolbar, should do as stated e.g. content, order, filter
+
+Select job using job number created above
+Tap customer
+Tap Map, Call, SMS, Mail, should do as stated.  Dialog shouldoccur if dialog doesn't support activity
+Return to job
+Tap Lines or Photo or Notes or Timesheet, should get message say to tap start
+Tap Start
+Go back to list and note icon has changed
+Select job again
+Now for each of Lines, Photo, Notes, Timesheet
+Add 3 records
+Update the second.  Verify behavour if attempt to canceldialog with/without making changes
+Delete the third 
+
+Each entry should have two records
+Go back to list 
+Tap Complete
+Enter name and signature 
+Verify icon now indicates complete
+Tap sync, note how detail in message indicates job is uploaded
+
+Go back to job and make sure can't update lines/photo/notes/timesheet
+
+Also from settings screen
+Tap Force Error, view error log
+

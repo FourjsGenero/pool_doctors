@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ManagedForm fileVersion="23200" gstVersion="10000" name="ManagedForm" uid="{b22cec54-0b45-4e36-9fe5-4511e4412ce9}">
+  <AGSettings/>
+  <Record additionalTables="" joinLeft="" joinOperator="" joinRight="" name="scr" order="" uid="{8b5a763f-c000-44ef-a319-f4be7045bbc6}" where="">
+    <RecordField colName="cm_code" fieldIdRef="0" name="cm_code" sqlTabName="formonly" table_alias_name="" uid="{6e5ab4e8-323e-43df-8788-923f8dcfdf64}"/>
+    <RecordField colName="cm_name" fieldIdRef="1" name="cm_name" sqlTabName="formonly" table_alias_name="" uid="{6ce6bff2-12f0-4c59-938f-fad6ec53a425}"/>
+    <RecordField colName="cm_phone" fieldIdRef="3" name="cm_phone" sqlTabName="formonly" table_alias_name="" uid="{fa5bc79c-134f-4be4-ae56-40a6c40c1af5}"/>
+    <RecordField colName="cm_email" fieldIdRef="4" name="cm_email" sqlTabName="formonly" table_alias_name="" uid="{bd584611-3c92-4386-bf75-9ebc7054d422}"/>
+    <RecordField colName="cm_address" fieldIdRef="2" name="cm_address" sqlTabName="formonly" table_alias_name="" uid="{332dbb19-c22f-443e-b670-7690b58e864e}"/>
+  </Record>
+  <Form gridHeight="12" gridWidth="32" name="customer_grid" perHeaderComment="#&#10;#       (c) Copyright 2014, Blue J Software - www.bluejs.com&#10;#&#10;#       MIT License (http://www.opensource.org/licenses/mit-license.php)&#10;#&#10;#       Permission is hereby granted, free of charge, to any person&#10;#       obtaining a copy of this software and associated documentation&#10;#       files (the &quot;Software&quot;), to deal in the Software without restriction,&#10;#       including without limitation the rights to use, copy, modify, merge,&#10;#       publish, distribute, sublicense, and/or sell copies of the Software,&#10;#       and to permit persons to whom the Software is furnished to do so,&#10;#       subject to the following conditions:&#10;#&#10;#       The above copyright notice and this permission notice shall be&#10;#       included in all copies or substantial portions of the Software.&#10;#&#10;#       THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#10;#       EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES&#10;#       OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#10;#       NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS&#10;#       BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN&#10;#       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN&#10;#       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN&#10;#       THE SOFTWARE." text="Customer Details">
+    <Grid gridHeight="12" gridWidth="32" name="grid1" posX="0" posY="0">
+      <Label gridHeight="1" gridWidth="14" name="label1" posX="1" posY="0" text="Customer Code"/>
+      <Edit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="cm_code" columnCount="" fieldId="0" gridHeight="1" gridWidth="15" justify="right" name="cm_code" posX="16" posY="0" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="1" table_alias_name="" widget="Edit"/>
+      <Label gridHeight="1" gridWidth="14" name="label2" posX="1" posY="1" text="Name"/>
+      <Edit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="cm_name" columnCount="" fieldId="1" gridHeight="1" gridWidth="15" justify="right" name="cm_name" posX="16" posY="1" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="2" table_alias_name="" widget="Edit"/>
+      <Label gridHeight="1" gridWidth="14" name="label3" posX="1" posY="2" text="Address"/>
+      <TextEdit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="cm_address" columnCount="" fieldId="2" gridHeight="3" gridWidth="15" name="cm_address" posX="16" posY="2" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="3" table_alias_name="" wantNoReturns="false" widget="TextEdit"/>
+      <Button gridHeight="1" gridWidth="30" name="map" posX="1" posY="5" tabIndex="4" text="Map"/>
+      <Label gridHeight="1" gridWidth="14" name="label4" posX="1" posY="6" text="Phone"/>
+      <Edit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="cm_phone" columnCount="" fieldId="3" gridHeight="1" gridWidth="15" justify="right" name="cm_phone" posX="16" posY="6" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="5" table_alias_name="" widget="Edit"/>
+      <Button gridHeight="1" gridWidth="30" name="call" posX="1" posY="7" tabIndex="6" text="Call"/>
+      <Button gridHeight="1" gridWidth="30" name="sms" posX="1" posY="8" tabIndex="7" text="SMS"/>
+      <Label gridHeight="1" gridWidth="14" name="label5" posX="1" posY="9" text="Email"/>
+      <Edit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="cm_email" columnCount="" fieldId="4" gridHeight="1" gridWidth="15" justify="right" name="cm_email" posX="16" posY="9" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="8" table_alias_name="" widget="Edit"/>
+      <Button gridHeight="1" gridWidth="30" name="email" posX="1" posY="10" tabIndex="9" text="Mail"/>
+    </Grid>
+  </Form>
+  <DiagramLayout>
+    <![CDATA[AAAAAgAAAEwAewBmAGEANQBiAGMANwA5AGMALQAxADMANABmAC0ANABiAGUANAAtAGEAZQA1ADYALQA0ADAAYQA2AGMANAAwAGMAMQBhAGYANQB9QCQAAAAAAABAVoAAAAAAAAAAAAAAAAAAAQAAAEwAewA4AGIANQBhADcANgAzAGYALQBjADAAMAAwAC0ANAA0AGUAZgAtAGEAMwAxADkALQBmADQAYgBlADcAMAA0ADUAYgBiAGMANgB9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAEwAewBiAGQANQA4ADQANgAxADEALQAzAGMAOQAyAC0ANAAzADgANgAtAGIAZgA3ADUALQA5AGUAYgBjADcAMAA1ADQAZAA0ADIAMgB9QCQAAAAAAABAXMAAAAAAAAAAAAAAAAAAAQAAAEwAewA2AGMAZQA2AGIAZgBmADIALQAxADIAZgAwAC0ANABjADUAOQAtADkAMwA4AGYALQBmAGEAZAA2AGUAYwA1ADMAYQA0ADIANQB9QCQAAAAAAABAUEAAAAAAAAAAAAAAAAAAAQAAAEwAewAzADMAMgBkAGIAYgAxADkALQBjADIAMgBmAC0ANAA0ADMAZQAtAGIANgA3ADAALQA3ADYAOQAwAGIANQA4AGUAOAA2ADQAZQB9QCQAAAAAAABAYYAAAAAAAAAAAAAAAAAAAQAAAEwAewA2AGUANQBhAGIANABlADgALQAzADIAMwBlAC0ANAAzAGQAZgAtADgANwA4ADgALQA5ADIAMwBmADgAZABjAGYAZABmADYANAB9QCQAAAAAAABARAAAAAAAAAAAAAAAAAAAAQ==]]>
+  </DiagramLayout>
+</ManagedForm>

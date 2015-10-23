@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Schema gstVersion="3000a" id="{6e0dcbbf-11f6-4a25-94a0-4381743de95a}" version="3.0">
+  <AGSettings version="1.1">
+    <DynamicProperties version="2">
+      <DynamicProperty description="Associated label when generating form" initialValue="" isDefaultInherited="false" isHidden="false" label="Label" name="label" readOnly="false" type="TEXT"/>
+      <DynamicProperty description="Associated widget" editorInfo="contains:ButtonEdit|CheckBox|ComboBox|DateEdit|DateTimeEdit|Edit|FFImage|FFLabel|Field|Phantom|ProgressBar|RadioGroup|Slider|SpinEdit|TextEdit|TimeEdit" initialValue="Edit" isDefaultInherited="false" isHidden="false" label="Widget" name="widget" readOnly="false" type="ENUM"/>
+      <DynamicPropertyGroup collapsed="false" description="Formfied properties" label="Formfield" name="formfieldGroup" properties="label;widget"/>
+    </DynamicProperties>
+    <NodeInfos version="1">
+      <NodeInfo mimeType="db/column" properties="widget;label"/>
+    </NodeInfos>
+  </AGSettings>
+  <ExtractionSettings>
+    <ExtractionOptions casens="LowerCase" cvmeth="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" ignerr="true" systab="false" type="SQLite"/>
+  </ExtractionSettings>
+  <GenerationSettings>
+    <GenerationOptions casens="LowerCase" generate="true" genidx="true" genpk="1" genuq="1" national="false" populate="false" version="SQLite"/>
+  </GenerationSettings>
+  <Table active="false" name="charge_code" status="R" uuid="db/table255">
+    <Column fglLength="2" fglType="0" name="cc_id" notNull="true" order="1" status="R" uuid="db/column1867"/>
+    <Column fglLength="40" fglType="0" name="cc_text" notNull="false" order="2" status="R" uuid="db/column1869"/>
+    <Index indexColumns="" indexConstraint="primaryKey" name="sqlite_autoindex_charge_code_1" status="R" uuid="db/index382"/>
+  </Table>
+  <Table active="false" name="customer" status="U" uuid="db/table257">
+    <Column fglLength="10" fglType="0" name="cm_code" notNull="true" order="1" status="U" uuid="db/column1871"/>
+    <Column fglLength="255" fglType="201" name="cm_name" notNull="true" order="2" status="U" uuid="db/column1873"/>
+    <Column fglLength="30" fglType="201" name="cm_email" notNull="false" order="3" status="U" uuid="db/column1875"/>
+    <Column fglLength="20" fglType="201" name="cm_phone" notNull="false" order="4" status="U" uuid="db/column123"/>
+    <Column fglLength="20" fglType="201" name="cm_phone2" notNull="false" order="5" status="R" uuid="db/column1877"/>
+    <Column fglLength="40" fglType="201" name="cm_addr1" notNull="false" order="6" status="U" uuid="db/column1879"/>
+    <Column fglLength="40" fglType="201" name="cm_addr2" notNull="false" order="7" status="U" uuid="db/column1881"/>
+    <Column fglLength="40" fglType="201" name="cm_addr3" notNull="false" order="8" status="U" uuid="db/column1883"/>
+    <Column fglLength="40" fglType="201" name="cm_addr4" notNull="false" order="9" status="U" uuid="db/column1885"/>
+    <Column fglLength="2821" fglType="5" name="cm_lat" notNull="false" order="10" status="U" uuid="db/column1887"/>
+    <Column fglLength="2821" fglType="5" name="cm_lon" notNull="false" order="11" status="U" uuid="db/column1889"/>
+    <Column fglLength="10" fglType="0" name="cm_postcode" notNull="false" order="12" status="U" uuid="db/column1891"/>
+    <Column fglLength="2" fglType="0" name="cm_rep" notNull="false" order="13" status="U" uuid="db/column1893"/>
+    <Index indexColumns="cm_name" indexConstraint="index" name="idx_customer_name" status="U" uuid="db/index386"/>
+    <Index indexColumns="cm_code" indexConstraint="uniqueIndex" name="idx_customer_pk" status="U" uuid="db/index384"/>
+    <Index indexColumns="cm_code" indexConstraint="primaryKey" name="sqlite_autoindex_customer_1" status="U" uuid="db/index388"/>
+  </Table>
+  <Table active="false" name="job_detail" status="U" uuid="db/table259">
+    <Column fglLength="10" fglType="0" name="jd_code" notNull="true" order="1" status="U" uuid="db/column1895"/>
+    <Column fglLength="4" fglType="2" name="jd_line" notNull="true" order="2" status="U" uuid="db/column1897"/>
+    <Column fglLength="10" fglType="0" name="jd_product" notNull="false" order="3" status="U" uuid="db/column1899"/>
+    <Column fglLength="2818" fglType="5" name="jd_qty" notNull="false" order="4" status="U" uuid="db/column1901"/>
+    <Column fglLength="1" fglType="0" name="jd_status" notNull="false" order="5" status="U" uuid="db/column1903"/>
+    <Index indexColumns="jd_code, jd_line" indexConstraint="uniqueIndex" name="idx_job_detail_pk" status="U" uuid="db/index390"/>
+    <Index indexColumns="jd_product" indexConstraint="index" name="idx_job_detail_product" status="U" uuid="db/index392"/>
+    <Index indexColumns="jd_code, jd_line" indexConstraint="primaryKey" name="sqlite_autoindex_job_detail_1" status="U" uuid="db/index394"/>
+  </Table>
+  <Table active="false" name="job_header" status="U" uuid="db/table261">
+    <Column fglLength="10" fglType="0" name="jh_code" notNull="true" order="1" status="U" uuid="db/column1905"/>
+    <Column fglLength="10" fglType="0" name="jh_customer" notNull="false" order="2" status="U" uuid="db/column1907"/>
+    <Column fglLength="3080" fglType="10" name="jh_date_created" notNull="false" order="3" status="U" uuid="db/column1909"/>
+    <Column fglLength="1" fglType="0" name="jh_status" notNull="false" order="4" status="U" uuid="db/column1911"/>
+    <Column fglLength="40" fglType="201" name="jh_address1" notNull="false" order="5" status="U" uuid="db/column1913"/>
+    <Column fglLength="40" fglType="201" name="jh_address2" notNull="false" order="6" status="U" uuid="db/column1915"/>
+    <Column fglLength="40" fglType="201" name="jh_address3" notNull="false" order="7" status="U" uuid="db/column1917"/>
+    <Column fglLength="40" fglType="201" name="jh_address4" notNull="false" order="8" status="U" uuid="db/column1919"/>
+    <Column fglLength="40" fglType="201" name="jh_contact" notNull="false" order="9" status="U" uuid="db/column1921"/>
+    <Column fglLength="20" fglType="201" name="jh_phone" notNull="false" order="10" status="U" uuid="db/column1923"/>
+    <Column fglLength="200" fglType="201" name="jh_task_notes" notNull="false" order="11" status="U" uuid="db/column1925"/>
+    <Column fglLength="10000" fglType="201" name="jh_signature" notNull="false" order="12" status="U" uuid="db/column1927"/>
+    <Column fglLength="3080" fglType="10" name="jh_date_signed" notNull="false" order="13" status="U" uuid="db/column1929"/>
+    <Column fglLength="40" fglType="201" name="jh_name_signed" notNull="false" order="14" status="U" uuid="db/column1931"/>
+    <Index indexColumns="jh_customer" indexConstraint="index" name="idx_job_header_customer" status="U" uuid="db/index398"/>
+    <Index indexColumns="jh_code" indexConstraint="uniqueIndex" name="idx_job_header_pk" status="U" uuid="db/index396"/>
+    <Index indexColumns="jh_code" indexConstraint="primaryKey" name="sqlite_autoindex_job_header_1" status="U" uuid="db/index400"/>
+  </Table>
+  <Table active="false" name="job_note" status="U" uuid="db/table263">
+    <Column fglLength="10" fglType="0" name="jn_code" notNull="false" order="1" status="U" uuid="db/column1933"/>
+    <Column fglLength="4" fglType="2" name="jn_idx" notNull="false" order="2" status="U" uuid="db/column1935"/>
+    <Column fglLength="10000" fglType="201" name="jn_note" notNull="false" order="3" status="U" uuid="db/column1937"/>
+    <Column fglLength="3080" fglType="10" name="jn_when" notNull="false" order="4" status="U" uuid="db/column1939"/>
+    <Index indexColumns="jn_code, jn_idx" indexConstraint="uniqueIndex" name="idx_job_note_pk" status="U" uuid="db/index402"/>
+    <Index indexColumns="jn_code, jn_idx" indexConstraint="primaryKey" name="sqlite_autoindex_job_note_1" status="U" uuid="db/index404"/>
+  </Table>
+  <Table active="false" name="job_photo" status="U" uuid="db/table265">
+    <Column fglLength="10" fglType="0" name="jp_code" notNull="true" order="1" status="U" uuid="db/column1941"/>
+    <Column fglLength="4" fglType="2" name="jp_idx" notNull="true" order="2" status="U" uuid="db/column1943"/>
+    <Column fglLength="160" fglType="201" name="jp_photo" notNull="false" order="3" status="M" uuid="db/column1945"/>
+    <Column fglLength="3080" fglType="10" name="jp_when" notNull="false" order="4" status="U" uuid="db/column1947"/>
+    <Column fglLength="2821" fglType="5" name="jp_lat" notNull="false" order="5" status="U" uuid="db/column1949"/>
+    <Column fglLength="2821" fglType="5" name="jp_lon" notNull="false" order="6" status="U" uuid="db/column1951"/>
+    <Column fglLength="56" fglType="11" name="jp_photo_data" notNull="false" order="7" status="U" uuid="db/column1953"/>
+    <Column fglLength="16" fglType="13" name="jp_text" notNull="false" order="8" status="A" uuid="db/column470"/>
+    <Index indexColumns="jp_code, jp_idx" indexConstraint="uniqueIndex" name="idx_job_photo_pk" status="U" uuid="db/index406"/>
+    <Index indexColumns="jp_code, jp_idx" indexConstraint="primaryKey" name="sqlite_autoindex_job_photo_1" status="U" uuid="db/index408"/>
+  </Table>
+  <Table active="false" name="job_timesheet" status="U" uuid="db/table267">
+    <Column fglLength="10" fglType="0" name="jt_code" notNull="true" order="1" status="U" uuid="db/column1955"/>
+    <Column fglLength="4" fglType="2" name="jt_idx" notNull="true" order="2" status="U" uuid="db/column1957"/>
+    <Column fglLength="3080" fglType="10" name="jt_start" notNull="false" order="3" status="U" uuid="db/column1959"/>
+    <Column fglLength="3080" fglType="10" name="jt_finish" notNull="false" order="4" status="U" uuid="db/column1961"/>
+    <Column fglLength="2" fglType="0" name="jt_charge_code_id" notNull="false" order="5" status="U" uuid="db/column1963"/>
+    <Column fglLength="10000" fglType="201" name="jt_text" notNull="false" order="6" status="U" uuid="db/column1965"/>
+    <Index indexColumns="jt_code, jt_idx" indexConstraint="uniqueIndex" name="idx_job_timesheet_pk" status="U" uuid="db/index410"/>
+    <Index indexColumns="jt_code, jt_idx" indexConstraint="primaryKey" name="sqlite_autoindex_job_timesheet_1" status="U" uuid="db/index412"/>
+  </Table>
+  <Table active="false" name="product" status="U" uuid="db/table269">
+    <Column fglLength="10" fglType="0" name="pr_code" notNull="true" order="1" status="U" uuid="db/column1967"/>
+    <Column fglLength="255" fglType="201" name="pr_desc" notNull="true" order="2" status="U" uuid="db/column1969"/>
+    <Column fglLength="30" fglType="201" name="pr_barcode" notNull="false" order="3" status="U" uuid="db/column1971"/>
+    <Index indexColumns="pr_desc" indexConstraint="index" name="idx_product_name" status="U" uuid="db/index416"/>
+    <Index indexColumns="pr_code" indexConstraint="uniqueIndex" name="idx_product_pk" status="U" uuid="db/index414"/>
+    <Index indexColumns="pr_code" indexConstraint="primaryKey" name="sqlite_autoindex_product_1" status="U" uuid="db/index418"/>
+  </Table>
+  <Table active="false" name="settings" status="R" uuid="db/table271">
+    <Column fglLength="1" fglType="45" name="zz_splash_screen" notNull="false" order="1" status="R" uuid="db/column1973"/>
+    <Column fglLength="2" fglType="0" name="zz_rep" notNull="false" order="2" status="R" uuid="db/column1975"/>
+    <Column fglLength="4" fglType="2" name="zz_keep" notNull="false" order="3" status="R" uuid="db/column1977"/>
+    <Column fglLength="1" fglType="0" name="zz_map" notNull="false" order="4" status="R" uuid="db/column1979"/>
+    <Column fglLength="2" fglType="0" name="zz_charge_code_id" notNull="false" order="5" status="R" uuid="db/column1981"/>
+  </Table>
+  <ForeignKey cascadeDelete="false" fkColumns="jd_code" fkRefColumns="jh_code" name="fk_job_detail_job_header_1" refTable="job_header" status="U" table="job_detail" uuid="db/foreignkey140"/>
+  <ForeignKey cascadeDelete="false" fkColumns="jd_product" fkRefColumns="pr_code" name="fk_job_detail_product_2" refTable="product" status="U" table="job_detail" uuid="db/foreignkey142"/>
+  <ForeignKey cascadeDelete="false" fkColumns="jh_customer" fkRefColumns="cm_code" name="fk_job_header_customer_1" refTable="customer" status="U" table="job_header" uuid="db/foreignkey144"/>
+  <ForeignKey cascadeDelete="false" fkColumns="jn_code" fkRefColumns="jh_code" name="fk_job_note_job_header_1" refTable="job_header" status="U" table="job_note" uuid="db/foreignkey146"/>
+  <ForeignKey cascadeDelete="false" fkColumns="jp_code" fkRefColumns="jh_code" name="fk_job_photo_job_header_1" refTable="job_header" status="U" table="job_photo" uuid="db/foreignkey148"/>
+  <ForeignKey cascadeDelete="false" fkColumns="jt_code" fkRefColumns="jh_code" name="fk_job_timesheet_job_header_1" refTable="job_header" status="U" table="job_timesheet" uuid="db/foreignkey150"/>
+  <Views ActiveView="View-1" showLabels="true">
+    <View Name="View-1">
+      <Layout>
+        <![CDATA[AAAAAgAAABYAZABiAC8AdABhAGIAbABlADIANgAxwHyQAAAAAABATQAAAAAAAD/NcKPXCj13AQAAABYAZABiAC8AdABhAGIAbABlADIANgAzQGAAAAAAAABAh0AAAAAAAD/GZmZmZmZrAQAAABYAZABiAC8AdABhAGIAbABlADIANgA1QF+AAAAAAABAjaAAAAAAAD/DU/fO2RaLAQAAABYAZABiAC8AdABhAGIAbABlADIANgA3QGAAAAAAAABAk/gAAAAAAD/AAAAAAAADAQAAABYAZABiAC8AdABhAGIAbABlADIANQA1AAAAAAAAAABANAAAAAAAAD9gYk3S8an8AAAAABYAZABiAC8AdABhAGIAbABlADIANgA5QIIQAAAAAABAgLAAAAAAAD/RN0vGp++hAQAAABYAZABiAC8AdABhAGIAbABlADIANQA3QIFQAAAAAABAUYAAAAAAAD/QcrAgxJupAQAAABYAZABiAC8AdABhAGIAbABlADIANQA5QF9AAAAAAABAfYAAAAAAAD/G6XjU/fO7AQAAABYAZABiAC8AdABhAGIAbABlADIANwAxQKLAAAAAAABANAAAAAAAAD9ok3S8an76AA==]]>
+      </Layout>
+    </View>
+  </Views>
+  <DBData>
+    <Data path="db/column1945@fglLength" type="2" value="80"/>
+    <Data path="db/column1945@fglType" type="2" value="201"/>
+    <Data path="db/index382@indexColumns" type="11" value="cc_id"/>
+  </DBData>
+</Schema>

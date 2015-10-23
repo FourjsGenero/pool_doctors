@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ManagedForm fileVersion="23200" gstVersion="10000" name="ManagedForm" uid="{df934bf2-d08a-4959-840d-a91553ece141}">
+  <AGSettings/>
+  <Record additionalTables="" joinLeft="" joinOperator="" joinRight="" name="scr" order="" uid="{704a74a7-d59f-4e01-8f62-07ef632be443}" where="">
+    <RecordField colName="major" fieldIdRef="0" name="major" sqlTabName="formonly" table_alias_name="" uid="{943ad51a-ba5c-4836-92c7-946bd42922f0}"/>
+    <RecordField colName="minor" fieldIdRef="1" name="minor" sqlTabName="formonly" table_alias_name="" uid="{dcfe1c42-61f1-44ba-9e27-290c521b85e4}"/>
+    <RecordField colName="img" fieldIdRef="2" name="img" sqlTabName="formonly" table_alias_name="" uid="{9d99314b-01e1-4b44-b594-fb5d359ff2a7}"/>
+  </Record>
+  <Form gridHeight="11" gridWidth="24" name="job_header_list" perHeaderComment="#&#10;#       (c) Copyright 2014, Blue J Software - www.bluejs.com&#10;#&#10;#       MIT License (http://www.opensource.org/licenses/mit-license.php)&#10;#&#10;#       Permission is hereby granted, free of charge, to any person&#10;#       obtaining a copy of this software and associated documentation&#10;#       files (the &quot;Software&quot;), to deal in the Software without restriction,&#10;#       including without limitation the rights to use, copy, modify, merge,&#10;#       publish, distribute, sublicense, and/or sell copies of the Software,&#10;#       and to permit persons to whom the Software is furnished to do so,&#10;#       subject to the following conditions:&#10;#&#10;#       The above copyright notice and this permission notice shall be&#10;#       included in all copies or substantial portions of the Software.&#10;#&#10;#       THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#10;#       EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES&#10;#       OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#10;#       NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS&#10;#       BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN&#10;#       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN&#10;#       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN&#10;#       THE SOFTWARE." text="My Jobs">
+    <Grid gridHeight="11" gridWidth="24" name="grid1" posX="0" posY="0">
+      <Table gridHeight="11" gridWidth="23" name="tab_job_header_list" posX="1" posY="0" totalRows="10">
+        <Edit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="major" columnCount="" fieldId="0" gridHeight="1" gridWidth="10" imageColumn="img" name="major" posX="0" posY="0" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="1" table_alias_name="" widget="Edit"/>
+        <Edit aggregateColName="" aggregateName="" aggregateTableAliasName="" aggregateTableName="" colName="minor" columnCount="" fieldId="1" gridHeight="1" gridWidth="10" name="minor" posX="10" posY="0" rowCount="" sqlTabName="formonly" stepX="" stepY="" tabIndex="2" table_alias_name="" widget="Edit"/>
+        <Phantom colName="img" fieldId="2" name="img" sqlTabName="formonly" table_alias_name="" widget="Phantom"/>
+      </Table>
+    </Grid>
+  </Form>
+  <DiagramLayout>
+    <![CDATA[AAAAAgAAAEwAewA5ADQAMwBhAGQANQAxAGEALQBiAGEANQBjAC0ANAA4ADMANgAtADkAMgBjADcALQA5ADQANgBiAGQANAAyADkAMgAyAGYAMAB9QCQAAAAAAABARAAAAAAAAAAAAAAAAAAAAQAAAEwAewA3ADAANABhADcANABhADcALQBkADUAOQBmAC0ANABlADAAMQAtADgAZgA2ADIALQAwADcAZQBmADYAMwAyAGIAZQA0ADQAMwB9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAEwAewBkAGMAZgBlADEAYwA0ADIALQA2ADEAZgAxAC0ANAA0AGIAYQAtADkAZQAyADcALQAyADkAMABjADUAMgAxAGIAOAA1AGUANAB9QCQAAAAAAABAUEAAAAAAAAAAAAAAAAAAAQAAAEwAewA5AGQAOQA5ADMAMQA0AGIALQAwADEAZQAxAC0ANABiADQANAAtAGIANQA5ADQALQBmAGIANQBkADMANQA5AGYAZgAyAGEANwB9QCQAAAAAAABAVoAAAAAAAAAAAAAAAAAAAQ==]]>
+  </DiagramLayout>
+</ManagedForm>
