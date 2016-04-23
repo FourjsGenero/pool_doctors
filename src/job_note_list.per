@@ -22,8 +22,9 @@
 #       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
-LAYOUT (TEXT="Job Notes")
-TABLE tab_job_note_list
+
+layout (text="Job Notes")
+table tab_job_note_list
 {
 [f01       |f02       ]
 [f01       |f02       ]
@@ -36,11 +37,11 @@ TABLE tab_job_note_list
 [f01       |f02       ]
 [f01       |f02       ]
 }
-END
-END
-ATTRIBUTES
-EDIT f01 = formonly.major, IMAGECOLUMN=img;
-EDIT f02 = formonly.minor;
-PHANTOM formonly.img;
-INSTRUCTIONS
-SCREEN RECORD scr(major, minor,img)
+end
+end
+attributes
+edit f01 = formonly.major, imagecolumn=img;
+edit f02 = formonly.minor;
+phantom formonly.img;
+instructions
+screen record scr(major, minor,img)

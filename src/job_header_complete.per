@@ -26,30 +26,7 @@ layout (text="Job Complete")
 stack
 group
 edit formonly.jh_name_signed, title="Name";
-webcomponent formonly.jh_signature,componenttype="signature";
+webcomponent formonly.jh_signature,componenttype="signature", HEIGHT=10 LINES;
 end
 end
 end
-
-
--- Keep grid syntax handy until resolve issue with W/C on simulator
---grid
---{
---Name [f01               ]
---[f02                    ]
---[                       ]
---[                       ]
---[                       ]
---[                       ]
---[                       ]
---[                       ]
---[                       ]
---[                       ]
---[                       ]
---[                       ]
---}
---end
---end
---attributes
---edit f01 = formonly.jh_name_signed;
---webcomponent f02 = formonly.jh_signature,componenttype="signature";

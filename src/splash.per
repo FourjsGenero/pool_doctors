@@ -25,32 +25,29 @@
 action defaults
 action splash (defaultview=no, text="Continue")
 action help (text="Help")
-
 end
 
 layout (text="Pool Doctors")
+stack 
+webcomponent formonly.splash, componenttype="programmable", stretch=both;
+end
 
--- BUG still grid until webcomponent fixed on Android 
---stack 
---webcomponent formonly.splash, componenttype="programmable", stretch=both;
+
+--grid
+--{
+--[f01                          ]
+--[                             ]
+--[                             ]
+--[                             ]
+--[                             ]
+--[                             ]
+--[                             ]
+--[                             ]
+--[                             ]
+--[                             ]
+--[                             ]
+--}
 --end
-
-
-grid
-{
-[f01                          ]
-[                             ]
-[                             ]
-[                             ]
-[                             ]
-[                             ]
-[                             ]
-[                             ]
-[                             ]
-[                             ]
-[                             ]
-}
-end
-end
-attributes
-webcomponent f01 = formonly.splash, componenttype="programmable", stretch=both;
+--end
+--attributes
+--webcomponent f01 = formonly.splash, componenttype="programmable", stretch=both;

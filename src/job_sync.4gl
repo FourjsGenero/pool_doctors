@@ -97,8 +97,8 @@ define s string
         return false, "Must be connected to internet"
     end if
 
-    #let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors/service/createRandomJob"
-    let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/createRandomJob"
+    let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors_server/service/createRandomJob"
+    #let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/createRandomJob"
 
     let req = com.HttpRequest.create(l_url)
     
@@ -151,8 +151,8 @@ end record
 define i integer
 define l_customer_rec record like customer.*
 
-    #let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors/service/getCustomers"
-    let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/getCustomers"
+    let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors_server/service/getCustomers"
+    #let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/getCustomers"
 
     let req = com.HttpRequest.create(l_url)
     call req.doRequest()
@@ -219,8 +219,8 @@ end record
 define i integer
 define l_product_rec record like product.*
 
-    #let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors/service/getProducts"
-    let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/getProducts"
+    let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors_server/service/getProducts"
+    #let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/getProducts"
 
     let req = com.HttpRequest.create(l_url)
     call req.doRequest()
@@ -288,8 +288,8 @@ define l_job_header_rec record like job_header.*
     let m_count.job_get = 0
 
     -- This gets jobs for customers with repcode = 01
-    #let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors/service/getJobsForRep"
-    let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/getJobsForRep"
+    let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors_server/service/getJobsForRep"
+    #let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/getJobsForRep"
     
     let req = com.HttpRequest.create(l_url)
     call req.setHeader("Content-Type","application/JSON")
@@ -419,8 +419,8 @@ define l_job_timesheet record like job_timesheet.*
 define i integer
 
 
-    #let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors/service/putJob"
-    let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/putJob"
+    let l_url = "https://demo.4js.com/gas/ws/r/pool_doctors_server/service/putJob"
+    #let l_url = "http://bj.bluejs.com/bj/ws/r/bj/pool_doctors_server/putJob"
 
     let l_sql = "select * from job_header where jh_status = 'X'"
     prepare job_header_text from l_sql

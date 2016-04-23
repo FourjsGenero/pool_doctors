@@ -23,20 +23,8 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-# Don't convert to 4fd until Studio handles case where componenttype is not
-# defined for a web component
-
 layout
-grid
-{
-[f01                 ]
-[                    ]
-[                    ]
-[                    ]
-[                    ]
-[                    ]
-}
+stack 
+webcomponent formonly.l_url, stretch=both;
 end
 end
-attributes
-webcomponent f01 = formonly.l_url, stretch=both;

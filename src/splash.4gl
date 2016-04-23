@@ -95,8 +95,8 @@ define l_outdata, l_outextras string
             end if
 
         on action help 
-           #call browser.browser("Help","https://demo.4js.com/gas/help.htm")
-           call browser.browser("Help","http://bj.bluejs.com/pool_doctors/help.html")
+           call browser.browser("Help","https://demo.4js.com/gas/help.htm")
+           #call browser.browser("Help","http://bj.bluejs.com/pool_doctors/help.html")
            -- this could use a PDF but the PDF is slow to load when it contains images
            -- could also consider embedding PDF inside application
             #call browser.browser("help","https://demo.4js.com/gas/help.pdf")
