@@ -29,6 +29,7 @@
 <StyleList>
  <Style name="Window">
      <StyleAttribute name="windowType" value="normal" />
+     <StyleAttribute name="materialFABActionList" value="append" />
   </Style>
   <!-- Used by select/zoom windows to animage up from bottom of window -->
   <Style name="Window.dialog">
@@ -39,4 +40,5 @@
   <Style name="ToolBarSeparator">
     <StyleAttribute name="iosSeparatorStretch" value="1"/>
   </Style>
+  
 </StyleList>
