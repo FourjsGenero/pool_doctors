@@ -63,7 +63,14 @@ define l_err_text string
     let m_job_header_rec.jh_code = l_jh_code
     call db_select() returning l_ok, l_err_text
     if l_ok then
-        open window job_header_grid with form "job_header_grid"
+        display ui.Interface.getFrontEndName()
+        -- Seperate form for Android due to bug of stack+buttonedit+noentry
+        -- Remove when bug fixed
+        if ui.Interface.getFrontEndName() = "GMA" then
+            open window job_header_grid with form "job_header_grid_android"
+        else
+            open window job_header_grid with form "job_header_grid"
+        end if
         let w= ui.Window.getCurrent()
         let f= w.getForm()
         call ui_view()

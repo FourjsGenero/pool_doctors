@@ -218,6 +218,7 @@
       <VirtualFolder label="96_job_header_grid (grid view)">
         <File excludeFromLink="true" filePath="src/job_header_grid.4gl"/>
         <File filePath="src/job_header_grid.per"/>
+        <File filePath="src/job_header_grid_android.per"/>
       </VirtualFolder>
       <VirtualFolder label="97_job_header_list (list drill)">
         <File excludeFromLink="true" filePath="src/job_header_list.4gl"/>
