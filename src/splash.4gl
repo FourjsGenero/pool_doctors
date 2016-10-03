@@ -28,6 +28,8 @@ import fgl browser
 import fgl job_sync
 import fgl job_header_list
 
+import os
+
 
 
 private function exception()
@@ -82,6 +84,9 @@ define l_outdata, l_outextras string
                     end if
                 on action force_error attributes(text= "Force Error")  -- used to test error handling
                     display 1/0        -- this will make program stop with error
+                on action clear_error attributes(text="Clear Error Log (Requires program restart)")
+                    let l_ok =  os.Path.delete("pool_doctors.log")
+                    exit program 0
                 on action cancel
                     exit menu
             end menu
