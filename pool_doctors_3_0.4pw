@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Project defaultApplication="400358049" gstVersion="3001c" version="3.1">
+<Project defaultApplication="400358049" gstVersion="3001d" version="3.1">
   <Settings>
     <DynamicProperties version="2">
       <DynamicProperty description="Accent color (Android 5.0 and later)" initialValue="#9575CD" isDefaultInherited="false" isHidden="false" label="Accent color" name="gma-accent-color" readOnly="false" type="COLOR"/>
@@ -83,7 +83,7 @@
       <DynamicProperty name="packageName" value="Pool Doctors"/>
       <DynamicProperty name="packageVersion" value="20160215"/>
       <DynamicProperty name="packageVersionName" value="20141028"/>
-      <DynamicProperty name="permissions" value="ACCESS_COARSE_LOCATION;ACCESS_FINE_LOCATION;ACCESS_NETWORK_STATE;ACCESS_WIFI_STATE;CALL_PHONE;CAMERA;INSTALL_SHORTCUT;INTERNET;SEND_SMS;WRITE_EXTERNAL_STORAGE;WRITE_SMS"/>
+      <DynamicProperty name="permissions" value="ACCESS_COARSE_LOCATION;ACCESS_FINE_LOCATION;ACCESS_NETWORK_STATE;ACCESS_WIFI_STATE;CALL_PHONE;CAMERA;INSTALL_SHORTCUT;INTERNET;SEND_SMS;WRITE_EXTERNAL_STORAGE"/>
       <Directory description="Binaries" destinationDirectory="$(ProjectDir)/bin" includedFiles="*.42?" label="Binaries" recursive="false" sourceDirectory="$(ProjectDir)/bin"/>
       <Directory description="Configuration Files" destinationDirectory="$(ProjectDir)/bin" includedFiles="fglprofile" label="Config" recursive="false" sourceDirectory="$(ProjectDir)/config"/>
       <Directory description="Images" destinationDirectory="$(ProjectDir)/bin" includedFiles="*.png *.jpg" label="Images" sourceDirectory="$(ProjectDir)/images"/>
@@ -243,6 +243,271 @@
         <File filePath="resources/pool_doctors.4ad"/>
         <File filePath="resources/pool_doctors_android.4ad"/>
         <File filePath="resources/pool_doctors_ios.4ad"/>
+      </VirtualFolder>
+      <VirtualFolder label="Images">
+        <VirtualFolder label="address">
+          <File filePath="images/address.png"/>
+          <File filePath="images/address_29x29.png"/>
+          <File filePath="images/address_40x40.png"/>
+          <File filePath="images/address_50x50.png"/>
+          <File filePath="images/address_57x57.png"/>
+          <File filePath="images/address_60x60.png"/>
+          <File filePath="images/address_72x72.png"/>
+          <File filePath="images/address_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="app_pdi">
+          <File filePath="images/app_pdi_iPad.png"/>
+          <File filePath="images/app_pdi_iPhone.png"/>
+          <File filePath="images/app_pdi_iTunesArtwork.png"/>
+          <File filePath="images/app_pdi_Settings.png"/>
+          <File filePath="images/app_pdi_Spotlight.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="barcode">
+          <File filePath="images/barcode.png"/>
+          <File filePath="images/barcode_29x29.png"/>
+          <File filePath="images/barcode_40x40.png"/>
+          <File filePath="images/barcode_50x50.png"/>
+          <File filePath="images/barcode_57x57.png"/>
+          <File filePath="images/barcode_60x60.png"/>
+          <File filePath="images/barcode_72x72.png"/>
+          <File filePath="images/barcode_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="camera">
+          <File filePath="images/camera.png"/>
+          <File filePath="images/camera_29x29.png"/>
+          <File filePath="images/camera_40x40.png"/>
+          <File filePath="images/camera_50x50.png"/>
+          <File filePath="images/camera_57x57.png"/>
+          <File filePath="images/camera_60x60.png"/>
+          <File filePath="images/camera_72x72.png"/>
+          <File filePath="images/camera_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="created">
+          <File filePath="images/created.png"/>
+          <File filePath="images/created_29x29.png"/>
+          <File filePath="images/created_40x40.png"/>
+          <File filePath="images/created_50x50.png"/>
+          <File filePath="images/created_57x57.png"/>
+          <File filePath="images/created_60x60.png"/>
+          <File filePath="images/created_72x72.png"/>
+          <File filePath="images/created_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="cross">
+          <File filePath="images/cross.png"/>
+          <File filePath="images/cross_29x29.png"/>
+          <File filePath="images/cross_40x40.png"/>
+          <File filePath="images/cross_50x50.png"/>
+          <File filePath="images/cross_57x57.png"/>
+          <File filePath="images/cross_60x60.png"/>
+          <File filePath="images/cross_72x72.png"/>
+          <File filePath="images/cross_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="details">
+          <File filePath="images/details.png"/>
+          <File filePath="images/details_29x29.png"/>
+          <File filePath="images/details_40x40.png"/>
+          <File filePath="images/details_50x50.png"/>
+          <File filePath="images/details_57x57.png"/>
+          <File filePath="images/details_60x60.png"/>
+          <File filePath="images/details_72x72.png"/>
+          <File filePath="images/details_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="filter">
+          <File filePath="images/filter.png"/>
+          <File filePath="images/filter_29x29.png"/>
+          <File filePath="images/filter_40x40.png"/>
+          <File filePath="images/filter_50x50.png"/>
+          <File filePath="images/filter_57x57.png"/>
+          <File filePath="images/filter_60x60.png"/>
+          <File filePath="images/filter_72x72.png"/>
+          <File filePath="images/filter_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="finish">
+          <File filePath="images/finish.png"/>
+          <File filePath="images/finish_29x29.png"/>
+          <File filePath="images/finish_40x40.png"/>
+          <File filePath="images/finish_50x50.png"/>
+          <File filePath="images/finish_57x57.png"/>
+          <File filePath="images/finish_60x60.png"/>
+          <File filePath="images/finish_72x72.png"/>
+          <File filePath="images/finish_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="ic_launcher">
+          <VirtualFolder label="res">
+            <VirtualFolder label="drawable-hdpi">
+              <File filePath="images/ic_launcher/res/drawable-hdpi/ic_launcher.png"/>
+            </VirtualFolder>
+            <VirtualFolder label="drawable-mdpi">
+              <File filePath="images/ic_launcher/res/drawable-mdpi/ic_launcher.png"/>
+            </VirtualFolder>
+            <VirtualFolder label="drawable-xhdpi">
+              <File filePath="images/ic_launcher/res/drawable-xhdpi/ic_launcher.png"/>
+            </VirtualFolder>
+            <VirtualFolder label="drawable-xxhdpi">
+              <File filePath="images/ic_launcher/res/drawable-xxhdpi/ic_launcher.png"/>
+            </VirtualFolder>
+            <VirtualFolder label="drawable-xxxhdpi">
+              <File filePath="images/ic_launcher/res/drawable-xxxhdpi/ic_launcher.png"/>
+            </VirtualFolder>
+          </VirtualFolder>
+        </VirtualFolder>
+        <VirtualFolder label="inprogress">
+          <File filePath="images/inprogress.png"/>
+          <File filePath="images/inprogress_29x29.png"/>
+          <File filePath="images/inprogress_40x40.png"/>
+          <File filePath="images/inprogress_50x50.png"/>
+          <File filePath="images/inprogress_57x57.png"/>
+          <File filePath="images/inprogress_60x60.png"/>
+          <File filePath="images/inprogress_72x72.png"/>
+          <File filePath="images/inprogress_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="magnifying_glass">
+          <File filePath="images/magnifying_glass.png"/>
+          <File filePath="images/magnifying_glass29x29.png"/>
+          <File filePath="images/magnifying_glass40x40.png"/>
+          <File filePath="images/magnifying_glass50x50.png"/>
+          <File filePath="images/magnifying_glass57x57.png"/>
+          <File filePath="images/magnifying_glass60x60.png"/>
+          <File filePath="images/magnifying_glass72x72.png"/>
+          <File filePath="images/magnifying_glass76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="map">
+          <File filePath="images/mail.png"/>
+          <File filePath="images/mail_29x29.png"/>
+          <File filePath="images/mail_40x40.png"/>
+          <File filePath="images/mail_50x50.png"/>
+          <File filePath="images/mail_57x57.png"/>
+          <File filePath="images/mail_60x60.png"/>
+          <File filePath="images/mail_72x72.png"/>
+          <File filePath="images/mail_76x76.png"/>
+          <File filePath="images/map.png"/>
+          <File filePath="images/map_29x29.png"/>
+          <File filePath="images/map_40x40.png"/>
+          <File filePath="images/map_50x50.png"/>
+          <File filePath="images/map_57x57.png"/>
+          <File filePath="images/map_60x60.png"/>
+          <File filePath="images/map_72x72.png"/>
+          <File filePath="images/map_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="name">
+          <File filePath="images/name.png"/>
+          <File filePath="images/name_29x29.png"/>
+          <File filePath="images/name_40x40.png"/>
+          <File filePath="images/name_50x50.png"/>
+          <File filePath="images/name_57x57.png"/>
+          <File filePath="images/name_60x60.png"/>
+          <File filePath="images/name_72x72.png"/>
+          <File filePath="images/name_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="note">
+          <File filePath="images/note.png"/>
+          <File filePath="images/note_29x29.png"/>
+          <File filePath="images/note_40x40.png"/>
+          <File filePath="images/note_50x50.png"/>
+          <File filePath="images/note_57x57.png"/>
+          <File filePath="images/note_60x60.png"/>
+          <File filePath="images/note_72x72.png"/>
+          <File filePath="images/note_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="parts">
+          <File filePath="images/parts.png"/>
+          <File filePath="images/parts_29x29.png"/>
+          <File filePath="images/parts_40x40.png"/>
+          <File filePath="images/parts_50x50.png"/>
+          <File filePath="images/parts_57x57.png"/>
+          <File filePath="images/parts_60x60.png"/>
+          <File filePath="images/parts_72x72.png"/>
+          <File filePath="images/parts_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="phone">
+          <File filePath="images/phone.png"/>
+          <File filePath="images/phone_29x29.png"/>
+          <File filePath="images/phone_40x40.png"/>
+          <File filePath="images/phone_50x50.png"/>
+          <File filePath="images/phone_57x57.png"/>
+          <File filePath="images/phone_60x60.png"/>
+          <File filePath="images/phone_72x72.png"/>
+          <File filePath="images/phone_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="setting">
+          <File filePath="images/setting.png"/>
+          <File filePath="images/setting_29x29.png"/>
+          <File filePath="images/setting_40x40.png"/>
+          <File filePath="images/setting_50x50.png"/>
+          <File filePath="images/setting_57x57.png"/>
+          <File filePath="images/setting_60x60.png"/>
+          <File filePath="images/setting_72x72.png"/>
+          <File filePath="images/setting_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="SMS">
+          <File filePath="images/SMS.png"/>
+          <File filePath="images/SMS_29x29.png"/>
+          <File filePath="images/SMS_40x40.png"/>
+          <File filePath="images/SMS_50x50.png"/>
+          <File filePath="images/SMS_57x57.png"/>
+          <File filePath="images/SMS_60x60.png"/>
+          <File filePath="images/SMS_72x72.png"/>
+          <File filePath="images/SMS_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="sort">
+          <File filePath="images/sort.png"/>
+          <File filePath="images/sort_29x29.png"/>
+          <File filePath="images/sort_40x40.png"/>
+          <File filePath="images/sort_50x50.png"/>
+          <File filePath="images/sort_57x57.png"/>
+          <File filePath="images/sort_60x60.png"/>
+          <File filePath="images/sort_72x72.png"/>
+          <File filePath="images/sort_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="splash">
+          <File filePath="images/splash_1242x2208.png"/>
+          <File filePath="images/splash_1536x2048.png"/>
+          <File filePath="images/splash_320x480.png"/>
+          <File filePath="images/splash_640x1136.png"/>
+          <File filePath="images/splash_640x960.png"/>
+          <File filePath="images/splash_750x1134.png"/>
+          <File filePath="images/splash_768x1024.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="start">
+          <File filePath="images/start.png"/>
+          <File filePath="images/start_29x29.png"/>
+          <File filePath="images/start_40x40.png"/>
+          <File filePath="images/start_50x50.png"/>
+          <File filePath="images/start_57x57.png"/>
+          <File filePath="images/start_60x60.png"/>
+          <File filePath="images/start_72x72.png"/>
+          <File filePath="images/start_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="task">
+          <File filePath="images/task.png"/>
+          <File filePath="images/task_29x29.png"/>
+          <File filePath="images/task_40x40.png"/>
+          <File filePath="images/task_50x50.png"/>
+          <File filePath="images/task_57x57.png"/>
+          <File filePath="images/task_60x60.png"/>
+          <File filePath="images/task_72x72.png"/>
+          <File filePath="images/task_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="tick">
+          <File filePath="images/tick.png"/>
+          <File filePath="images/tick_29x29.png"/>
+          <File filePath="images/tick_40x40.png"/>
+          <File filePath="images/tick_50x50.png"/>
+          <File filePath="images/tick_57x57.png"/>
+          <File filePath="images/tick_60x60.png"/>
+          <File filePath="images/tick_72x72.png"/>
+          <File filePath="images/tick_76x76.png"/>
+        </VirtualFolder>
+        <VirtualFolder label="timesheet">
+          <File filePath="images/timesheet.png"/>
+          <File filePath="images/timesheet_29x29.png"/>
+          <File filePath="images/timesheet_40x40.png"/>
+          <File filePath="images/timesheet_50x50.png"/>
+          <File filePath="images/timesheet_57x57.png"/>
+          <File filePath="images/timesheet_60x60.png"/>
+          <File filePath="images/timesheet_72x72.png"/>
+          <File filePath="images/timesheet_76x76.png"/>
+        </VirtualFolder>
       </VirtualFolder>
       <VirtualFolder label="Stylesheet">
         <File filePath="resources/pool_doctors.4st"/>
