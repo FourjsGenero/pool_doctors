@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Schema gstVersion="3000a" id="{6e0dcbbf-11f6-4a25-94a0-4381743de95a}" version="3.0">
+<Schema gstVersion="3001d" id="{6e0dcbbf-11f6-4a25-94a0-4381743de95a}" version="3.0">
   <AGSettings version="1.1">
     <DynamicProperties version="2">
       <DynamicProperty description="Associated label when generating form" initialValue="" isDefaultInherited="false" isHidden="false" label="Label" name="label" readOnly="false" type="TEXT"/>
@@ -84,7 +84,7 @@
     <Column fglLength="2821" fglType="5" name="jp_lat" notNull="false" order="5" status="U" uuid="db/column1949"/>
     <Column fglLength="2821" fglType="5" name="jp_lon" notNull="false" order="6" status="U" uuid="db/column1951"/>
     <Column fglLength="56" fglType="11" name="jp_photo_data" notNull="false" order="7" status="U" uuid="db/column1953"/>
-    <Column fglLength="16" fglType="13" name="jp_text" notNull="false" order="8" status="A" uuid="db/column470"/>
+    <Column fglLength="160" fglType="13" name="jp_text" notNull="false" order="8" status="A" uuid="db/column470"/>
     <Index indexColumns="jp_code, jp_idx" indexConstraint="uniqueIndex" name="idx_job_photo_pk" status="U" uuid="db/index406"/>
     <Index indexColumns="jp_code, jp_idx" indexConstraint="primaryKey" name="sqlite_autoindex_job_photo_1" status="U" uuid="db/index408"/>
   </Table>
@@ -122,7 +122,7 @@
   <Views ActiveView="View-1" showLabels="true">
     <View Name="View-1">
       <Layout>
-        <![CDATA[AAAAAgAAABYAZABiAC8AdABhAGIAbABlADIANgAxwHyQAAAAAABATQAAAAAAAD/NcKPXCj13AQAAABYAZABiAC8AdABhAGIAbABlADIANgAzQGAAAAAAAABAh0AAAAAAAD/GZmZmZmZrAQAAABYAZABiAC8AdABhAGIAbABlADIANgA1QF+AAAAAAABAjaAAAAAAAD/DU/fO2RaLAQAAABYAZABiAC8AdABhAGIAbABlADIANgA3QGAAAAAAAABAk/gAAAAAAD/AAAAAAAADAQAAABYAZABiAC8AdABhAGIAbABlADIANQA1AAAAAAAAAABANAAAAAAAAD9gYk3S8an8AAAAABYAZABiAC8AdABhAGIAbABlADIANgA5QIIQAAAAAABAgLAAAAAAAD/RN0vGp++hAQAAABYAZABiAC8AdABhAGIAbABlADIANQA3QIFQAAAAAABAUYAAAAAAAD/QcrAgxJupAQAAABYAZABiAC8AdABhAGIAbABlADIANQA5QF9AAAAAAABAfYAAAAAAAD/G6XjU/fO7AQAAABYAZABiAC8AdABhAGIAbABlADIANwAxQKLAAAAAAABANAAAAAAAAD9ok3S8an76AA==]]>
+        <![CDATA[AAAAAgAAABYAZABiAC8AdABhAGIAbABlADIANgA5QIIQAAAAAABAgLAAAAAAAD/RN0vGp++hAQAAABYAZABiAC8AdABhAGIAbABlADIANQA3QIFQAAAAAABAUYAAAAAAAD/RR64UeuFLAQAAABYAZABiAC8AdABhAGIAbABlADIANQA5QF9AAAAAAABAfYAAAAAAAD/G6XjU/fO7AQAAABYAZABiAC8AdABhAGIAbABlADIANwAxQKLAAAAAAABANAAAAAAAAD9ok3S8an76AAAAABYAZABiAC8AdABhAGIAbABlADIANgAxwHyQAAAAAABATQAAAAAAAD/NcKPXCj13AQAAABYAZABiAC8AdABhAGIAbABlADIANgAzQGAAAAAAAABAh0AAAAAAAD/GZmZmZmZrAQAAABYAZABiAC8AdABhAGIAbABlADIANgA1QF+AAAAAAABAjaAAAAAAAD/SsCDEm6XnAQAAABYAZABiAC8AdABhAGIAbABlADIANgA3QGAAAAAAAABAk/gAAAAAAD/AAAAAAAADAQAAABYAZABiAC8AdABhAGIAbABlADIANQA1AAAAAAAAAABANAAAAAAAAD9gYk3S8an8AA==]]>
       </Layout>
     </View>
   </Views>
