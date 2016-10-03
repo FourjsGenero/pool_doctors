@@ -467,6 +467,7 @@
           <File filePath="images/splash_640x960.png"/>
           <File filePath="images/splash_750x1134.png"/>
           <File filePath="images/splash_768x1024.png"/>
+          <File filePath="images/splash_iphone.jpg"/>
         </VirtualFolder>
         <VirtualFolder label="start">
           <File filePath="images/start.png"/>
