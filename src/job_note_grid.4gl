@@ -174,9 +174,6 @@ private function ui_edit()
 define l_ok, l_error_text string
 
     input by name m_job_note_rec.*  attributes(unbuffered, without defaults=true)
-        before input
-            call dialog.setFieldActive("jn_code", m_mode = "add")
-            call dialog.setFieldActive("jn_idx", m_mode = "add")
 
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \

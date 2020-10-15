@@ -46,8 +46,8 @@ LABEL l03: TEXT="Product", STYLE="title";
 LABEL l04: TEXT="Quantity", STYLE="title";
 LABEL l05: TEXT="Status", STYLE="title";
 
-EDIT f01 = formonly.jd_code;
-EDIT f02 = formonly.jd_line;
+EDIT f01 = formonly.jd_code, NOENTRY;
+EDIT f02 = formonly.jd_line, NOENTRY;
 BUTTONEDIT f03 = formonly.jd_product, ACTION=jd_product.zoom;
 SPINEDIT f04 = formonly.jd_qty;
 COMBOBOX f05 = formonly.jd_status, NOT NULL;
@@ -56,18 +56,3 @@ BUTTON b01: barcode;
 BUTTON b02: accept;
 
 IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
-
-
-
---stack
---group
---edit formonly.jd_code, justify=right, title="Job Code";
---edit formonly.jd_line, justify=right, title="Line Number";
---button barcode;
---buttonedit formonly.jd_product, action=jd_product.zoom, noteditable, justify=right, title="Product";
---edit formonly.jd_qty, justify=right, title="Quantity";
---combobox formonly.jd_status, not null, justify=right, title="Status";
---BUTTON accept;
---end
---end
---end

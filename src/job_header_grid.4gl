@@ -67,13 +67,8 @@ define l_err_text string
     call db_select() returning l_ok, l_err_text
     if l_ok then
         display ui.Interface.getFrontEndName()
-        -- Seperate form for Android due to bug of stack+buttonedit+noentry
-        -- Remove when bug fixed
-     #   if ui.Interface.getFrontEndName() = "GMA" then
-     #       open window job_header_grid with form "job_header_grid_android"
-     #  else
+
             open window job_header_grid with form "job_header_grid"
-     #   end if
         let w= ui.Window.getCurrent()
         let f= w.getForm()
         call ui_view()
@@ -91,32 +86,8 @@ private function ui_view()
 define l_ok boolean
 define l_err_text string
 
-
-define n om.DomNode
-
-define lines_count, notes_count, photos_count, timesheet_count  string
-
-define jh_day_created DATe
-define jh_time_created DATETIME HOUR TO SECOND
-    --let n = f.findNode("Button","lines")
-    --call n.setAttribute("text",SFMT(" %1 Parts",lib_job_detail.count(m_job_header_rec.jh_code)))
---
-    --let n = f.findNode("Button","photo")
-    --call n.setAttribute("text",SFMT(" %1 Photos",lib_job_photo.count(m_job_header_rec.jh_code)))
---
-    --let n = f.findNode("Button","notes")
-    --call n.setAttribute("text",SFMT(" %1 Notes",lib_job_note.count(m_job_header_rec.jh_code)))
---
-    --let n = f.findNode("Button","time")
-    --call n.setAttribute("text",SFMT(" %1 Timesheet Lines",lib_job_timesheet.count(m_job_header_rec.jh_code)))
-
-    display by name m_job_header_rec.jh_code, m_job_header_rec.jh_customer
-
-    -- datetime does not fit in target screen so split into two lines
-    let jh_day_created = m_job_header_rec.jh_date_created
-    let jh_time_created = m_job_header_rec.jh_date_created
-    display by name jh_day_created
-    display by name jh_time_created
+    let  m_job_header_rec.jh_date_created = current
+    display by name m_job_header_rec.jh_code, m_job_header_rec.jh_customer,  m_job_header_rec.jh_date_created
     
     display sfmt("%1 (%2)",lib_customer.lookup_cm_name(m_job_header_rec.jh_customer) ,m_job_header_rec.jh_customer clipped) to jh_customer
    
@@ -126,21 +97,11 @@ define jh_time_created DATETIME HOUR TO SECOND
     display sfmt("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code)) to photos_count
     display sfmt("%1 Timesheet Lines", lib_job_timesheet.count(m_job_header_rec.jh_code)) to timesheet_count
 
-  #  let lines_count = sfmt("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code))
-  #  let notes_count = sfmt("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code))
-  #  let photos_count =  sfmt("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code))
-  #  let timesheet_count =  sfmt("%1 Timesheet Lines",lib_job_timesheet.count(m_job_header_rec.jh_code))
-
-    #input by name  m_job_header_rec.jh_customer, lines_count, notes_count, photos_count, timesheet_count attributes(without defaults=true, accept=false)
-    #before input
-    #    on action customer
-    #end input
     menu
         before menu
             call state(dialog)
 
         on action cancel
-            #exit input
             exit menu
 
         on action customer  
@@ -189,7 +150,6 @@ define jh_time_created DATETIME HOUR TO SECOND
             call job_header_complete.complete(m_job_header_rec.jh_code) returning 
                l_ok, l_err_text
             if not l_ok then
-                #continue input
                 continue menu
             end if
             call db_select() returning l_ok, l_err_text
@@ -198,7 +158,6 @@ define jh_time_created DATETIME HOUR TO SECOND
             end if
             call state(dialog)
             
-    #end input
     end menu
 end function
 

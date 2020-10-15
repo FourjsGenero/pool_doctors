@@ -116,8 +116,11 @@ define l_err_text string
             end if
 
         on action help 
-           #call browser.browser("Help",sfmt("%1/help.pdf", lib_settings.js_url))
-           call browser.browser("Help","../help/help.pdf")
+            -- Use Supported Systems Document as example of similar sized PDF
+            -- Consider using browser.browser when NULL Web Component can handle PDF
+            -- I think that will be GDD 4.00 using the Qt library that will be available then 
+            # call browser.browser("Help","https://4js.com//mirror/documentation.php?s=genero&f=fjs-genero-3.20.XX-PlatformsDb.pdf")
+            call ui.Interface.frontCall("standard","launchUrl","https://4js.com//mirror/documentation.php?s=genero&f=fjs-genero-3.20.XX-PlatformsDb.pdf",[])
           
         on action video
             if ui.Interface.getFrontEndName() = "GBC"

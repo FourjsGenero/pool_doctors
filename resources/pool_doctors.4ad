@@ -52,6 +52,7 @@
   <ActionDefault name="product" text="Product"  image="fa-binoculars" />
 
   <ActionDefault name="view" text="View" image="fa-search"  />
+  <ActionDefault name="zoom" text="Zoom" image="fa-search"  />
   <ActionDefault name="barcode" text="Barcode" image="fa-barcode" />
 
   <ActionDefault name="append" text="Append" defaultView="no" image="fa-plus" />

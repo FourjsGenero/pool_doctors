@@ -55,8 +55,8 @@ LABEL l05: TEXT="Latitude", STYLE="title";
 LABEL l06: TEXT="Longitude", STYLE="title";
 LABEL l07: TEXT="Notes", STYLE="title";
 
-EDIT f01 = formonly.jp_code;
-EDIT f02 = formonly.jp_idx;
+EDIT f01 = formonly.jp_code, NOENTRY;
+EDIT f02 = formonly.jp_idx, NOENTRY;
 IMAGE f03 = formonly.jp_photo, autoscale, sizepolicy=fixed, height=4;
 DATETIMEEDIT f04 = formonly.jp_when;
 EDIT f05 = formonly.jp_lat;

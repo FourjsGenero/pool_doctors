@@ -48,8 +48,8 @@ LABEL l04: TEXT="Finish", STYLE="title";
 LABEL l05: TEXT="Charge Code", STYLE="title";
 LABEL l06: TEXT="Notes", STYLE="title";
 
-EDIT f01 = formonly.jt_code;
-EDIT f02 = formonly.jt_idx;
+EDIT f01 = formonly.jt_code, NOENTRY;
+EDIT f02 = formonly.jt_idx, NOENTRY;
 DATETIMEEDIT f03 = formonly.jt_start;
 DATETIMEEDIT f04 = formonly.jt_finish;
 combobox f05 = formonly.jt_charge_code_id, initializer=populate_charge_code_id, not NULL;

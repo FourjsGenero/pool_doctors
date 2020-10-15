@@ -22,50 +22,46 @@
 #       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
-layout (text="Job")
+LAYOUT (TEXT="Job")
 GROUP
 GRID
 {
 
-[l01 |f01             ]
-[l02 |f02             |b]
-[l03a|f03a            ]
-[l03b|f03b            ]
-[b01                  ]
-[l04 |f04             |d]
-[l05 |f05             |e]
-[l06 |f06             |f]
-[l07 |f07             |g]
-[b02                  ]
-[z                    ]
+[l01 |f01            ]
+[l02 |f02            |b]
+[l03 |f03            ]
+[b01                 ]
+[l04 |f04            |d]
+[l05 |f05            |e]
+[l06 |f06            |f]
+[l07 |f07            |g]
+[b02                 ]
+[z                   ]
 }
 END
 END
 END
 ATTRIBUTES
 
-LABEL l01: TEXT="Job Code", STYLE="title";
-LABEL l02: TEXT="Customer", STYLE="title";
-LABEL l03a: TEXT="Date", STYLE="title";
-LABEL l03b: TEXT="Time", STYLE="title";
+LABEL l01: TEXT="Code", STYLE="title";
+LABEL l02: TEXT="Where", STYLE="title";
+LABEL l03:  TEXT="Raised", STYLE="title";
+
 
 LABEL l04: TEXT="Lines", STYLE="title";
 LABEL l05: TEXT="Photos", STYLE="title";
 LABEL l06: TEXT="Notes", STYLE="title";
-LABEL l07: TEXT="Timesheet", STYLE="title";
+LABEL l07: TEXT="Time", STYLE="title";
 
 EDIT f01 = formonly.jh_code;
-
 EDIT f02 = formonly.jh_customer, SCROLL;
---DATETIMEEDIT f03 = formonly.jh_date_created;
-DATEEDIT f03a = formonly.jh_day_created;
-TIMEEDIT f03b = formonly.jh_time_created;
+DATETIMEEDIT f03 = formonly.jh_date_created;
+
 
 EDIT f04 = formonly.lines_count;
 EDIT f05 = formonly.photos_count;
 EDIT f06 = formonly.notes_count;
 EDIT f07 = formonly.timesheet_count;
-
 
 BUTTON b: customer, TEXT="";
 BUTTON d: lines, TEXT="";
@@ -78,21 +74,5 @@ BUTTON b02: complete;
 
 IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
 
-
---stack
---group
---edit formonly.jh_code, justify=right, title="Job Code";
---buttonedit formonly.jh_customer, noteditable, title="Customer", action=customer;
---datetimeedit formonly.jh_date_created, justify=right, title="Created";
---button start, text="Start";
---buttonedit formonly.lines_count, noteditable, title="Lines", action=lines;
---buttonedit formonly.photos_count, noteditable, title="Photos", action=photo;
---buttonedit formonly.notes_count, noteditable, title="Notes", action=notes;
---buttonedit formonly.timesheet_count, noteditable, title="Timesheet", action=time;
---button complete,  text="Complete";
---end
---end
---end
-
-instructions
-screen record scr(jh_code, jh_customer)
+INSTRUCTIONS
+SCREEN RECORD scr(jh_code, jh_customer)

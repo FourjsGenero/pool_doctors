@@ -32,30 +32,7 @@ IMPORT FGL lib_settings
 
 IMPORT FGL fglsvgcanvas
 SCHEMA pool_doctors
-PUBLIC TYPE fillType RECORD
-    colour STRING,
-    rule STRING,
-    opacity STRING
-END RECORD
-PUBLIC TYPE strokeType RECORD
-    colour STRING,
-    width STRING,
-    linecap STRING,
-    linejoin STRING,
-    miterlimit STRING,
-    dasharray STRING,
-    dashoffset STRING,
-    opacity STRING
-END RECORD
-PUBLIC TYPE fontType RECORD
-    family STRING,
-    size STRING,
-    style STRING,
-    weight STRING
---underline
---overline
---strike through
-END RECORD
+
 
 PUBLIC TYPE gaugeType RECORD
     x, y INTEGER,
@@ -104,7 +81,7 @@ define l_cm_name like customer.cm_name
 
     DEFINE root_svg, child_node om.DomNode
     DEFINE canvas_id INTEGER
-    OPEN WINDOW w WITH FORM "customer_reading" ATTRIBUTES(TEXT=SFMT("Reading %1 (%2)", l_cm_name, l_cm_code))
+    OPEN WINDOW w WITH FORM "customer_reading" ATTRIBUTES(TEXT="Reading")
 
     INITIALIZE g.* TO NULL
     LET g.x = 500
@@ -258,7 +235,8 @@ define l_cm_name like customer.cm_name
     CALL fglsvgcanvas.display(canvas_id)
 
     MENU ""
-        ON ACTION accept
+       
+        ON ACTION cancel
             EXIT MENU
 
         ON ACTION close
