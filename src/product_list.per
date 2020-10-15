@@ -23,9 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-layout (text="Select Product")
-vbox
-table
+LAYOUT (TEXT="Select Product")
+VBOX
+TABLE
 {
 [f01       |f02       ]
 [f01       |f02       ]
@@ -45,16 +45,19 @@ GRID
 [z              ]
 }
 END
-end
-end
-attributes
-edit f01 = formonly.major, imagecolumn=img;
-edit f02 = formonly.minor;
-phantom formonly.img;
+END
+END
+ATTRIBUTES
+EDIT f01 = formonly.major, IMAGECOLUMN=img;
+EDIT f02 = formonly.minor;
+PHANTOM formonly.img;
+
 BUTTON b01: append;
 BUTTON b02: toggle;
 BUTTON b03: order;
 BUTTON b04: filter;
+
 IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
-instructions
-screen record scr(major, minor,img)
+
+INSTRUCTIONS
+SCREEN RECORD scr(major, minor,img)

@@ -22,7 +22,7 @@
 #       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
-layout (text="Customer Details")
+LAYOUT (TEXT="Customer Details")
 GRID
 {
 <G g1                 >
@@ -79,29 +79,5 @@ BUTTON b31: email,  TEXT="E-mail";
 
 IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
 
-
-
---stack
---GROUP (TEXT="Customer")
---edit formonly.cm_code, justify=right, title="Code";
---edit formonly.cm_name, justify=right, title="Name";
---END
---GROUP (TEXT="Address")
---textedit formonly.cm_address, height = 5;
---button map, text="Map";
---END
---GROUP (TEXT="Phone")
---edit formonly.cm_phone, justify=right;
---button call, text="Call";
---button sms, text="SMS";
---END
---GROUP (TEXT="E-mail")
---edit formonly.cm_email, justify=right;
---button email, text="Mail";
---END
---end
---end
-
-
-instructions
-screen record scr(cm_code, cm_name, cm_phone, cm_email);
+INSTRUCTIONS
+SCREEN RECORD scr(cm_code, cm_name, cm_phone, cm_email);

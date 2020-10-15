@@ -23,7 +23,7 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-layout (text="Job Photo")
+LAYOUT (TEXT="Job Photo")
 GROUP
 GRID
 {
@@ -65,22 +65,4 @@ TEXTEDIT f07 = formonly.jp_text;
 
 BUTTON b01: accept;
 
-
 IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
-
-
---stack
---group
---edit formonly.jp_code, title="Job Code";
---edit formonly.jp_idx, title="Line Number";
---
---image formonly.jp_photo, autoscale, sizepolicy=fixed, height=4, title="Photo" ;
---datetimeedit formonly.jp_when, title="When";
---edit formonly.jp_lat, title="Latitude";
---edit formonly.jp_lon, title="Longitude";
---textedit formonly.jp_text, height=2, title="Notes";
---phantom formonly.jp_photo_data;
---BUTTON accept;
---end
---end
---end

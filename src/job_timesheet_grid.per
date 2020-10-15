@@ -22,7 +22,7 @@
 #       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
-layout (text="Job Timesheet")
+LAYOUT (TEXT="Job Timesheet")
 GROUP
 GRID
 {
@@ -52,22 +52,10 @@ EDIT f01 = formonly.jt_code, NOENTRY;
 EDIT f02 = formonly.jt_idx, NOENTRY;
 DATETIMEEDIT f03 = formonly.jt_start;
 DATETIMEEDIT f04 = formonly.jt_finish;
-combobox f05 = formonly.jt_charge_code_id, initializer=populate_charge_code_id, not NULL;
-BUTTON b01: accept;
+COMBOBOX f05 = formonly.jt_charge_code_id, initializer=populate_charge_code_id, not NULL;
 TEXTEDIT f06 = formonly.jt_text;
+
+BUTTON b01: accept;
 
 IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
 
-
---stack
---group
---edit formonly.jt_code, title="Job Code";
---edit formonly.jt_idx, title="Line Number";
---datetimeedit formonly.jt_start, title="Start";
---datetimeedit formonly.jt_finish, title="Finish";
---combobox formonly.jt_charge_code_id, initializer=populate_charge_code_id, not null, title="Charge Code";
---textedit formonly.jt_text, title="Notes";
---BUTTON accept;
---end
---end
---end

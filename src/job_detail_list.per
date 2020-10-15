@@ -23,9 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-layout (text="Job Details")
-vbox
-table tab_job_detail_list
+LAYOUT (TEXT="Job Details")
+VBOX
+TABLE tab_job_detail_list
 {
 [f01       |f02       ]
 [f01       |f02       ]
@@ -45,15 +45,16 @@ GRID
 [z              ]
 }
 END
-end
-attributes
-edit f01 = formonly.major, imagecolumn=img;
-edit f02 = formonly.minor, justify=right;
-phantom formonly.img;
+END
+ATTRIBUTES
+EDIT f01 = formonly.major, imagecolumn=img;
+EDIT f02 = formonly.minor, justify=right;
+PHANTOM formonly.img;
 BUTTON b01: append;
 BUTTON b02: toggle;
 BUTTON b03: order;
 BUTTON b04: filter;
 IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
-instructions
-screen record scr(major, minor,img)
+
+INSTRUCTIONS
+SCREEN RECORD scr(major, minor,img)
