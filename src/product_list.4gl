@@ -23,161 +23,149 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-type product_type record like product.*
+TYPE product_type RECORD LIKE product.*
 
-define m_product_arr dynamic array of product_type 
-define m_arr dynamic array of record
-    major string,
-    minor string,
-    img string
-end record
+DEFINE m_product_arr DYNAMIC ARRAY OF product_type
+DEFINE m_arr DYNAMIC ARRAY OF RECORD
+    major STRING,
+    minor STRING,
+    img STRING
+END RECORD
 
-define w ui.window
-define f ui.form
+DEFINE w ui.window
+DEFINE f ui.form
 
-define m_toggle string
-define m_filter string
-define m_orderby string
+DEFINE m_toggle STRING
+DEFINE m_filter STRING
+DEFINE m_orderby STRING
 
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
+FUNCTION select()
+    DEFINE l_pr_code LIKE product.pr_code
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
+    DEFINE l_ok BOOLEAN
+    DEFINE l_err_text STRING
 
+    LET m_toggle = NVL(m_toggle, "pr_code")
 
+    OPEN WINDOW product_list WITH FORM "product_list" ATTRIBUTES(TYPE = POPUP) #style="dialog")
+    LET w = ui.window.getcurrent()
+    LET f = w.getform()
 
-function select()
-define l_pr_code like product.pr_code
+    CALL db_populate() RETURNING l_ok, l_err_text
+    IF l_ok THEN
+        CALL ui_populate()
+        LET l_pr_code = ui_list()
+    ELSE
+        CALL lib_ui.show_error(l_err_text, TRUE)
+    END IF
 
-define l_ok boolean
-define l_err_text string
+    CLOSE WINDOW product_list
 
-    let m_toggle = nvl(m_toggle,"pr_code")
-    
-    open window product_list with form "product_list" attributes(type=popup)#style="dialog")
-    let w= ui.window.getcurrent()
-    let f = w.getform()
+    RETURN l_pr_code
+END FUNCTION
 
-    call db_populate() returning l_ok, l_err_text
-    if l_ok then
-        call ui_populate()
-        let l_pr_code = ui_list()
-    else
-        call lib_ui.show_error(l_err_text, true)
-    end if
-    
-    close window product_list
-    
-    return l_pr_code
-end function
+PRIVATE FUNCTION ui_populate()
+    DEFINE i INTEGER
 
+    CALL m_arr.clear()
+    FOR i = 1 TO m_product_arr.getLength()
+        CALL ui_populate_row(i)
+    END FOR
+END FUNCTION
 
+PRIVATE FUNCTION ui_populate_row(l_row)
+    DEFINE l_row INTEGER
 
-private function ui_populate()
-define i integer
+    CASE m_toggle
+        WHEN "pr_code"
+            LET m_arr[l_row].major = m_product_arr[l_row].pr_code CLIPPED
+            LET m_arr[l_row].minor = m_product_arr[l_row].pr_desc CLIPPED
+            LET m_arr[l_row].img = ""
+        WHEN "pr_desc"
+            LET m_arr[l_row].major = m_product_arr[l_row].pr_desc CLIPPED
+            LET m_arr[l_row].minor = m_product_arr[l_row].pr_code CLIPPED
+            LET m_arr[l_row].img = ""
+    END CASE
+END FUNCTION
 
-    call m_arr.clear()
-    for i = 1 to m_product_arr.getLength()
-        call ui_populate_row(i)
-    end for
-end function
+PRIVATE FUNCTION ui_list()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_err_text STRING
 
+    DEFINE l_popup_value_select BOOLEAN
 
+    DISPLAY ARRAY m_arr TO scr.* ATTRIBUTES(UNBUFFERED, ACCESSORYTYPE = CHECKMARK, DOUBLECLICK = accept)
 
-private function ui_populate_row(l_row)
-define l_row integer
+        ON ACTION toggle
+            LET l_popup_value_select = TRUE
+            MENU "Display Detail" ATTRIBUTES(STYLE = "popup")
+                ON ACTION pr_code ATTRIBUTES(TEXT = "Code")
+                    LET m_toggle = "pr_code"
+                ON ACTION pr_desc ATTRIBUTES(TEXT = "Description")
+                    LET m_toggle = "pr_desc"
+                ON ACTION cancel
+                    LET l_popup_value_select = FALSE
+            END MENU
+            IF l_popup_value_select THEN
+                CALL ui_populate()
+            END IF
 
-    case m_toggle
-         when "pr_code"
-            let m_arr[l_row].major = m_product_arr[l_row].pr_code clipped
-            let m_arr[l_row].minor = m_product_arr[l_row].pr_desc clipped
-            let m_arr[l_row].img = ""
-        when "pr_desc"
-            let m_arr[l_row].major = m_product_arr[l_row].pr_desc clipped
-            let m_arr[l_row].minor = m_product_arr[l_row].pr_code clipped
-            let m_arr[l_row].img = ""
-     end case
-end function
+        ON ACTION order
+            LET l_popup_value_select = TRUE
+            MENU "Order" ATTRIBUTES(STYLE = "popup")
+                ON ACTION pr_code ATTRIBUTES(TEXT = "Code")
+                    LET m_orderby = "pr_code"
+                ON ACTION pr_desc ATTRIBUTES(TEXT = "Description")
+                    LET m_orderby = "pr_desc"
+                ON ACTION cancel
+                    LET l_popup_value_select = FALSE
+            END MENU
+            IF l_popup_value_select THEN
+                CALL db_populate() RETURNING l_ok, l_err_text
+                IF l_ok THEN
+                    CALL ui_populate()
+                ELSE
+                    CALL lib_ui.show_error(l_err_text, TRUE)
+                END IF
+            END IF
 
+    END DISPLAY
+    IF int_flag THEN
+        LET int_flag = 0
+        RETURN NULL
+    ELSE
+        RETURN m_product_arr[arr_curr()].pr_code
+    END IF
+END FUNCTION
 
+PRIVATE FUNCTION db_populate()
+    DEFINE l_sql STRING
+    DEFINE l_rec product_type
 
-private function ui_list()
-define l_ok boolean
-define l_err_text string
-
-define l_popup_value_select boolean
-
-    display array m_arr to scr.* attributes(unbuffered, accessorytype=checkmark, doubleclick=accept)
-
-        on action toggle
-            let l_popup_value_select = true
-            menu "Display Detail" attributes(style="popup")
-                on action pr_code attributes(text="Code")
-                    let m_toggle = "pr_code"
-                on action pr_desc attributes(text="Description")
-                    let m_toggle = "pr_desc"
-                on action cancel
-                    let l_popup_value_select = false
-            end menu
-            if l_popup_value_select then
-                call ui_populate()
-            end if
-
-        on action order
-            let l_popup_value_select = true
-            menu "Order" attributes(style="popup")
-                on action pr_code attributes(text="Code")
-                    let m_orderby = "pr_code"
-                on action pr_desc attributes(text="Description")
-                    let m_orderby = "pr_desc"
-                on action cancel
-                    let l_popup_value_select = false
-            end menu
-            if l_popup_value_select then
-                call db_populate() returning l_ok, l_err_text
-                if l_ok then
-                    call ui_populate()
-                else
-                    call lib_ui.show_error(l_err_text, true)
-                end if
-            end if
-            
-    end display
-    if int_flag then
-        let int_flag = 0
-        return null
-    else
-        return m_product_arr[arr_curr()].pr_code
-    end if
-end function
-
-
-
-private function db_populate()
-define l_sql string
-define l_rec product_type
-
-    try
-        call m_product_arr.clear()
-        let l_sql = "select * from product"
-        if m_filter.getLength() > 0 then
-            let l_sql = l_sql, " where ", m_filter
-        end if
-        if m_orderby.getlength() > 0 then
-            let l_sql = l_sql, " order by ", m_orderby
-        end if
-        declare product_list_curs cursor from l_sql
-        foreach product_list_curs into l_rec.*
-            let m_product_arr[m_product_arr.getLength()+1].* = l_rec.*
-        end foreach
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
+    TRY
+        CALL m_product_arr.clear()
+        LET l_sql = "select * from product"
+        IF m_filter.getLength() > 0 THEN
+            LET l_sql = l_sql, " where ", m_filter
+        END IF
+        IF m_orderby.getlength() > 0 THEN
+            LET l_sql = l_sql, " order by ", m_orderby
+        END IF
+        DECLARE product_list_curs CURSOR FROM l_sql
+        FOREACH product_list_curs INTO l_rec.*
+            LET m_product_arr[m_product_arr.getLength() + 1].* = l_rec.*
+        END FOREACH
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION

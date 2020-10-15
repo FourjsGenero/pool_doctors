@@ -23,185 +23,160 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
 
-import fgl lib_customer
-import fgl lib_job_detail
-import fgl lib_job_note
-import fgl lib_job_photo
-import fgl lib_job_timesheet
+IMPORT FGL lib_customer
+IMPORT FGL lib_job_detail
+IMPORT FGL lib_job_note
+IMPORT FGL lib_job_photo
+IMPORT FGL lib_job_timesheet
 
-import fgl customer_grid
-import fgl job_header_complete
-import fgl job_detail_list
-import fgl job_photo_list
-import fgl job_note_list
-import fgl job_timesheet_list
+IMPORT FGL customer_grid
+IMPORT FGL job_header_complete
+IMPORT FGL job_detail_list
+IMPORT FGL job_photo_list
+IMPORT FGL job_note_list
+IMPORT FGL job_timesheet_list
 
-schema pool_doctors
+SCHEMA pool_doctors
 
-type job_header_type record like job_header.*
+TYPE job_header_type RECORD LIKE job_header.*
 
-define m_job_header_rec job_header_type  
+DEFINE m_job_header_rec job_header_type
 
-define w ui.window
-define f ui.form
+DEFINE w ui.window
+DEFINE f ui.form
 
-
-
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 ---- Control ----
-function view_job(l_jh_code)
-define l_jh_code like job_header.jh_code
+FUNCTION view_job(l_jh_code)
+    DEFINE l_jh_code LIKE job_header.jh_code
 
-define l_ok boolean
-define l_err_text string
+    DEFINE l_ok BOOLEAN
+    DEFINE l_err_text STRING
 
-    let m_job_header_rec.jh_code = l_jh_code
-    call db_select() returning l_ok, l_err_text
-    if l_ok then
-        display ui.Interface.getFrontEndName()
+    LET m_job_header_rec.jh_code = l_jh_code
+    CALL db_select() RETURNING l_ok, l_err_text
+    IF l_ok THEN
+        DISPLAY ui.Interface.getFrontEndName()
 
-            open window job_header_grid with form "job_header_grid"
-        let w= ui.Window.getCurrent()
-        let f= w.getForm()
-        call ui_view()
-        close window job_header_grid
-    else
-        call lib_ui.show_error("Job Record not found", TRUE)
-    end if
-    return l_ok, l_err_text
-end function
-
-
+        OPEN WINDOW job_header_grid WITH FORM "job_header_grid"
+        LET w = ui.Window.getCurrent()
+        LET f = w.getForm()
+        CALL ui_view()
+        CLOSE WINDOW job_header_grid
+    ELSE
+        CALL lib_ui.show_error("Job Record not found", TRUE)
+    END IF
+    RETURN l_ok, l_err_text
+END FUNCTION
 
 ---- User Interface ----
-private function ui_view()
-define l_ok boolean
-define l_err_text string
+PRIVATE FUNCTION ui_view()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_err_text STRING
 
-    let  m_job_header_rec.jh_date_created = current
-    display by name m_job_header_rec.jh_code, m_job_header_rec.jh_customer,  m_job_header_rec.jh_date_created
-    
-    display sfmt("%1 (%2)",lib_customer.lookup_cm_name(m_job_header_rec.jh_customer) ,m_job_header_rec.jh_customer clipped) to jh_customer
-   
+    LET m_job_header_rec.jh_date_created = CURRENT
+    DISPLAY BY NAME m_job_header_rec.jh_code, m_job_header_rec.jh_customer, m_job_header_rec.jh_date_created
 
-    display sfmt("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code)) to lines_count
-    display sfmt("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code)) to notes_count
-    display sfmt("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code)) to photos_count
-    display sfmt("%1 Timesheet Lines", lib_job_timesheet.count(m_job_header_rec.jh_code)) to timesheet_count
+    DISPLAY SFMT("%1 (%2)", lib_customer.lookup_cm_name(m_job_header_rec.jh_customer), m_job_header_rec.jh_customer CLIPPED)
+        TO jh_customer
 
-    menu
-        before menu
-            call state(dialog)
+    DISPLAY SFMT("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code)) TO lines_count
+    DISPLAY SFMT("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code)) TO notes_count
+    DISPLAY SFMT("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code)) TO photos_count
+    DISPLAY SFMT("%1 Timesheet Lines", lib_job_timesheet.count(m_job_header_rec.jh_code)) TO timesheet_count
 
-        on action cancel
-            exit menu
+    MENU
+        BEFORE MENU
+            CALL state(dialog)
 
-        on action customer  
-            call customer_grid.view_customer(m_job_header_rec.jh_customer) returning l_ok, l_err_text
+        ON ACTION cancel
+            EXIT MENU
 
-        on action lines 
-            if m_job_header_rec.jh_status matches "[IX]" then
-                call job_detail_list.maintain_job(m_job_header_rec.jh_code)
-                display sfmt("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code)) to lines_count
-            else
-                call lib_ui.show_message("Tap Start before entering job data", true)
-            end if
-            
-        on action photo  
-             if m_job_header_rec.jh_status matches "[IX]" then
-                call job_photo_list.maintain_job(m_job_header_rec.jh_code)
-                display sfmt("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code)) to photos_count
-            else
-                call lib_ui.show_message("Tap Start before entering job data", true)
-            end if
+        ON ACTION customer
+            CALL customer_grid.view_customer(m_job_header_rec.jh_customer) RETURNING l_ok, l_err_text
 
-        on action notes  
-             if m_job_header_rec.jh_status matches "[IX]" then
-                call job_note_list.maintain_job(m_job_header_rec.jh_code)
-                display sfmt("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code)) to notes_count
-             else
-                call lib_ui.show_message("Tap Start before entering job data", true)
-            end if
-            
-        on action time 
-             if m_job_header_rec.jh_status matches "[IX]" then
-                call job_timesheet_list.maintain_job(m_job_header_rec.jh_code)
-                display sfmt("%1 Timesheet Lines", lib_job_timesheet.count(m_job_header_rec.jh_code)) to timesheet_count
-            else
-                call lib_ui.show_message("Tap Start before entering job data", true)
-            end if
+        ON ACTION lines
+            IF m_job_header_rec.jh_status MATCHES "[IX]" THEN
+                CALL job_detail_list.maintain_job(m_job_header_rec.jh_code)
+                DISPLAY SFMT("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code)) TO lines_count
+            ELSE
+                CALL lib_ui.show_message("Tap Start before entering job data", TRUE)
+            END IF
 
-        on action start  
-            call db_update_start() returning l_ok, l_err_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("Error starting job %1", l_err_text), true)
-            end if
-            call state(dialog)
-            
-        on action complete  
-            call job_header_complete.complete(m_job_header_rec.jh_code) returning 
-               l_ok, l_err_text
-            if not l_ok then
-                continue menu
-            end if
-            call db_select() returning l_ok, l_err_text
-            if not l_ok then
+        ON ACTION photo
+            IF m_job_header_rec.jh_status MATCHES "[IX]" THEN
+                CALL job_photo_list.maintain_job(m_job_header_rec.jh_code)
+                DISPLAY SFMT("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code)) TO photos_count
+            ELSE
+                CALL lib_ui.show_message("Tap Start before entering job data", TRUE)
+            END IF
+
+        ON ACTION notes
+            IF m_job_header_rec.jh_status MATCHES "[IX]" THEN
+                CALL job_note_list.maintain_job(m_job_header_rec.jh_code)
+                DISPLAY SFMT("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code)) TO notes_count
+            ELSE
+                CALL lib_ui.show_message("Tap Start before entering job data", TRUE)
+            END IF
+
+        ON ACTION time
+            IF m_job_header_rec.jh_status MATCHES "[IX]" THEN
+                CALL job_timesheet_list.maintain_job(m_job_header_rec.jh_code)
+                DISPLAY SFMT("%1 Timesheet Lines", lib_job_timesheet.count(m_job_header_rec.jh_code)) TO timesheet_count
+            ELSE
+                CALL lib_ui.show_message("Tap Start before entering job data", TRUE)
+            END IF
+
+        ON ACTION start
+            CALL db_update_start() RETURNING l_ok, l_err_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("Error starting job %1", l_err_text), TRUE)
+            END IF
+            CALL state(dialog)
+
+        ON ACTION complete
+            CALL job_header_complete.complete(m_job_header_rec.jh_code) RETURNING l_ok, l_err_text
+            IF NOT l_ok THEN
+                CONTINUE MENU
+            END IF
+            CALL db_select() RETURNING l_ok, l_err_text
+            IF NOT l_ok THEN
                 -- shouldn't occur
-            end if
-            call state(dialog)
-            
-    end menu
-end function
+            END IF
+            CALL state(dialog)
 
+    END MENU
+END FUNCTION
 
+PRIVATE FUNCTION state(d)
+    DEFINE d ui.dialog
 
-private function state(d)
-define d ui.dialog 
-
-    call d.setActionActive("start", m_job_header_rec.jh_status = "O")
-    call d.setActionActive("complete", m_job_header_rec.jh_status = "I")
-end function
-
-
+    CALL d.setActionActive("start", m_job_header_rec.jh_status = "O")
+    CALL d.setActionActive("complete", m_job_header_rec.jh_status = "I")
+END FUNCTION
 
 ---- Database ----
-private function db_select()
-    try
-        select * 
-        into m_job_header_rec.*
-        from job_header 
-        where 
-            job_header.jh_code = m_job_header_rec.jh_code
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
+PRIVATE FUNCTION db_select()
+    TRY
+        SELECT * INTO m_job_header_rec.* FROM job_header WHERE job_header.jh_code = m_job_header_rec.jh_code
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-
-
-private function db_update_start()
-    let m_job_header_rec.jh_status = "I"
-    try
-        update job_header
-        set 
-            jh_status = m_job_header_rec.jh_status
-        where 
-            job_header.jh_code = m_job_header_rec.jh_code
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-
+PRIVATE FUNCTION db_update_start()
+    LET m_job_header_rec.jh_status = "I"
+    TRY
+        UPDATE job_header SET jh_status = m_job_header_rec.jh_status WHERE job_header.jh_code = m_job_header_rec.jh_code
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION

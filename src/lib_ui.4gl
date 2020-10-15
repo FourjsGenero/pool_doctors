@@ -23,91 +23,71 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-
- 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
-
-
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- Standard dialog to display messages.  Set second parameter to true to
 -- force acknowledgement
-function show_message(l_message_text, l_acknowledge) 
-define l_message_text string
-define l_acknowledge boolean
+FUNCTION show_message(l_message_text, l_acknowledge)
+    DEFINE l_message_text STRING
+    DEFINE l_acknowledge BOOLEAN
 
-    if l_acknowledge then
-        if l_message_text.getlength() > 0 then
-            menu "Info" attributes(style="dialog", comment=l_message_text, image="fa-info")
-               on action accept
-                  exit menu
-            end menu
-        end if
-    else
-        message l_message_text
-        call ui.Interface.refresh() -- force display to current window
-    end if
-end function
-
-
+    IF l_acknowledge THEN
+        IF l_message_text.getlength() > 0 THEN
+            MENU "Info" ATTRIBUTES(STYLE = "dialog", COMMENT = l_message_text, IMAGE = "fa-info")
+                ON ACTION accept
+                    EXIT MENU
+            END MENU
+        END IF
+    ELSE
+        MESSAGE l_message_text
+        CALL ui.Interface.refresh() -- force display to current window
+    END IF
+END FUNCTION
 
 -- Standard dialog to display errors.  Set second parameter to true to
 -- force acknowledgement
-function show_error(l_error_text, l_acknowledge)
-define l_error_text string
-define l_acknowledge boolean
+FUNCTION show_error(l_error_text, l_acknowledge)
+    DEFINE l_error_text STRING
+    DEFINE l_acknowledge BOOLEAN
 
-    if l_acknowledge then
-        if l_error_text.getlength() > 0 then
-            menu "Error" attributes(style="dialog", comment=l_error_text, image="fa-stop")
-               on action accept
-                  exit menu
-            end menu
-        end if
-    else
-        error l_error_text
-        call ui.interface.refresh() -- force display to current window
-    end if
-end function
+    IF l_acknowledge THEN
+        IF l_error_text.getlength() > 0 THEN
+            MENU "Error" ATTRIBUTES(STYLE = "dialog", COMMENT = l_error_text, IMAGE = "fa-stop")
+                ON ACTION accept
+                    EXIT MENU
+            END MENU
+        END IF
+    ELSE
+        ERROR l_error_text
+        CALL ui.interface.refresh() -- force display to current window
+    END IF
+END FUNCTION
 
+FUNCTION not_implemented_dialog()
+    CALL show_message("This has not yet been implemented", TRUE)
+END FUNCTION
 
-
-function not_implemented_dialog()
-    call show_message("This has not yet been implemented",true)
-end function
-
-
-
-function confirm_dialog(l_text)
-define l_text string
-define l_ok boolean
+FUNCTION confirm_dialog(l_text)
+    DEFINE l_text STRING
+    DEFINE l_ok BOOLEAN
 
     -- yes, no dialog with default answer = no, i.e. user has to
     -- explicitly choose yes to do something destructive
 
-    let l_ok = false
-    menu "Warning" attributes(style="dialog", comment=l_text, image="fa-warning")
-        command "No"
-            let l_ok = false
-        command "Yes"
-            let l_ok = True
-    end menu
-    return l_ok
-end function
-    
+    LET l_ok = FALSE
+    MENU "Warning" ATTRIBUTES(STYLE = "dialog", COMMENT = l_text, IMAGE = "fa-warning")
+        COMMAND "No"
+            LET l_ok = FALSE
+        COMMAND "Yes"
+            LET l_ok = TRUE
+    END MENU
+    RETURN l_ok
+END FUNCTION
 
-
-
-function confirm_cancel_dialog()
-    return confirm_dialog("Are you sure you want to cancel?  You will lose your changes")
-end function
-
-
-
+FUNCTION confirm_cancel_dialog()
+    RETURN confirm_dialog("Are you sure you want to cancel?  You will lose your changes")
+END FUNCTION

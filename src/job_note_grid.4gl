@@ -23,181 +23,164 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
 
-import fgl lib_job_note
+IMPORT FGL lib_job_note
 
-schema pool_doctors
+SCHEMA pool_doctors
 
-type job_note_type record like job_note.*
+TYPE job_note_type RECORD LIKE job_note.*
 
-public define m_job_note_rec job_note_type  -- used to edit a single row
+PUBLIC DEFINE m_job_note_rec job_note_type -- used to edit a single row
 
-define m_mode string
-define m_jh_code like job_header.jh_code
+DEFINE m_mode STRING
+DEFINE m_jh_code LIKE job_header.jh_code
 
-define w ui.window
-define f ui.form
+DEFINE w ui.window
+DEFINE f ui.form
 
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
+FUNCTION add(l_jh_code)
+    DEFINE l_jh_code LIKE job_header.jh_code
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
+    LET m_jh_code = l_jh_code
+    CALL record_default() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        LET m_mode = "add"
+        CALL open_window()
+        CALL ui_edit() RETURNING l_ok
+        IF l_ok THEN
+            CALL db_insert() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("Unable to add row\n%1", l_error_text), TRUE)
+            END IF
+        END IF
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+FUNCTION update(l_jn_code, l_jn_idx)
+    DEFINE l_jn_code LIKE job_note.jn_code
+    DEFINE l_jn_idx LIKE job_note.jn_idx
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET m_job_note_rec.jn_code = l_jn_code
+    LET m_job_note_rec.jn_idx = l_jn_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        LET m_mode = "update"
+        CALL open_window()
+        CALL ui_edit() RETURNING l_ok
+        IF l_ok THEN
+            CALL db_update() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("Unable to update row\n%1", l_error_text), TRUE)
+            END IF
+        END IF
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-function add(l_jh_code)
-define l_jh_code like job_header.jh_code
-define l_ok boolean
-define l_error_text string
+FUNCTION view(l_jn_code, l_jn_idx)
+    DEFINE l_jn_code LIKE job_note.jn_code
+    DEFINE l_jn_idx LIKE job_note.jn_idx
 
-    let m_jh_code = l_jh_code
-    call record_default() returning l_ok, l_error_text
-    if l_ok then
-        let m_mode = "add"
-        call open_window()
-        call ui_edit() returning l_ok
-        if l_ok then
-            call db_insert() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("Unable to add row\n%1", l_error_text), true)
-            end if
-        end if
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET m_job_note_rec.jn_code = l_jn_code
+    LET m_job_note_rec.jn_idx = l_jn_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        CALL open_window()
+        CALL ui_view()
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+FUNCTION delete(l_jn_code, l_jn_idx)
+    DEFINE l_jn_code LIKE job_note.jn_code
+    DEFINE l_jn_idx LIKE job_note.jn_idx
 
-function update(l_jn_code, l_jn_idx)
-define l_jn_code like job_note.jn_code
-define l_jn_idx like job_note.jn_idx
-define l_ok boolean
-define l_error_text string
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-    let m_job_note_rec.jn_code = l_jn_code
-    let m_job_note_rec.jn_idx = l_jn_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        let m_mode = "update"
-        call open_window()
-        call ui_edit() returning l_ok
-        if l_ok then
-            call db_update() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("Unable to update row\n%1", l_error_text),true)
-            end if
-        end if
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+    DEFINE l_warning BOOLEAN
+    DEFINE l_warning_text STRING
 
+    LET m_job_note_rec.jn_code = l_jn_code
+    LET m_job_note_rec.jn_idx = l_jn_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        CALL record_delete_warning() RETURNING l_warning, l_warning_text
+        IF l_warning THEN
+            CALL open_window()
+            CALL ui_display()
+            CALL ui.interface.refresh()
+            LET l_ok = lib_ui.confirm_dialog(SFMT("%1\nAre you sure you want to delete?", l_warning_text))
+            CALL close_window()
+            IF NOT l_ok THEN
+                LET l_error_text = "Delete cancelled"
+            END IF
+        END IF
+    END IF
+    IF l_ok THEN
+        CALL db_delete() RETURNING l_ok, l_error_text
+        IF NOT l_ok THEN
+            CALL lib_ui.show_error(SFMT("Unable to delete row\n%1", l_error_text), TRUE)
+        END IF
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+PRIVATE FUNCTION open_window()
+    OPEN WINDOW job_note_grid WITH FORM "job_note_grid"
+    LET w = ui.window.getcurrent()
+    LET f = w.getform()
+END FUNCTION
 
-function view(l_jn_code, l_jn_idx)
-define l_jn_code like job_note.jn_code
-define l_jn_idx like job_note.jn_idx
+PRIVATE FUNCTION close_window()
+    CLOSE WINDOW job_note_grid
+END FUNCTION
 
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION ui_edit()
+    DEFINE l_ok, l_error_text STRING
 
-    let m_job_note_rec.jn_code = l_jn_code
-    let m_job_note_rec.jn_idx = l_jn_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        call open_window()
-        call ui_view()
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-function delete(l_jn_code, l_jn_idx)
-define l_jn_code like job_note.jn_code
-define l_jn_idx like job_note.jn_idx
-
-define l_ok boolean
-define l_error_text string
-
-define l_warning boolean
-define l_warning_text string
-
-    let m_job_note_rec.jn_code = l_jn_code
-    let m_job_note_rec.jn_idx = l_jn_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        call record_delete_warning() returning l_warning, l_warning_text
-        if l_warning then
-            call open_window()
-            call ui_display()
-            call ui.interface.refresh()
-            let l_ok = lib_ui.confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
-            call close_window()
-            if not l_ok then
-                let l_error_text = "Delete cancelled"
-            end if
-        end if
-    end if
-    if l_ok then
-        call db_delete() returning l_ok, l_error_text
-        if not l_ok then
-            call lib_ui.show_error(sfmt("Unable to delete row\n%1", l_error_text), true)
-        end if
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-
-private function open_window()
-    open window job_note_grid with form "job_note_grid"
-    let w= ui.window.getcurrent()
-    let f= w.getform()
-end function
-
-
-
-private function close_window()
-    close window job_note_grid
-end function
-
-
-
-private function ui_edit()
-define l_ok, l_error_text string
-
-    input by name m_job_note_rec.*  attributes(unbuffered, without defaults=true)
+    INPUT BY NAME m_job_note_rec.* ATTRIBUTES(UNBUFFERED, WITHOUT DEFAULTS = TRUE)
 
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \
                                     if not l_ok then \
                                         call lib_ui.show_error(l_error_text,false) \
                                         next field p1 \
-                                    end if 
+                                    end if
         after_field(jn_code)
         after_field(jn_idx)
         after_field(jn_note)
         after_field(jn_when)
-       
-        &undef after_field
-        
-        on action cancel
-            if dialog.getfieldtouched("*") then
-                if not lib_ui.confirm_cancel_dialog() then
-                    let int_flag = 0
-                    continue input
-                end if
-            end if
-            exit input
 
-        after input
+        &undef after_field
+
+        ON ACTION cancel
+            IF dialog.getfieldtouched("*") THEN
+                IF NOT lib_ui.confirm_cancel_dialog() THEN
+                    LET int_flag = 0
+                    CONTINUE INPUT
+                END IF
+            END IF
+            EXIT INPUT
+
+        AFTER INPUT
             -- test values
             &define field_valid(p1) call p1 ## _valid() returning l_ok, l_error_text \
             if not l_ok then \
@@ -206,233 +189,188 @@ define l_ok, l_error_text string
             end if
 
             -- test key
-            if m_mode = "add" then
+            IF m_mode = "add" THEN
                 field_valid(jn_code)
                 field_valid(jn_idx)
-                call record_key_valid() returning l_ok, l_error_text
-                if not l_ok then
-                    call lib_ui.show_error(l_error_text, true)
-                    next field current
-                end if
-            end if
+                CALL record_key_valid() RETURNING l_ok, l_error_text
+                IF NOT l_ok THEN
+                    CALL lib_ui.show_error(l_error_text, TRUE)
+                    NEXT FIELD CURRENT
+                END IF
+            END IF
 
             field_valid(jn_note)
             field_valid(jn_when)
 
             &undef field_valid
-            
+
             -- test record
-            call record_valid() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(l_error_text, true)
-                next field current
-            end if
-    end input
-    if int_flag then
-        let int_flag = 0
-        return false
-    end if
-    return true
-end function
+            CALL record_valid() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(l_error_text, TRUE)
+                NEXT FIELD CURRENT
+            END IF
+    END INPUT
+    IF int_flag THEN
+        LET int_flag = 0
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION
 
+PRIVATE FUNCTION ui_view()
 
+    CALL ui_display()
+    MENU ""
+        ON ACTION cancel
+            EXIT MENU
 
-private function ui_view()
+    END MENU
+END FUNCTION
 
-    call ui_display()
-    menu ""
-        on action cancel
-            exit menu
+PRIVATE FUNCTION ui_display()
 
-    end menu
-end function
+    DISPLAY BY NAME m_job_note_rec.*
+END FUNCTION
 
+PRIVATE FUNCTION record_delete_warning()
 
+    RETURN FALSE, ""
+END FUNCTION
 
-private function ui_display()
-
-    display by name m_job_note_rec.*
-end function
-
-
-
-private function record_delete_warning()
-
-    return false, ""
-end function
-
-
-
-private function record_valid()
+PRIVATE FUNCTION record_valid()
 
     -- validation involving two or more fields
-    return true, ""
-end function
+    RETURN TRUE, ""
+END FUNCTION
 
-
-
-private function record_key_valid()
+PRIVATE FUNCTION record_key_valid()
 
     -- when adding, test that primary key value is unique
-    if lib_job_note.exists(m_job_note_rec.jn_code, m_job_note_rec.jn_idx) then
-        return false, "Record already exists"
-    end if
-    return true, ""
-end function
+    IF lib_job_note.exists(m_job_note_rec.jn_code, m_job_note_rec.jn_idx) THEN
+        RETURN FALSE, "Record already exists"
+    END IF
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION record_default()
+    LET m_job_note_rec.jn_code = jn_code_default()
+    LET m_job_note_rec.jn_idx = jn_idx_default()
+    LET m_job_note_rec.jn_note = jn_note_default()
+    LET m_job_note_rec.jn_when = jn_when_default()
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION jn_code_default()
+    DEFINE l_default LIKE job_note.jn_code
+    LET l_default = m_jh_code
+    RETURN l_default
+END FUNCTION
 
-private function record_default()
-    let m_job_note_rec.jn_code = jn_code_default()
-    let m_job_note_rec.jn_idx = jn_idx_default()
-    let m_job_note_rec.jn_note = jn_note_default()
-    let m_job_note_rec.jn_when = jn_when_default()
-    return true, ""
-end function
+PRIVATE FUNCTION jn_code_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
+    LET l_ok = TRUE
+    IF m_job_note_rec.jn_code IS NULL THEN
+        RETURN FALSE, "Job Code must be entered"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-
-
-private function jn_code_default()
-define l_default like job_note.jn_code
-    let l_default = m_jh_code
-    return l_default
-end function
-
-
-
-private function jn_code_valid()
-define l_ok boolean
-define l_error_text string
-    let l_ok = true
-    if m_job_note_rec.jn_code is null then
-        return false, "Job Code must be entered"
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-
-private function jn_idx_default()
-define l_default like job_note.jn_idx
+PRIVATE FUNCTION jn_idx_default()
+    DEFINE l_default LIKE job_note.jn_idx
 
     -- maxmimum line number + 1
-    let l_default = nvl(lib_job_note.jn_idx_max(m_job_note_rec.jn_code),0) + 1
-    return l_default
-end function
+    LET l_default = NVL(lib_job_note.jn_idx_max(m_job_note_rec.jn_code), 0) + 1
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jn_idx_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_note_rec.jn_idx IS NULL THEN
+        RETURN FALSE, "Job Line must be entered"
+    END IF
+    IF m_job_note_rec.jn_idx < 1 THEN
+        RETURN FALSE, "job Line must be greater than 0"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jn_idx_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION jn_note_default()
+    DEFINE l_default LIKE job_note.jn_note
 
-    let l_ok = true
-    if m_job_note_rec.jn_idx is null then
-        return false, "Job Line must be entered"
-    end if
-    if m_job_note_rec.jn_idx < 1 then
-        return false, "job Line must be greater than 0"
-    end if
-    return l_ok, l_error_text
-end function
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jn_note_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_note_rec.jn_note IS NULL THEN
+        RETURN FALSE, "Job Note must be entered"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jn_note_default()
-define l_default like job_note.jn_note
+PRIVATE FUNCTION jn_when_default()
+    DEFINE l_default LIKE job_note.jn_when
 
-    return l_default
-end function
+    LET l_default = CURRENT YEAR TO SECOND
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jn_when_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_note_rec.jn_when > CURRENT THEN
+        RETURN FALSE, "When must be in the past"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jn_note_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION db_select()
+    TRY
+        SELECT * INTO m_job_note_rec.* FROM job_note
+            WHERE job_note.jn_code = m_job_note_rec.jn_code AND job_note.jn_idx = m_job_note_rec.jn_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-    let l_ok = true
-    if m_job_note_rec.jn_note is null  then
-        return false, "Job Note must be entered"
-    end if
-    return l_ok, l_error_text
-end function
+PRIVATE FUNCTION db_insert()
 
+    TRY
+        INSERT INTO job_note VALUES(m_job_note_rec.*)
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION db_update()
 
-private function jn_when_default()
-define l_default like job_note.jn_when
+    TRY
+        UPDATE job_note SET job_note.* = m_job_note_rec.*
+            WHERE job_note.jn_code = m_job_note_rec.jn_code AND job_note.jn_idx = m_job_note_rec.jn_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-    let l_default = current year to second
-    return l_default
-end function
+PRIVATE FUNCTION db_delete()
 
-
-
-private function jn_when_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    if m_job_note_rec.jn_when > current then
-        return false, "When must be in the past"
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-private function db_select()
-    try
-        select * 
-        into m_job_note_rec.*
-        from job_note 
-        where job_note.jn_code = m_job_note_rec.jn_code
-        and   job_note.jn_idx = m_job_note_rec.jn_idx
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-private function db_insert()
-
-    try
-        insert into job_note values(m_job_note_rec.*)
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-private function db_update()
-
-    try
-        update job_note
-        set job_note.* = m_job_note_rec.*
-        where job_note.jn_code = m_job_note_rec.jn_code
-        and   job_note.jn_idx = m_job_note_rec.jn_idx   
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-private function db_delete()
-
-    try
-        delete 
-        from job_note 
-        where job_note.jn_code = m_job_note_rec.jn_code
-        and   job_note.jn_idx = m_job_note_rec.jn_idx
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
+    TRY
+        DELETE FROM job_note WHERE job_note.jn_code = m_job_note_rec.jn_code AND job_note.jn_idx = m_job_note_rec.jn_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION

@@ -23,65 +23,51 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-
-
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- For a given job code, return the number of job timesheet lines
-function count(l_jt_code)
-define l_jt_code like job_timesheet.jt_code
+FUNCTION count(l_jt_code)
+    DEFINE l_jt_code LIKE job_timesheet.jt_code
 
-define l_count integer
+    DEFINE l_count INTEGER
 
-define l_sql string
+    DEFINE l_sql STRING
 
-    let l_sql = "select count(*) from job_timesheet where jt_code = ? "
-    
-    declare job_timesheet_count_curs cursor from l_sql
-    open job_timesheet_count_curs using l_jt_code
-    fetch job_timesheet_count_curs into l_count
-    
-    return l_count
-end function
+    LET l_sql = "select count(*) from job_timesheet where jt_code = ? "
 
+    DECLARE job_timesheet_count_curs CURSOR FROM l_sql
+    OPEN job_timesheet_count_curs USING l_jt_code
+    FETCH job_timesheet_count_curs INTO l_count
 
+    RETURN l_count
+END FUNCTION
 
 -- For a given job code, return the maximum job timesheet line number
-function jt_idx_max(l_jt_code)
-define l_jt_code like job_timesheet.jt_code
+FUNCTION jt_idx_max(l_jt_code)
+    DEFINE l_jt_code LIKE job_timesheet.jt_code
 
-define l_jt_idx like job_timesheet.jt_idx
+    DEFINE l_jt_idx LIKE job_timesheet.jt_idx
 
-    select max(jt_idx)
-    into l_jt_idx
-    from job_timesheet
-    where jt_code = l_jt_code
+    SELECT MAX(jt_idx) INTO l_jt_idx FROM job_timesheet WHERE jt_code = l_jt_code
 
-    return l_jt_idx
-end function
-
-
+    RETURN l_jt_idx
+END FUNCTION
 
 -- Determine if a given job timesheet line exists
-function exists(l_jt_code, l_jt_idx)
-define l_jt_code like job_timesheet.jt_code
-define l_jt_idx  like job_timesheet.jt_idx
+FUNCTION exists(l_jt_code, l_jt_idx)
+    DEFINE l_jt_code LIKE job_timesheet.jt_code
+    DEFINE l_jt_idx LIKE job_timesheet.jt_idx
 
-    select 'x'
-    from job_timesheet
-    where job_timesheet.jt_code = l_jt_code
-    and   job_timesheet.jt_idx = l_jt_idx 
+    SELECT 'x' FROM job_timesheet WHERE job_timesheet.jt_code = l_jt_code AND job_timesheet.jt_idx = l_jt_idx
 
-    if status==notfound then
-        return false
-    end if
-    return true
-end function
+    IF status == NOTFOUND THEN
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION

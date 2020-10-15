@@ -23,185 +23,167 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
 
-import fgl lib_job_timesheet
+IMPORT FGL lib_job_timesheet
 
-schema pool_doctors
+SCHEMA pool_doctors
 
-type job_timesheet_type record like job_timesheet.*
+TYPE job_timesheet_type RECORD LIKE job_timesheet.*
 
-public define m_job_timesheet_rec job_timesheet_type  -- used to edit a single row
+PUBLIC DEFINE m_job_timesheet_rec job_timesheet_type -- used to edit a single row
 
-define m_mode string
-define m_jh_code like job_header.jh_code
+DEFINE m_mode STRING
+DEFINE m_jh_code LIKE job_header.jh_code
 
-define w ui.window
-define f ui.form
+DEFINE w ui.window
+DEFINE f ui.form
 
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
+FUNCTION add(l_jh_code)
+    DEFINE l_jh_code LIKE job_header.jh_code
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
+    LET m_jh_code = l_jh_code
+    CALL record_default() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        LET m_mode = "add"
+        CALL open_window()
+        CALL ui_edit() RETURNING l_ok
+        IF l_ok THEN
+            CALL db_insert() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("unable to add row\n%1", l_error_text), TRUE)
+            END IF
+        END IF
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+FUNCTION update(l_jt_code, l_jt_idx)
+    DEFINE l_jt_code LIKE job_timesheet.jt_code
+    DEFINE l_jt_idx LIKE job_timesheet.jt_idx
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET m_job_timesheet_rec.jt_code = l_jt_code
+    LET m_job_timesheet_rec.jt_idx = l_jt_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        LET m_mode = "update"
+        CALL open_window()
+        CALL ui_edit() RETURNING l_ok
+        IF l_ok THEN
+            CALL db_update() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("Unable to update row\n%1", l_error_text), TRUE)
+            END IF
+        END IF
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-function add(l_jh_code)
-define l_jh_code like job_header.jh_code
-define l_ok boolean
-define l_error_text string
+FUNCTION view(l_jt_code, l_jt_idx)
+    DEFINE l_jt_code LIKE job_timesheet.jt_code
+    DEFINE l_jt_idx LIKE job_timesheet.jt_idx
 
-    let m_jh_code = l_jh_code
-    call record_default() returning l_ok, l_error_text
-    if l_ok then
-        let m_mode = "add"
-        call open_window()
-        call ui_edit() returning l_ok
-        if l_ok then
-            call db_insert() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("unable to add row\n%1", l_error_text), true)
-            end if
-        end if
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET m_job_timesheet_rec.jt_code = l_jt_code
+    LET m_job_timesheet_rec.jt_idx = l_jt_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        CALL open_window()
+        CALL ui_view()
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+FUNCTION delete(l_jt_code, l_jt_idx)
+    DEFINE l_jt_code LIKE job_timesheet.jt_code
+    DEFINE l_jt_idx LIKE job_timesheet.jt_idx
 
-function update(l_jt_code, l_jt_idx)
-define l_jt_code like job_timesheet.jt_code
-define l_jt_idx like job_timesheet.jt_idx
-define l_ok boolean
-define l_error_text string
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-    let m_job_timesheet_rec.jt_code = l_jt_code
-    let m_job_timesheet_rec.jt_idx = l_jt_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        let m_mode = "update"
-        call open_window()
-        call ui_edit() returning l_ok
-        if l_ok then
-            call db_update() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("Unable to update row\n%1", l_error_text),true)
-            end if
-        end if
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+    DEFINE l_warning BOOLEAN
+    DEFINE l_warning_text STRING
 
+    LET m_job_timesheet_rec.jt_code = l_jt_code
+    LET m_job_timesheet_rec.jt_idx = l_jt_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        CALL record_delete_warning() RETURNING l_warning, l_warning_text
+        IF l_warning THEN
+            CALL open_window()
+            CALL ui_display()
+            CALL ui.interface.refresh()
+            LET l_ok = lib_ui.confirm_dialog(SFMT("%1\nAre you sure you want to delete?", l_warning_text))
+            CALL close_window()
+            IF NOT l_ok THEN
+                LET l_error_text = "Delete cancelled"
+            END IF
+        END IF
+    END IF
+    IF l_ok THEN
+        CALL db_delete() RETURNING l_ok, l_error_text
+        IF NOT l_ok THEN
+            CALL lib_ui.show_error(SFMT("Unable to delete row\n%1", l_error_text), TRUE)
+        END IF
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+PRIVATE FUNCTION open_window()
+    OPEN WINDOW job_timesheet_grid WITH FORM "job_timesheet_grid"
+    LET w = ui.window.getcurrent()
+    LET f = w.getform()
+    CALL combo_populate_jt_charge_code(ui.combobox.forname("formonly.jt_charge_code_id"))
+END FUNCTION
 
-function view(l_jt_code, l_jt_idx)
-define l_jt_code like job_timesheet.jt_code
-define l_jt_idx like job_timesheet.jt_idx
+PRIVATE FUNCTION close_window()
+    CLOSE WINDOW job_timesheet_grid
+END FUNCTION
 
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION ui_edit()
+    DEFINE l_ok, l_error_text STRING
 
-    let m_job_timesheet_rec.jt_code = l_jt_code
-    let m_job_timesheet_rec.jt_idx = l_jt_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        call open_window()
-        call ui_view()
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-function delete(l_jt_code, l_jt_idx)
-define l_jt_code like job_timesheet.jt_code
-define l_jt_idx like job_timesheet.jt_idx
-
-define l_ok boolean
-define l_error_text string
-
-define l_warning boolean
-define l_warning_text string
-
-    let m_job_timesheet_rec.jt_code = l_jt_code
-    let m_job_timesheet_rec.jt_idx = l_jt_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        call record_delete_warning() returning l_warning, l_warning_text
-        if l_warning then
-            call open_window()
-            call ui_display()
-            call ui.interface.refresh()
-            let l_ok = lib_ui.confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
-            call close_window()
-            if not l_ok then
-                let l_error_text = "Delete cancelled"
-            end if
-        end if
-    end if
-    if l_ok then
-        call db_delete() returning l_ok, l_error_text
-        if not l_ok then
-            call lib_ui.show_error(sfmt("Unable to delete row\n%1", l_error_text),true)
-        end if
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-
-private function open_window()
-    open window job_timesheet_grid with form "job_timesheet_grid"
-    let w= ui.window.getcurrent()
-    let f= w.getform()
-    call combo_populate_jt_charge_code(ui.combobox.forname("formonly.jt_charge_code_id"))
-end function
-
-
-
-private function close_window()
-    close window job_timesheet_grid
-end function
-
-
-
-
-private function ui_edit()
-define l_ok, l_error_text string
-
-    input by name m_job_timesheet_rec.*  attributes(unbuffered, without defaults=true)
+    INPUT BY NAME m_job_timesheet_rec.* ATTRIBUTES(UNBUFFERED, WITHOUT DEFAULTS = TRUE)
 
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \
                                     if not l_ok then \
                                         call lib_ui.show_error(l_error_text, false) \
                                         next field p1 \
-                                    end if 
+                                    end if
         after_field(jt_code)
         after_field(jt_idx)
         after_field(jt_start)
         after_field(jt_finish)
         after_field(jt_charge_code_id)
         after_field(jt_text)
-       
+
         &undef after_field
-        
-        on action cancel
-            if dialog.getFieldTouched("*") then
-                if not lib_ui.confirm_cancel_dialog() then
-                    let int_flag = 0
-                    continue input
-                end if
-            end if
-            exit input
-            
-        after input
+
+        ON ACTION cancel
+            IF dialog.getFieldTouched("*") THEN
+                IF NOT lib_ui.confirm_cancel_dialog() THEN
+                    LET int_flag = 0
+                    CONTINUE INPUT
+                END IF
+            END IF
+            EXIT INPUT
+
+        AFTER INPUT
             -- test values
             &define field_valid(p1) call p1 ## _valid() returning l_ok, l_error_text \
             if not l_ok then \
@@ -210,15 +192,15 @@ define l_ok, l_error_text string
             end if
 
             -- test key
-            if m_mode = "add" then
+            IF m_mode = "add" THEN
                 field_valid(jt_code)
                 field_valid(jt_idx)
-                call record_key_valid() returning l_ok, l_error_text
-                if not l_ok then
-                    call lib_ui.show_error(l_error_text, false)
-                    next field current
-                end if
-            end if
+                CALL record_key_valid() RETURNING l_ok, l_error_text
+                IF NOT l_ok THEN
+                    CALL lib_ui.show_error(l_error_text, FALSE)
+                    NEXT FIELD CURRENT
+                END IF
+            END IF
 
             field_valid(jt_start)
             field_valid(jt_finish)
@@ -226,296 +208,237 @@ define l_ok, l_error_text string
             field_valid(jt_text)
 
             &undef field_valid
-            
+
             -- test record
-            call record_valid() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(l_error_text, false)
-                next field current
-            end if
+            CALL record_valid() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(l_error_text, FALSE)
+                NEXT FIELD CURRENT
+            END IF
 
-    end input
-    if int_flag then
-        let int_flag = 0
-        return false
-    end if
-    return true
-end function
+    END INPUT
+    IF int_flag THEN
+        LET int_flag = 0
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION
 
+PRIVATE FUNCTION ui_view()
 
+    CALL ui_display()
+    MENU ""
+        ON ACTION cancel
+            EXIT MENU
 
-private function ui_view()
+    END MENU
+END FUNCTION
 
-    call ui_display()
-    menu ""
-        on action cancel
-            exit menu
+PRIVATE FUNCTION ui_display()
 
-    end menu
-end function
+    DISPLAY BY NAME m_job_timesheet_rec.*
+END FUNCTION
 
+PRIVATE FUNCTION combo_populate_jt_charge_code(l_cb)
+    DEFINE l_cb ui.combobox
 
+    CALL l_cb.clear()
+    CALL l_cb.additem("1", "Standard")
+    CALL l_cb.additem("2", "Overtime")
+    CALL l_cb.additem("0", "Free")
+END FUNCTION
 
-private function ui_display()
+PRIVATE FUNCTION record_delete_warning()
 
-    display by name m_job_timesheet_rec.*
-end function
+    RETURN FALSE, ""
+END FUNCTION
 
-
-
-private function combo_populate_jt_charge_code(l_cb)
-define l_cb ui.combobox
-
-    call l_cb.clear()
-    call l_cb.additem("1", "Standard")
-    call l_cb.additem("2", "Overtime")
-    call l_cb.additem("0", "Free")
-end function
-
-
-
-
-private function record_delete_warning()
-
-    return false, ""
-end function
-
-
-
-private function record_valid()
+PRIVATE FUNCTION record_valid()
 
     -- validation involving two or more fields
-    if m_job_timesheet_rec.jt_start > m_job_timesheet_rec.jt_finish then
-        return false, "Start time must be before finish time"
-    end if
-    return true, ""
-end function
+    IF m_job_timesheet_rec.jt_start > m_job_timesheet_rec.jt_finish THEN
+        RETURN FALSE, "Start time must be before finish time"
+    END IF
+    RETURN TRUE, ""
+END FUNCTION
 
-
-
-private function record_key_valid()
+PRIVATE FUNCTION record_key_valid()
 
     -- when adding, test that primary key value is unique
-    if lib_job_timesheet.exists(m_job_timesheet_rec.jt_code, m_job_timesheet_rec.jt_idx) then
-        return false, "Record already exists"
-    end if
-    return true, ""
-end function
+    IF lib_job_timesheet.exists(m_job_timesheet_rec.jt_code, m_job_timesheet_rec.jt_idx) THEN
+        RETURN FALSE, "Record already exists"
+    END IF
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION record_default()
 
+    LET m_job_timesheet_rec.jt_code = jt_code_default()
+    LET m_job_timesheet_rec.jt_idx = jt_idx_default()
+    LET m_job_timesheet_rec.jt_start = jt_start_default()
+    LET m_job_timesheet_rec.jt_finish = jt_finish_default()
+    LET m_job_timesheet_rec.jt_charge_code_id = jt_charge_code_id_default()
+    LET m_job_timesheet_rec.jt_text = jt_text_default()
+    RETURN TRUE, ""
+END FUNCTION
 
-private function record_default()
+PRIVATE FUNCTION jt_code_default()
+    DEFINE l_default LIKE job_timesheet.jt_code
+    LET l_default = m_jh_code
+    RETURN l_default
+END FUNCTION
 
-    let m_job_timesheet_rec.jt_code = jt_code_default()
-    let m_job_timesheet_rec.jt_idx = jt_idx_default()
-    let m_job_timesheet_rec.jt_start = jt_start_default()
-    let m_job_timesheet_rec.jt_finish = jt_finish_default()
-    let m_job_timesheet_rec.jt_charge_code_id = jt_charge_code_id_default()
-    let m_job_timesheet_rec.jt_text = jt_text_default()
-    return true, ""
-end function
+PRIVATE FUNCTION jt_code_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_timesheet_rec.jt_code IS NULL THEN
+        RETURN FALSE, "Job Code must be entered"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-
-
-private function jt_code_default()
-define l_default like job_timesheet.jt_code
-    let l_default = m_jh_code
-    return l_default
-end function
-
-
-
-private function jt_code_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    if m_job_timesheet_rec.jt_code is null then
-        return false, "Job Code must be entered"
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-
-private function jt_idx_default()
-define l_default like job_timesheet.jt_idx
+PRIVATE FUNCTION jt_idx_default()
+    DEFINE l_default LIKE job_timesheet.jt_idx
 
     -- maxmimum line number + 1
-    let l_default = nvl(lib_job_timesheet.jt_idx_max(m_job_timesheet_rec.jt_code),0) + 1
-    return l_default
-end function
+    LET l_default = NVL(lib_job_timesheet.jt_idx_max(m_job_timesheet_rec.jt_code), 0) + 1
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jt_idx_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_timesheet_rec.jt_idx IS NULL THEN
+        RETURN FALSE, "Timesheet Index must be entered"
+    END IF
+    IF m_job_timesheet_rec.jt_idx < 1 THEN
+        RETURN FALSE, "Timesheet Index must be greater than 0"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jt_idx_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION jt_start_default()
+    DEFINE l_default LIKE job_timesheet.jt_start
 
-    let l_ok = true
-    if m_job_timesheet_rec.jt_idx is null then
-        return false, "Timesheet Index must be entered"
-    end if
-    if m_job_timesheet_rec.jt_idx < 1 then
-        return false, "Timesheet Index must be greater than 0"
-    end if
-    return l_ok, l_error_text
-end function
+    LET l_default = CURRENT YEAR TO MINUTE
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jt_start_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_timesheet_rec.jt_start IS NULL THEN
+        RETURN FALSE, "Start time must be entered"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jt_start_default()
-define l_default like job_timesheet.jt_start
+PRIVATE FUNCTION jt_finish_default()
+    DEFINE l_default LIKE job_timesheet.jt_finish
 
-    let l_default = current year to minute    
-    return l_default
-end function
+    LET l_default = CURRENT YEAR TO MINUTE
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jt_finish_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_timesheet_rec.jt_finish IS NULL THEN
+        RETURN FALSE, "Finish time must be entered"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jt_start_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION jt_charge_code_id_default()
+    DEFINE l_default LIKE job_timesheet.jt_charge_code_id
 
-    let l_ok = true   
-    if m_job_timesheet_rec.jt_start is null then
-        return false, "Start time must be entered"
-    end if
-    return l_ok, l_error_text
-end function
+    LET l_default = 1
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jt_charge_code_id_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-
-private function jt_finish_default()
-define l_default like job_timesheet.jt_finish
-
-    let l_default = current year to minute
-    return l_default
-end function
-
-
-
-private function jt_finish_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    if m_job_timesheet_rec.jt_finish is null then
-        return false, "Finish time must be entered"
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-private function jt_charge_code_id_default()
-define l_default like job_timesheet.jt_charge_code_id
-
-    let l_default = 1
-    return l_default
-end function
-
-
-
-private function jt_charge_code_id_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true   
-    if m_job_timesheet_rec.jt_charge_code_id is null then
-        return false, "Charge Code must be entered"
-    end if
-    if m_job_timesheet_rec.jt_charge_code_id matches "[012]" then
+    LET l_ok = TRUE
+    IF m_job_timesheet_rec.jt_charge_code_id IS NULL THEN
+        RETURN FALSE, "Charge Code must be entered"
+    END IF
+    IF m_job_timesheet_rec.jt_charge_code_id MATCHES "[012]" THEN
         #ok
-    else
-        return false, "Charge Code must be valid"
-    end if
-    return l_ok, l_error_text
-end function
+    ELSE
+        RETURN FALSE, "Charge Code must be valid"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+PRIVATE FUNCTION jt_text_default()
+    DEFINE l_default LIKE job_timesheet.jt_text
 
+    RETURN l_default
+END FUNCTION
 
-private function jt_text_default()
-define l_default like job_timesheet.jt_text 
-  
-    return l_default
-end function
+PRIVATE FUNCTION jt_text_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+PRIVATE FUNCTION db_select()
+    TRY
+        SELECT * INTO m_job_timesheet_rec.* FROM job_timesheet
+            WHERE job_timesheet.jt_code = m_job_timesheet_rec.jt_code AND job_timesheet.jt_idx = m_job_timesheet_rec.jt_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-private function jt_text_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION db_insert()
 
-    let l_ok = true    
-    return l_ok, l_error_text
-end function
+    TRY
+        INSERT INTO job_timesheet VALUES(m_job_timesheet_rec.*)
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION db_update()
 
+    TRY
+        UPDATE job_timesheet SET job_timesheet.* = m_job_timesheet_rec.*
+            WHERE job_timesheet.jt_code = m_job_timesheet_rec.jt_code AND job_timesheet.jt_idx = m_job_timesheet_rec.jt_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-private function db_select()
-    try
-        select * 
-        into m_job_timesheet_rec.*
-        from job_timesheet 
-        where job_timesheet.jt_code = m_job_timesheet_rec.jt_code
-        and   job_timesheet.jt_idx = m_job_timesheet_rec.jt_idx
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
+PRIVATE FUNCTION db_delete()
 
+    TRY
+        DELETE FROM job_timesheet
+            WHERE job_timesheet.jt_code = m_job_timesheet_rec.jt_code AND job_timesheet.jt_idx = m_job_timesheet_rec.jt_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-
-private function db_insert()
-
-    try
-        insert into job_timesheet values(m_job_timesheet_rec.*)
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-
-private function db_update()
-
-    try
-        update job_timesheet
-        set job_timesheet.* = m_job_timesheet_rec.*
-        where job_timesheet.jt_code = m_job_timesheet_rec.jt_code
-        and   job_timesheet.jt_idx = m_job_timesheet_rec.jt_idx   
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-
-
-private function db_delete()
-
-    try
-        delete 
-        from job_timesheet 
-        where job_timesheet.jt_code = m_job_timesheet_rec.jt_code
-        and   job_timesheet.jt_idx = m_job_timesheet_rec.jt_idx
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-function populate_charge_code_id(cb ui.combobox)
-    call cb.clear()
-    call cb.addItem("S","S-Standard")
-    call cb.addItem("F","F-FOC")
-    call cb.addItem("O","O-Overtime")
-end function
+FUNCTION populate_charge_code_id(cb ui.combobox)
+    CALL cb.clear()
+    CALL cb.addItem("S", "S-Standard")
+    CALL cb.addItem("F", "F-FOC")
+    CALL cb.addItem("O", "O-Overtime")
+END FUNCTION

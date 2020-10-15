@@ -23,90 +23,87 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
 
-import fgl lib_settings
+IMPORT FGL lib_settings
 
-import fgl home
+IMPORT FGL home
 
-main
-    options field order form
-    options input no wrap 
-        
-    call lib_error.start_errorlog("pool_doctors.log")
-    whenever any error call lib_error.serious_error
-    
-    call ui.Interface.setText("Pool Doctors")
-    call ui.Interface.setImage("splash_320x480") -- Not logo_transparent as hard to see in chromeBar
-    
-    call ui.Interface.loadStyles("pool_doctors")
-    call ui.Interface.loadActionDefaults("pool_doctors")
-    
-    call init_database()
+MAIN
+    OPTIONS FIELD ORDER FORM
+    OPTIONS INPUT NO WRAP
 
-    call lib_settings.populate()
-    close window screen
-    call home.execute()
+    CALL lib_error.start_errorlog("pool_doctors.log")
+    WHENEVER ANY ERROR CALL lib_error.serious_error
 
-end main
+    CALL ui.Interface.setText("Pool Doctors")
+    CALL ui.Interface.setImage("splash_320x480") -- Not logo_transparent as hard to see in chromeBar
 
+    CALL ui.Interface.loadStyles("pool_doctors")
+    CALL ui.Interface.loadActionDefaults("pool_doctors")
 
+    CALL init_database()
 
-private function init_database()
-define l_database_exists boolean
-define ch base.channel
+    CALL lib_settings.populate()
+    CLOSE WINDOW screen
+    CALL home.execute()
+
+END MAIN
+
+PRIVATE FUNCTION init_database()
+    DEFINE l_database_exists BOOLEAN
+    DEFINE ch base.channel
 
     -- First attempt to connect to database.
     -- If this successed we know the database exists
-    LET l_database_exists = true
-    try
-        connect to "pool_doctors"
-    catch
-        let l_database_exists = false
-    end try
+    LET l_database_exists = TRUE
+    TRY
+        CONNECT TO "pool_doctors"
+    CATCH
+        LET l_database_exists = FALSE
+    END TRY
 
-    
-    if l_database_exists then
+    IF l_database_exists THEN
         -- Database exists.
         -- In later versions of app, upgrade database here
 
         -- We are done and can carry on with app
-        return
-    end if
+        RETURN
+    END IF
 
     -- If get to there, there is no database, need to create it
     -- Warning if in development mode
-    if not base.Application.isMobile() then
-        if not lib_ui.confirm_dialog("About to create database.  Are you sure?") then
-            call errorlog("User cancelled database creation")
-            exit program 1
-        end if
-    end if
+    IF NOT base.Application.isMobile() THEN
+        IF NOT lib_ui.confirm_dialog("About to create database.  Are you sure?") THEN
+            CALL errorlog("User cancelled database creation")
+            EXIT PROGRAM 1
+        END IF
+    END IF
 
     -- Database doesn't exist so we need to create a new empty database file
     -- Should use FGL_GETRESOURCE(dbi.database.pool_doctors.source) here instead
     -- of hard-coded filename
-    try
-        let ch = base.Channel.create()
-        call ch.openFile("pool_doctors.db","w")
-        call ch.close()
-    catch
-        call errorlog("Unable to create empty database")
-        exit program 1
-    end try
+    TRY
+        LET ch = base.Channel.create()
+        CALL ch.openFile("pool_doctors.db", "w")
+        CALL ch.close()
+    CATCH
+        CALL errorlog("Unable to create empty database")
+        EXIT PROGRAM 1
+    END TRY
 
     -- Connect to new empty database
-    try
-        connect to "pool_doctors"
-    catch
+    TRY
+        CONNECT TO "pool_doctors"
+    CATCH
         -- Something has gone wrong
-        call errorlog("Unable to connect to empty database")
-        exit program 1
-    end try
+        CALL errorlog("Unable to connect to empty database")
+        EXIT PROGRAM 1
+    END TRY
 
     -- Create Database
-    execute immediate "create table customer (
+    EXECUTE IMMEDIATE "create table customer (
         cm_code char(10) not null,
         cm_name varchar(255) not null,
         cm_email varchar(30),
@@ -120,7 +117,7 @@ define ch base.channel
         cm_postcode char(10),
         cm_rep char(2),
         constraint sqlite_autoindex_customer_1 primary key(cm_code))"
-    execute immediate "create table job_detail (
+    EXECUTE IMMEDIATE "create table job_detail (
         jd_code char(10) not null,
         jd_line integer not null,
         jd_product char(10),
@@ -131,7 +128,7 @@ define ch base.channel
             references job_header(jh_code),
         constraint fk_job_detail_product_2 foreign key(jd_product)
             references product(pr_code))"
-    execute immediate "create table job_header (
+    EXECUTE IMMEDIATE "create table job_header (
         jh_code char(10) not null,
         jh_customer char(10),
         jh_date_created datetime year to minute,
@@ -149,7 +146,7 @@ define ch base.channel
         constraint sqlite_autoindex_job_header_1 primary key(jh_code),
         constraint fk_job_header_customer_1 foreign key(jh_customer)
             references customer(cm_code))"
-    execute immediate "create table job_note (
+    EXECUTE IMMEDIATE "create table job_note (
         jn_code char(10),
         jn_idx integer,
         jn_note varchar(10000),
@@ -157,7 +154,7 @@ define ch base.channel
         constraint sqlite_autoindex_job_note_1 primary key(jn_code, jn_idx),
         constraint fk_job_note_job_header_1 foreign key(jn_code)
             references job_header(jh_code))"
-    execute immediate "create table job_photo (
+    EXECUTE IMMEDIATE "create table job_photo (
         jp_code char(10) not null,
         jp_idx integer not null,
         jp_photo varchar(160),
@@ -168,7 +165,7 @@ define ch base.channel
         constraint sqlite_autoindex_job_photo_1 primary key(jp_code, jp_idx),
         constraint fk_job_photo_job_header_1 foreign key(jp_code)
             references job_header(jh_code))"
-    execute immediate "create table job_timesheet (
+    EXECUTE IMMEDIATE "create table job_timesheet (
         jt_code char(10) not null,
         jt_idx integer not null,
         jt_start datetime year to minute,
@@ -178,30 +175,30 @@ define ch base.channel
         constraint sqlite_autoindex_job_timesheet_1 primary key(jt_code, jt_idx),
         constraint fk_job_timesheet_job_header_1 foreign key(jt_code)
             references job_header(jh_code))"
-    execute immediate "create table product (
+    EXECUTE IMMEDIATE "create table product (
         pr_code char(10) not null,
         pr_desc varchar(255) not null,
         pr_barcode varchar(30),
         constraint sqlite_autoindex_product_1 primary key(pr_code))"
-    execute immediate "create table job_settings (
+    EXECUTE IMMEDIATE "create table job_settings (
         js_url char(40),
         js_group char(40),
         js_map smallint)"
 
-    execute immediate "create unique index idx_customer_pk on customer(cm_code)"
-    execute immediate "create index idx_customer_name on customer(cm_name)"
-    execute immediate "create unique index idx_job_detail_pk on job_detail(jd_code, jd_line)"
-    execute immediate "create index idx_job_detail_product on job_detail(jd_product)"
-    execute immediate "create unique index idx_job_header_pk on job_header(jh_code)"
-    execute immediate "create index idx_job_header_customer on job_header(jh_customer)"
-    execute immediate "create unique index idx_job_note_pk on job_note(jn_code, jn_idx)"
-    execute immediate "create unique index idx_job_photo_pk on job_photo(jp_code, jp_idx)"
-    execute immediate "create unique index idx_job_timesheet_pk on job_timesheet(jt_code, jt_idx)"
-    execute immediate "create unique index idx_product_pk on product(pr_code)"
-    execute immediate "create index idx_product_name on product(pr_desc)"
+    EXECUTE IMMEDIATE "create unique index idx_customer_pk on customer(cm_code)"
+    EXECUTE IMMEDIATE "create index idx_customer_name on customer(cm_name)"
+    EXECUTE IMMEDIATE "create unique index idx_job_detail_pk on job_detail(jd_code, jd_line)"
+    EXECUTE IMMEDIATE "create index idx_job_detail_product on job_detail(jd_product)"
+    EXECUTE IMMEDIATE "create unique index idx_job_header_pk on job_header(jh_code)"
+    EXECUTE IMMEDIATE "create index idx_job_header_customer on job_header(jh_customer)"
+    EXECUTE IMMEDIATE "create unique index idx_job_note_pk on job_note(jn_code, jn_idx)"
+    EXECUTE IMMEDIATE "create unique index idx_job_photo_pk on job_photo(jp_code, jp_idx)"
+    EXECUTE IMMEDIATE "create unique index idx_job_timesheet_pk on job_timesheet(jt_code, jt_idx)"
+    EXECUTE IMMEDIATE "create unique index idx_product_pk on product(pr_code)"
+    EXECUTE IMMEDIATE "create index idx_product_name on product(pr_desc)"
 
     -- insert initial data if required
     #insert into job_settings(js_url, js_group) values("https://demo.4js.com/gas","pool_doctors_server")
-    insert into job_settings(js_url, js_group, js_map) values("https://demo.4js.com/gas","pool_doctors_server",1)
-    
-end function
+    INSERT INTO job_settings(js_url, js_group, js_map) VALUES("https://demo.4js.com/gas", "pool_doctors_server", 1)
+
+END FUNCTION

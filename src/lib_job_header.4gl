@@ -23,42 +23,33 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- Is the given job number editable, that is jh_status = "I" for in-progress
-function editable(l_jh_code)
-define l_jh_code like job_header.jh_code
+FUNCTION editable(l_jh_code)
+    DEFINE l_jh_code LIKE job_header.jh_code
 
-define l_jh_status like job_header.jh_status
+    DEFINE l_jh_status LIKE job_header.jh_status
 
-    select jh_status
-    into l_jh_status
-    from job_header
-    where jh_code = l_jh_code
+    SELECT jh_status INTO l_jh_status FROM job_header WHERE jh_code = l_jh_code
 
-    return (l_jh_status = "I")
-end function
-
-
+    RETURN (l_jh_status = "I")
+END FUNCTION
 
 -- Does the given job number exist
-function exists(l_jh_code)
-define l_jh_code like job_header.jh_code
+FUNCTION exists(l_jh_code)
+    DEFINE l_jh_code LIKE job_header.jh_code
 
-    select 'x'
-    from job_header
-    where job_header.jh_code = l_jh_code 
+    SELECT 'x' FROM job_header WHERE job_header.jh_code = l_jh_code
 
-    if status==notfound then
-        return false
-    end if
-    return true
-end function
+    IF status == NOTFOUND THEN
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION

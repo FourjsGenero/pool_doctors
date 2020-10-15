@@ -23,137 +23,123 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
 
-import fgl lib_settings
+IMPORT FGL lib_settings
 
-import fgl browser
+IMPORT FGL browser
 
-import fgl customer_reading
+IMPORT FGL customer_reading
 
-schema pool_doctors
+SCHEMA pool_doctors
 
-type customer_type record like customer.*
-define m_customer_rec customer_type  
+TYPE customer_type RECORD LIKE customer.*
+DEFINE m_customer_rec customer_type
 
-define w ui.window
-define f ui.form
+DEFINE w ui.window
+DEFINE f ui.form
 
-
-
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 ---- Control ----
-function view_customer(l_cm_code)
-define l_cm_code like customer.cm_code
+FUNCTION view_customer(l_cm_code)
+    DEFINE l_cm_code LIKE customer.cm_code
 
-define l_ok boolean
-define l_err_text string
+    DEFINE l_ok BOOLEAN
+    DEFINE l_err_text STRING
 
-    let m_customer_rec.cm_code = l_cm_code
-    call db_select() returning l_ok, l_err_text
-    if l_ok then
-        open window customer_grid with form "customer_grid"
-        let w= ui.Window.getCurrent()
-        let f= w.getForm()
-        call ui_view()
-        close window customer_grid
-    else
-        call lib_ui.show_error(l_err_text, true)
-    end if
-    return l_ok, l_err_text
-end function
-
-
-
-
-
+    LET m_customer_rec.cm_code = l_cm_code
+    CALL db_select() RETURNING l_ok, l_err_text
+    IF l_ok THEN
+        OPEN WINDOW customer_grid WITH FORM "customer_grid"
+        LET w = ui.Window.getCurrent()
+        LET f = w.getForm()
+        CALL ui_view()
+        CLOSE WINDOW customer_grid
+    ELSE
+        CALL lib_ui.show_error(l_err_text, TRUE)
+    END IF
+    RETURN l_ok, l_err_text
+END FUNCTION
 
 ---- User Interface ----
-private function ui_view()
-define result string
+PRIVATE FUNCTION ui_view()
+    DEFINE result STRING
 
-define l_url string
+    DEFINE l_url STRING
 
+    DISPLAY BY NAME m_customer_rec.cm_code, m_customer_rec.cm_name, m_customer_rec.cm_email, m_customer_rec.cm_phone
+    DISPLAY SFMT("%1\n%2\n%3\n%4",
+            m_customer_rec.cm_addr1, m_customer_rec.cm_addr2, m_customer_rec.cm_addr3, m_customer_rec.cm_addr4)
+        TO cm_address
 
-    display by name m_customer_rec.cm_code, m_customer_rec.cm_name, m_customer_rec.cm_email, m_customer_rec.cm_phone
-    display sfmt("%1\n%2\n%3\n%4",  m_customer_rec.cm_addr1, m_customer_rec.cm_addr2, m_customer_rec.cm_addr3, m_customer_rec.cm_addr4) to cm_address
+    MENU ""
+        BEFORE MENU
+            CALL dialog.setActionActive("map", lib_settings.js_map > 0)
+        ON ACTION cancel
+            EXIT MENU
 
-    menu "" 
-        before menu
-            call dialog.setActionActive("map",lib_settings.js_map>0)
-        on action cancel
-            exit menu
+        ON ACTION readings
+            CALL customer_reading.show(m_customer_rec.cm_code, m_customer_rec.cm_name)
 
-        on action readings
-            call customer_reading.show(m_customer_rec.cm_code, m_customer_rec.cm_name)
+        ON ACTION call
+            LET result = 0
+            TRY
+                CALL ui.interface.frontcall("standard", "launchUrl", [SFMT("telprompt:%1", m_customer_rec.cm_phone)], [result])
+            CATCH
+                LET result = 1
+            END TRY
+            IF result > 0 THEN
+                CALL lib_ui.show_error("Unable to call", TRUE)
+            END IF
 
-        on action call
-            let result = 0
-            try
-                call ui.interface.frontcall("standard","launchUrl",[sfmt("telprompt:%1", m_customer_rec.cm_phone)],[result])
-            catch
-                let result = 1
-            end try
-            if result > 0 then
-                call lib_ui.show_error("Unable to call", true)
-            end if
-            
-        on action sms
-            try
-                call ui.interface.frontcall("mobile","composeSMS",[m_customer_rec.cm_phone,""],result)
-            catch
-                call lib_ui.show_error("Unable to SMS", true)
-            end try
-            
-        on action email
-            try
-                call ui.interface.frontcall("mobile","composeMail",[m_customer_rec.cm_email,"",""],result)
-            catch
-                try
-                    call ui.interface.frontcall("standard","launchUrl", [SFMT("mailto:%1", m_customer_rec.cm_email)],[])
-                catch
-                    call lib_ui.show_error("Unable to email", true)
-                end try
-            end try
+        ON ACTION sms
+            TRY
+                CALL ui.interface.frontcall("mobile", "composeSMS", [m_customer_rec.cm_phone, ""], result)
+            CATCH
+                CALL lib_ui.show_error("Unable to SMS", TRUE)
+            END TRY
 
-        on action map
+        ON ACTION email
+            TRY
+                CALL ui.interface.frontcall("mobile", "composeMail", [m_customer_rec.cm_email, "", ""], result)
+            CATCH
+                TRY
+                    CALL ui.interface.frontcall("standard", "launchUrl", [SFMT("mailto:%1", m_customer_rec.cm_email)], [])
+                CATCH
+                    CALL lib_ui.show_error("Unable to email", TRUE)
+                END TRY
+            END TRY
+
+        ON ACTION map
             -- There are many different ways to launch a map tool...
 
-
-            case lib_settings.js_map
-                when 1
-                    let l_url = sfmt("geo:q=%1,%2", m_customer_rec.cm_lat, m_customer_rec.cm_lon)
-                    call ui.interface.frontCall("standard","launchUrl", l_url,[])
-                when 2
-                    let l_url = sfmt("https://www.google.com/maps/@%1,%2,12z", m_customer_rec.cm_lat, m_customer_rec.cm_lon)
-                    call ui.interface.frontCall("standard","launchUrl", l_url,[])
-                when 3
-                    let l_url = sfmt("comgooglemapsurl://maps.google.com/?q=@%1,%2",m_customer_rec.cm_lat, m_customer_rec.cm_lon)
-                    call ui.interface.frontCall("standard","launchUrl", l_url,[])
-                otherwise
-                    call lib_ui.not_implemented_dialog()
-            end case
-    end menu
-end function
-
-
+            CASE lib_settings.js_map
+                WHEN 1
+                    LET l_url = SFMT("geo:q=%1,%2", m_customer_rec.cm_lat, m_customer_rec.cm_lon)
+                    CALL ui.interface.frontCall("standard", "launchUrl", l_url, [])
+                WHEN 2
+                    LET l_url = SFMT("https://www.google.com/maps/@%1,%2,12z", m_customer_rec.cm_lat, m_customer_rec.cm_lon)
+                    CALL ui.interface.frontCall("standard", "launchUrl", l_url, [])
+                WHEN 3
+                    LET l_url = SFMT("comgooglemapsurl://maps.google.com/?q=@%1,%2", m_customer_rec.cm_lat, m_customer_rec.cm_lon)
+                    CALL ui.interface.frontCall("standard", "launchUrl", l_url, [])
+                OTHERWISE
+                    CALL lib_ui.not_implemented_dialog()
+            END CASE
+    END MENU
+END FUNCTION
 
 ---- Database ----
-private function db_select()
-    
-    select * 
-    into m_customer_rec.*
-    from customer 
-    where customer.cm_code = m_customer_rec.cm_code
+PRIVATE FUNCTION db_select()
 
-    if status=notfound then
-        return false, "Customer record could not be found"
-    end if
-    return true, ""
-end function
+    SELECT * INTO m_customer_rec.* FROM customer WHERE customer.cm_code = m_customer_rec.cm_code
+
+    IF status = NOTFOUND THEN
+        RETURN FALSE, "Customer record could not be found"
+    END IF
+    RETURN TRUE, ""
+END FUNCTION

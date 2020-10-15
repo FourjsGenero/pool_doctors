@@ -23,65 +23,51 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-
-
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- For a given job code, return the number of job photo lines
-function count(l_jp_code)
-define l_jp_code like job_photo.jp_code
+FUNCTION count(l_jp_code)
+    DEFINE l_jp_code LIKE job_photo.jp_code
 
-define l_count integer
+    DEFINE l_count INTEGER
 
-define l_sql string
+    DEFINE l_sql STRING
 
-    let l_sql = "select count(*) from job_photo where jp_code = ? "
-    
-    declare job_photo_count_curs cursor from l_sql
-    open job_photo_count_curs using l_jp_code
-    fetch job_photo_count_curs into l_count
-    
-    return l_count
-end function
+    LET l_sql = "select count(*) from job_photo where jp_code = ? "
 
+    DECLARE job_photo_count_curs CURSOR FROM l_sql
+    OPEN job_photo_count_curs USING l_jp_code
+    FETCH job_photo_count_curs INTO l_count
 
+    RETURN l_count
+END FUNCTION
 
 -- For a given job code, return the maximum job photo line number
-function jp_idx_max(l_jp_code)
-define l_jp_code like job_photo.jp_code
+FUNCTION jp_idx_max(l_jp_code)
+    DEFINE l_jp_code LIKE job_photo.jp_code
 
-define l_jp_idx like job_photo.jp_idx
+    DEFINE l_jp_idx LIKE job_photo.jp_idx
 
-    select max(jp_idx)
-    into l_jp_idx
-    from job_photo
-    where jp_code = l_jp_code
+    SELECT MAX(jp_idx) INTO l_jp_idx FROM job_photo WHERE jp_code = l_jp_code
 
-    return l_jp_idx
-end function
-
-
+    RETURN l_jp_idx
+END FUNCTION
 
 -- Determine if a given job photo line exists
-function exists(l_jp_code, l_jp_idx)
-define l_jp_code like job_photo.jp_code
-define l_jp_idx  like job_photo.jp_idx
+FUNCTION exists(l_jp_code, l_jp_idx)
+    DEFINE l_jp_code LIKE job_photo.jp_code
+    DEFINE l_jp_idx LIKE job_photo.jp_idx
 
-    select 'x'
-    from job_photo
-    where job_photo.jp_code = l_jp_code
-    and   job_photo.jp_idx = l_jp_idx 
+    SELECT 'x' FROM job_photo WHERE job_photo.jp_code = l_jp_code AND job_photo.jp_idx = l_jp_idx
 
-    if status==notfound then
-        return false
-    end if
-    return true
-end function
+    IF status == NOTFOUND THEN
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION

@@ -23,65 +23,51 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-
-
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- For a given job code, return the number of job detail lines
-function count(l_jd_code)
-define l_jd_code like job_detail.jd_code
+FUNCTION count(l_jd_code)
+    DEFINE l_jd_code LIKE job_detail.jd_code
 
-define l_count integer
+    DEFINE l_count INTEGER
 
-define l_sql string
+    DEFINE l_sql STRING
 
-    let l_sql = "select count(*) from job_detail where jd_code = ? "
-    
-    declare job_detail_count_curs cursor from l_sql
-    open job_detail_count_curs using l_jd_code
-    fetch job_detail_count_curs into l_count
-    
-    return l_count
-end function
+    LET l_sql = "select count(*) from job_detail where jd_code = ? "
 
+    DECLARE job_detail_count_curs CURSOR FROM l_sql
+    OPEN job_detail_count_curs USING l_jd_code
+    FETCH job_detail_count_curs INTO l_count
 
+    RETURN l_count
+END FUNCTION
 
 -- For a given job code, return the maximum job detail line number
-function jd_line_max(l_jd_code)
-define l_jd_code like job_detail.jd_code
+FUNCTION jd_line_max(l_jd_code)
+    DEFINE l_jd_code LIKE job_detail.jd_code
 
-define l_jd_line like job_detail.jd_line
+    DEFINE l_jd_line LIKE job_detail.jd_line
 
-    select max(jd_line)
-    into l_jd_line
-    from job_detail
-    where jd_code = l_jd_code
+    SELECT MAX(jd_line) INTO l_jd_line FROM job_detail WHERE jd_code = l_jd_code
 
-    return l_jd_line
-end function
-
-
+    RETURN l_jd_line
+END FUNCTION
 
 -- Determine if a given job detail line exists
-function exists(l_jd_code, l_jd_line)
-define l_jd_code like job_detail.jd_code
-define l_jd_line like job_detail.jd_line
+FUNCTION exists(l_jd_code, l_jd_line)
+    DEFINE l_jd_code LIKE job_detail.jd_code
+    DEFINE l_jd_line LIKE job_detail.jd_line
 
-    select 'x'
-    from job_detail
-    where job_detail.jd_code = l_jd_code
-    and   job_detail.jd_line = l_jd_line 
+    SELECT 'x' FROM job_detail WHERE job_detail.jd_code = l_jd_code AND job_detail.jd_line = l_jd_line
 
-    if status==notfound then
-        return false
-    end if
-    return true
-end function
+    IF status == NOTFOUND THEN
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION

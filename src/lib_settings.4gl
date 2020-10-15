@@ -23,28 +23,22 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-public define js_url string
-public define js_group string
-public define js_map string
+PUBLIC DEFINE js_url STRING
+PUBLIC DEFINE js_group STRING
+PUBLIC DEFINE js_map STRING
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
+FUNCTION populate()
+    SELECT @js_url, @js_group, @js_map INTO js_url, js_group, js_map FROM job_settings
 
-
-function populate()
-    select @js_url, @js_group, @js_map
-    into js_url, js_group, js_map
-    from job_settings
-
-    let js_url = js_url.trim()
-    let js_group = js_group.trim()
-    let js_map = js_map
-end function
-
-
+    LET js_url = js_url.trim()
+    LET js_group = js_group.trim()
+    LET js_map = js_map
+END FUNCTION

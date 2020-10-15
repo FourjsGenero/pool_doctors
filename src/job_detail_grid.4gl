@@ -23,170 +23,156 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
 
-import fgl product_list
+IMPORT FGL product_list
 
-import fgl lib_product
-import fgl lib_job_detail
+IMPORT FGL lib_product
+IMPORT FGL lib_job_detail
 
-schema pool_doctors
+SCHEMA pool_doctors
 
-type job_detail_type record like job_detail.*
+TYPE job_detail_type RECORD LIKE job_detail.*
 
-public define m_job_detail_rec job_detail_type  -- used to edit a single row
+PUBLIC DEFINE m_job_detail_rec job_detail_type -- used to edit a single row
 
-define m_mode string
-define m_jh_code like job_header.jh_code
+DEFINE m_mode STRING
+DEFINE m_jh_code LIKE job_header.jh_code
 
-define w ui.window
-define f ui.form
+DEFINE w ui.window
+DEFINE f ui.form
 
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
+FUNCTION add(l_jh_code)
+    DEFINE l_jh_code LIKE job_header.jh_code
 
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET m_jh_code = l_jh_code
+    CALL record_default() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        LET m_mode = "add"
+        CALL open_window()
+        CALL ui_edit() RETURNING l_ok
+        IF l_ok THEN
+            CALL db_insert() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("Unable to add row\n%1", l_error_text), TRUE)
+            END IF
+        END IF
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-function add(l_jh_code)
-define l_jh_code like job_header.jh_code
+FUNCTION update(l_jd_code, l_jd_line)
+    DEFINE l_jd_code LIKE job_detail.jd_code
+    DEFINE l_jd_line LIKE job_detail.jd_line
 
-define l_ok boolean
-define l_error_text string
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-    let m_jh_code = l_jh_code
-    call record_default() returning l_ok, l_error_text
-    if l_ok then
-        let m_mode = "add"
-        call open_window()
-        call ui_edit() returning l_ok
-        if l_ok then
-            call db_insert() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("Unable to add row\n%1", l_error_text), true)
-            end if
-        end if
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+    LET m_job_detail_rec.jd_code = l_jd_code
+    LET m_job_detail_rec.jd_line = l_jd_line
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        LET m_mode = "update"
+        CALL open_window()
+        CALL ui_edit() RETURNING l_ok
+        IF l_ok THEN
+            CALL db_update() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("Unable to update row\n%1", l_error_text), TRUE)
+            END IF
+        END IF
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+FUNCTION view(l_jd_code, l_jd_line)
+    DEFINE l_jd_code LIKE job_detail.jd_code
+    DEFINE l_jd_line LIKE job_detail.jd_line
 
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-function update(l_jd_code, l_jd_line)
-define l_jd_code like job_detail.jd_code
-define l_jd_line like job_detail.jd_line
+    LET m_job_detail_rec.jd_code = l_jd_code
+    LET m_job_detail_rec.jd_line = l_jd_line
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        CALL open_window()
+        CALL ui_view()
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-define l_ok boolean
-define l_error_text string
+FUNCTION delete(l_jd_code, l_jd_line)
+    DEFINE l_jd_code LIKE job_detail.jd_code
+    DEFINE l_jd_line LIKE job_detail.jd_line
 
-    let m_job_detail_rec.jd_code = l_jd_code
-    let m_job_detail_rec.jd_line = l_jd_line
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        let m_mode = "update"
-        call open_window()
-        call ui_edit() returning l_ok
-        if l_ok then
-            call db_update() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("Unable to update row\n%1", l_error_text),true)
-            end if
-        end if
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    DEFINE l_warning BOOLEAN
+    DEFINE l_warning_text STRING
 
+    LET m_job_detail_rec.jd_code = l_jd_code
+    LET m_job_detail_rec.jd_line = l_jd_line
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        CALL record_delete_warning() RETURNING l_warning, l_warning_text
+        IF l_warning THEN
+            CALL open_window()
+            CALL ui_display()
+            CALL ui.interface.refresh()
+            LET l_ok = lib_ui.confirm_dialog(SFMT("%1\nAre you sure you want to delete?", l_warning_text))
+            CALL close_window()
+            IF NOT l_ok THEN
+                LET l_error_text = "Delete Cancelled"
+            END IF
+        END IF
+    END IF
+    IF l_ok THEN
+        CALL db_delete() RETURNING l_ok, l_error_text
+        IF NOT l_ok THEN
+            CALL lib_ui.show_error(SFMT("Unable to delete row\n%1", l_error_text), TRUE)
+        END IF
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-function view(l_jd_code, l_jd_line)
-define l_jd_code like job_detail.jd_code
-define l_jd_line like job_detail.jd_line
+PRIVATE FUNCTION open_window()
+    OPEN WINDOW job_detail_grid WITH FORM "job_detail_grid"
+    LET w = ui.window.getcurrent()
+    LET f = w.getform()
+    CALL combo_populate_jd_status(ui.combobox.forname("formonly.jd_status"))
+END FUNCTION
 
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION close_window()
+    CLOSE WINDOW job_detail_grid
+END FUNCTION
 
-    let m_job_detail_rec.jd_code = l_jd_code
-    let m_job_detail_rec.jd_line = l_jd_line
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        call open_window()
-        call ui_view()
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+PRIVATE FUNCTION ui_edit()
+    DEFINE l_ok, l_error_text STRING
 
-
-
-function delete(l_jd_code, l_jd_line)
-define l_jd_code like job_detail.jd_code
-define l_jd_line like job_detail.jd_line
-
-define l_ok boolean
-define l_error_text string
-
-define l_warning boolean
-define l_warning_text string
-
-    let m_job_detail_rec.jd_code = l_jd_code
-    let m_job_detail_rec.jd_line = l_jd_line
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        call record_delete_warning() returning l_warning, l_warning_text
-        if l_warning then
-            call open_window()
-            call ui_display()
-            call ui.interface.refresh()
-            let l_ok = lib_ui.confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
-            call close_window()
-            if not l_ok then
-                let l_error_text = "Delete Cancelled"
-            end if
-        end if
-    end if
-    if l_ok then
-        call db_delete() returning l_ok, l_error_text
-        if not l_ok then
-            call lib_ui.show_error(sfmt("Unable to delete row\n%1", l_error_text),true)
-        end if
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-
-private function open_window()
-    open window job_detail_grid with form "job_detail_grid"
-    let w= ui.window.getcurrent()
-    let f= w.getform()
-    call combo_populate_jd_status(ui.combobox.forname("formonly.jd_status"))
-end function
-
-
-
-private function close_window()
-    close window job_detail_grid
-end function
-
-
-
-private function ui_edit()
-define l_ok, l_error_text string
-
-    input by name m_job_detail_rec.jd_code, m_job_detail_rec.jd_line, m_job_detail_rec.jd_product, m_job_detail_rec.jd_qty, m_job_detail_rec.jd_status  attributes(unbuffered, without defaults=true)
+    INPUT BY NAME m_job_detail_rec.jd_code, m_job_detail_rec.jd_line, m_job_detail_rec.jd_product, m_job_detail_rec.jd_qty,
+        m_job_detail_rec.jd_status
+        ATTRIBUTES(UNBUFFERED, WITHOUT DEFAULTS = TRUE)
 
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \
                                     if not l_ok then \
                                         call lib_ui.show_error(l_error_text,false) \
                                         next field p1 \
-                                    end if 
-                                    
+                                    end if
+
         after_field(jd_code)
         after_field(jd_line)
         after_field(jd_product)
@@ -194,25 +180,24 @@ define l_ok, l_error_text string
         after_field(jd_status)
         &undef after_field
 
-    
-        on action zoom infield jd_product
-            let m_job_detail_rec.jd_product = nvl(product_list.select(), m_job_detail_rec.jd_product) 
-            call dialog.setFieldTouched("jd_product", true)
+        ON ACTION zoom INFIELD jd_product
+            LET m_job_detail_rec.jd_product = NVL(product_list.select(), m_job_detail_rec.jd_product)
+            CALL dialog.setFieldTouched("jd_product", TRUE)
 
-        on action barcode 
-            call do_barcode_read()
-            call dialog.setFieldTouched("jd_product", true)
+        ON ACTION barcode
+            CALL do_barcode_read()
+            CALL dialog.setFieldTouched("jd_product", TRUE)
 
-        on action cancel
-            if dialog.getfieldtouched("*") then
-                if not lib_ui.confirm_cancel_dialog() then
-                    let int_flag = 0
-                    continue input
-                end if
-            end if
-            exit input
+        ON ACTION cancel
+            IF dialog.getfieldtouched("*") THEN
+                IF NOT lib_ui.confirm_cancel_dialog() THEN
+                    LET int_flag = 0
+                    CONTINUE INPUT
+                END IF
+            END IF
+            EXIT INPUT
 
-        after input
+        AFTER INPUT
             -- test values
             &define field_valid(p1) call p1 ## _valid() returning l_ok, l_error_text \
             if not l_ok then \
@@ -221,15 +206,15 @@ define l_ok, l_error_text string
             end if
 
             -- test key fields
-            if m_mode = "add" then
+            IF m_mode = "add" THEN
                 field_valid(jd_code)
                 field_valid(jd_line)
-                call record_key_valid() returning l_ok, l_error_text
-                if not l_ok then
-                    call lib_ui.show_error(l_error_text, false)
-                    next field current
-                end if
-            end if
+                CALL record_key_valid() RETURNING l_ok, l_error_text
+                IF NOT l_ok THEN
+                    CALL lib_ui.show_error(l_error_text, FALSE)
+                    NEXT FIELD CURRENT
+                END IF
+            END IF
 
             -- test data fields
             field_valid(jd_product)
@@ -237,290 +222,238 @@ define l_ok, l_error_text string
             field_valid(jd_status)
 
             &undef field_valid
-            
+
             -- test record
-            call record_valid() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(l_error_text, false)
-                next field current
-            end if
-    end input
-    if int_flag then
-        let int_flag = 0
-        return false
-    end if
-    return true
-end function
+            CALL record_valid() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(l_error_text, FALSE)
+                NEXT FIELD CURRENT
+            END IF
+    END INPUT
+    IF int_flag THEN
+        LET int_flag = 0
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION
 
+PRIVATE FUNCTION ui_view()
 
+    CALL ui_display()
+    MENU ""
+        ON ACTION cancel
+            EXIT MENU
+    END MENU
+END FUNCTION
 
-private function ui_view()
+PRIVATE FUNCTION ui_display()
 
-    call ui_display()
-    menu ""
-        on action cancel
-            exit menu
-    end menu
-end function
+    DISPLAY BY NAME m_job_detail_rec.jd_code, m_job_detail_rec.jd_line, m_job_detail_rec.jd_product, m_job_detail_rec.jd_qty,
+        m_job_detail_rec.jd_status
+END FUNCTION
 
+FUNCTION combo_populate_jd_status(l_cb)
+    DEFINE l_cb ui.combobox
 
+    CALL l_cb.clear()
+    CALL l_cb.additem("0", "Entered")
+    CALL l_cb.additem("1", "Delivered")
+    CALL l_cb.additem("2", "Invoiced")
+END FUNCTION
 
-private function ui_display()
+PRIVATE FUNCTION do_barcode_read()
+    DEFINE l_pr_barcode LIKE product.pr_barcode
+    DEFINE l_pr_code LIKE product.pr_code
+    DEFINE l_pr_desc LIKE product.pr_desc
+    DEFINE l_barcode_type STRING
 
-    display by name m_job_detail_rec.jd_code, m_job_detail_rec.jd_line, m_job_detail_rec.jd_product, m_job_detail_rec.jd_qty, m_job_detail_rec.jd_status
-end function
+    CALL ui.interface.frontcall("mobile", "scanBarCode", [], [l_pr_barcode, l_barcode_type])
+    IF l_pr_barcode IS NOT NULL THEN
+        LET l_pr_code = lib_product.find_from_barcode(l_pr_barcode)
+        IF l_pr_code IS NOT NULL THEN
+            LET l_pr_desc = lib_product.lookup_pr_desc(l_pr_code)
+            CALL lib_ui.show_message(SFMT("Barcode read is %1\nproduct is %2(%3)", l_pr_barcode, l_pr_code, l_pr_desc), TRUE)
+            LET m_job_detail_rec.jd_product = l_pr_code
+        ELSE
+            CALL lib_ui.show_error("Barcode is not in database", TRUE)
+        END IF
+    END IF
+END FUNCTION
 
-
-
-function combo_populate_jd_status(l_cb)
-define l_cb ui.combobox
-
-    call l_cb.clear()
-    call l_cb.additem("0", "Entered")
-    call l_cb.additem("1", "Delivered")
-    call l_cb.additem("2", "Invoiced")
-end function
-
-
-
-private function do_barcode_read()
-define l_pr_barcode like product.pr_barcode
-define l_pr_code like product.pr_code
-define l_pr_desc like product.pr_desc
-define l_barcode_type string
-    
-    call ui.interface.frontcall("mobile","scanBarCode",[],[l_pr_barcode, l_barcode_type])
-    if l_pr_barcode is not null then
-        let l_pr_code = lib_product.find_from_barcode(l_pr_barcode)
-        if l_pr_code is not null then
-            let l_pr_desc = lib_product.lookup_pr_desc(l_pr_code)
-            call lib_ui.show_message(sfmt("Barcode read is %1\nproduct is %2(%3)",l_pr_barcode, l_pr_code, l_pr_desc),true)
-            let m_job_detail_rec.jd_product = l_pr_code
-        else
-            call lib_ui.show_error("Barcode is not in database",true)
-        end if
-    end if
-end function
-
-
-
-private function record_delete_warning()
+PRIVATE FUNCTION record_delete_warning()
     -- Sample delete warning, don't delete line if has certain status
-    if m_job_detail_rec.jd_status = "0" then
+    IF m_job_detail_rec.jd_status = "0" THEN
         #ok to delete
-    else
-        return true, "Job Line has status 1" 
-    end if
-    return false, ""
-end function
+    ELSE
+        RETURN TRUE, "Job Line has status 1"
+    END IF
+    RETURN FALSE, ""
+END FUNCTION
 
-
-
-private function record_valid()
+PRIVATE FUNCTION record_valid()
 
     -- validation involving two or more fields
-    return true, ""
-end function
+    RETURN TRUE, ""
+END FUNCTION
 
-
-
-private function record_key_valid()
+PRIVATE FUNCTION record_key_valid()
 
     -- when adding, test that primary key value is unique
-    if lib_job_detail.exists(m_job_detail_rec.jd_code, m_job_detail_rec.jd_line) then
-        return false, "Record already exists"
-    end if
-    return true, ""
-end function
+    IF lib_job_detail.exists(m_job_detail_rec.jd_code, m_job_detail_rec.jd_line) THEN
+        RETURN FALSE, "Record already exists"
+    END IF
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION record_default()
+    LET m_job_detail_rec.jd_code = jd_code_default()
+    LET m_job_detail_rec.jd_line = jd_line_default()
+    LET m_job_detail_rec.jd_product = jd_product_default()
+    LET m_job_detail_rec.jd_qty = jd_qty_default()
+    LET m_job_detail_rec.jd_status = jd_status_default()
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION jd_code_default()
+    DEFINE l_default LIKE job_detail.jd_code
+    LET l_default = m_jh_code
+    RETURN l_default
+END FUNCTION
 
-private function record_default()
-    let m_job_detail_rec.jd_code = jd_code_default()
-    let m_job_detail_rec.jd_line = jd_line_default()
-    let m_job_detail_rec.jd_product = jd_product_default()
-    let m_job_detail_rec.jd_qty = jd_qty_default()
-    let m_job_detail_rec.jd_status = jd_status_default()
-    return true, ""
-end function
+PRIVATE FUNCTION jd_code_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_detail_rec.jd_code IS NULL THEN
+        RETURN FALSE, "Job Code must be entered"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-
-private function jd_code_default()
-define l_default like job_detail.jd_code
-    let l_default = m_jh_code
-    return l_default
-end function
-
-
-
-private function jd_code_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    if m_job_detail_rec.jd_code is null then
-        return false, "Job Code must be entered"
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-private function jd_line_default()
-define l_default like job_detail.jd_line
+PRIVATE FUNCTION jd_line_default()
+    DEFINE l_default LIKE job_detail.jd_line
 
     -- maxmimum line number + 1
-    let l_default = nvl(lib_job_detail.jd_line_max(m_job_detail_rec.jd_code),0) + 1
-    return l_default
-end function
+    LET l_default = NVL(lib_job_detail.jd_line_max(m_job_detail_rec.jd_code), 0) + 1
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jd_line_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_detail_rec.jd_line IS NULL THEN
+        RETURN FALSE, "Job Line must be entered"
+    END IF
+    IF m_job_detail_rec.jd_line < 1 THEN
+        RETURN FALSE, "Job Line must be greater than 0"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jd_line_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION jd_product_default()
+    DEFINE l_default LIKE job_detail.jd_product
 
-    let l_ok = true
-    if m_job_detail_rec.jd_line is null then
-        return false, "Job Line must be entered"
-    end if
-    if m_job_detail_rec.jd_line < 1 then
-        return false, "Job Line must be greater than 0"
-    end if
-    return l_ok, l_error_text
-end function
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jd_product_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_detail_rec.jd_product IS NULL THEN
+        RETURN FALSE, "Product must be entered"
+    END IF
+    IF NOT lib_product.exists(m_job_detail_rec.jd_product) THEN
+        RETURN FALSE, "Product must be valid"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+PRIVATE FUNCTION jd_qty_default()
+    DEFINE l_default LIKE job_detail.jd_qty
 
-private function jd_product_default()
-define l_default like job_detail.jd_product
+    LET l_default = 1
+    RETURN l_default
+END FUNCTION
 
-    return l_default
-end function
+PRIVATE FUNCTION jd_qty_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_detail_rec.jd_qty IS NULL THEN
+        RETURN FALSE, "Quantity must be entered"
+    END IF
+    IF m_job_detail_rec.jd_qty < 0 THEN
+        RETURN FALSE, "Quantity must be greater than 0"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+PRIVATE FUNCTION jd_status_default()
+    DEFINE l_default LIKE job_detail.jd_status
 
-private function jd_product_valid()
-define l_ok boolean
-define l_error_text string
+    LET l_default = 0
+    RETURN l_default
+END FUNCTION
 
-    let l_ok = true
-    if m_job_detail_rec.jd_product is null then
-        return false, "Product must be entered"
-    end if
-    if not lib_product.exists(m_job_detail_rec.jd_product) then
-        return false, "Product must be valid"
-    end if
-    return l_ok, l_error_text
-end function
+PRIVATE FUNCTION jd_status_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-
-
-private function jd_qty_default()
-define l_default like job_detail.jd_qty
-
-    let l_default = 1
-    return l_default
-end function
-
-
-
-private function jd_qty_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    if m_job_detail_rec.jd_qty is null then
-        return false, "Quantity must be entered"
-    end if
-    if m_job_detail_rec.jd_qty < 0 then
-        return false, "Quantity must be greater than 0"
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-private function jd_status_default()
-define l_default like job_detail.jd_status
-    
-    let l_default = 0
-    return l_default
-end function
-
-
-
-private function jd_status_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    if m_job_detail_rec.jd_status is null then
-        return false, "Status must be entered"
-    end if
-    if m_job_detail_rec.jd_status matches "[012]" then
+    LET l_ok = TRUE
+    IF m_job_detail_rec.jd_status IS NULL THEN
+        RETURN FALSE, "Status must be entered"
+    END IF
+    IF m_job_detail_rec.jd_status MATCHES "[012]" THEN
         #ok
-    else
-        return false, "Status must be valid"
-    end if
-    return l_ok, l_error_text
-end function
+    ELSE
+        RETURN FALSE, "Status must be valid"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+PRIVATE FUNCTION db_select()
+    TRY
+        SELECT * INTO m_job_detail_rec.* FROM job_detail
+            WHERE job_detail.jd_code = m_job_detail_rec.jd_code AND job_detail.jd_line = m_job_detail_rec.jd_line
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION db_insert()
 
-private function db_select()
-    try
-        select * 
-        into m_job_detail_rec.*
-        from job_detail 
-        where job_detail.jd_code = m_job_detail_rec.jd_code
-        and   job_detail.jd_line = m_job_detail_rec.jd_line
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
+    TRY
+        INSERT INTO job_detail VALUES(m_job_detail_rec.*)
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION db_update()
 
+    TRY
+        UPDATE job_detail SET job_detail.* = m_job_detail_rec.*
+            WHERE job_detail.jd_code = m_job_detail_rec.jd_code AND job_detail.jd_line = m_job_detail_rec.jd_line
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-private function db_insert()
+PRIVATE FUNCTION db_delete()
 
-    try
-        insert into job_detail values(m_job_detail_rec.*)
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-private function db_update()
-
-    try
-        update job_detail
-        set job_detail.* = m_job_detail_rec.*
-        where job_detail.jd_code = m_job_detail_rec.jd_code
-           and   job_detail.jd_line = m_job_detail_rec.jd_line   
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-private function db_delete()
-
-    try
-        delete 
-        from job_detail 
-        where job_detail.jd_code = m_job_detail_rec.jd_code
-        and   job_detail.jd_line = m_job_detail_rec.jd_line 
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
+    TRY
+        DELETE FROM job_detail WHERE job_detail.jd_code = m_job_detail_rec.jd_code AND job_detail.jd_line = m_job_detail_rec.jd_line
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION

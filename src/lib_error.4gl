@@ -24,75 +24,64 @@
 #       THE SOFTWARE.
 
 # no import fgl here, this module needs to be as foolproof as possible
-import os
+IMPORT os
 
-define m_been_here_before boolean
-define m_test_mode boolean
-define m_filename string
+DEFINE m_been_here_before BOOLEAN
+DEFINE m_test_mode BOOLEAN
+DEFINE m_filename STRING
 
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL serious_error
+END FUNCTION
 
+FUNCTION start_errorlog(l_filename)
+    DEFINE l_filename STRING
+    LET m_filename = l_filename
+    CALL startlog(l_filename)
+END FUNCTION
 
-private function exception()
-    whenever any error call serious_error
-end function
+FUNCTION clear_errorlog()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
+    LET l_ok = os.Path.delete(m_filename)
+    LET l_error_text = IIF(l_ok, "Errorlog deleted", "Unable to delete errorlog")
+    CALL startlog(m_filename)
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+FUNCTION view_errorlog()
+    DEFINE l_text TEXT
 
+    LOCATE l_text IN FILE m_filename
+    MENU "Error Log" ATTRIBUTES(STYLE = "dialog", COMMENT = l_text)
+        ON ACTION accept
+            EXIT MENU
+    END MENU
+END FUNCTION
 
-function start_errorlog(l_filename)
-define l_filename string
-    let m_filename = l_filename
-    call startlog(l_filename)
-end function
+FUNCTION test_mode(l_test_mode)
+    DEFINE l_test_mode BOOLEAN
+    LET m_test_mode = l_test_mode
+END FUNCTION
 
-
-
-function clear_errorlog()
-define l_ok boolean
-define l_error_text string
-    let l_ok = os.Path.delete(m_filename) 
-    let l_error_text = iif(l_ok, "Errorlog deleted", "Unable to delete errorlog")
-    call startlog(m_filename)
-    return l_ok, l_error_text
-end function
-
-
-
-function view_errorlog()
-define l_text text
-
-    locate l_text in file m_filename   
-    menu "Error Log" attributes(style="dialog", comment=l_text)
-        on action accept
-            exit menu
-    end menu
-end function
-
-
-function test_mode(l_test_mode)
-define l_test_mode boolean
-    let m_test_mode = l_test_mode
-end function
-
-
-
-function serious_error()
+FUNCTION serious_error()
 
     -- Prevent endless loop occuring
-    if m_been_here_before then
-        exit program 2
-    end if
-    let m_been_here_before = true
-    
-    menu "Error" attributes(style="dialog", comment="An unexpected error has occured")
-        on action accept
-            
-        on action viewlog attributes(text="View log")
-            call view_errorlog()                        
-    end menu
+    IF m_been_here_before THEN
+        EXIT PROGRAM 2
+    END IF
+    LET m_been_here_before = TRUE
 
-    if m_test_mode then
-        let m_been_here_before = false
-    else
-        exit program 1
-    end if
-end function
+    MENU "Error" ATTRIBUTES(STYLE = "dialog", COMMENT = "An unexpected error has occured")
+        ON ACTION accept
+
+        ON ACTION viewlog ATTRIBUTES(TEXT = "View log")
+            CALL view_errorlog()
+    END MENU
+
+    IF m_test_mode THEN
+        LET m_been_here_before = FALSE
+    ELSE
+        EXIT PROGRAM 1
+    END IF
+END FUNCTION

@@ -21,9 +21,7 @@ TYPE tGlobalEndpointType RECORD # Rest Endpoint
     END RECORD
 END RECORD
 
-PUBLIC DEFINE Endpoint
-    tGlobalEndpointType
-    = (Address:(Uri: "http://localhost:8093/ws/r/product"))
+PUBLIC DEFINE Endpoint tGlobalEndpointType = (Address:(Uri: "http://localhost:8093/ws/r/product"))
 
 # Error codes
 PUBLIC CONSTANT C_SUCCESS = 0
@@ -75,9 +73,7 @@ PUBLIC FUNCTION list() RETURNS(INTEGER, listResponseBodyType)
         CALL fullpath.append("/list")
 
         # Create request and configure it
-        LET req =
-            com.HTTPRequest.Create(
-                SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
+        LET req = com.HTTPRequest.Create(SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
         IF Endpoint.Binding.Version IS NOT NULL THEN
             CALL req.setVersion(Endpoint.Binding.Version)
         END IF
@@ -88,8 +84,7 @@ PUBLIC FUNCTION list() RETURNS(INTEGER, listResponseBodyType)
             CALL req.setTimeout(Endpoint.Binding.ReadWriteTimeout)
         END IF
         IF Endpoint.Binding.CompressRequest IS NOT NULL THEN
-            CALL req.setHeader(
-                "Content-Encoding", Endpoint.Binding.CompressRequest)
+            CALL req.setHeader("Content-Encoding", Endpoint.Binding.CompressRequest)
         END IF
 
         # Perform request
@@ -150,9 +145,7 @@ PUBLIC FUNCTION get(p_l_pr_code STRING) RETURNS(INTEGER, getResponseBodyType)
         CALL fullpath.replace("{l_pr_code}", p_l_pr_code, 1)
 
         # Create request and configure it
-        LET req =
-            com.HTTPRequest.Create(
-                SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
+        LET req = com.HTTPRequest.Create(SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
         IF Endpoint.Binding.Version IS NOT NULL THEN
             CALL req.setVersion(Endpoint.Binding.Version)
         END IF
@@ -163,8 +156,7 @@ PUBLIC FUNCTION get(p_l_pr_code STRING) RETURNS(INTEGER, getResponseBodyType)
             CALL req.setTimeout(Endpoint.Binding.ReadWriteTimeout)
         END IF
         IF Endpoint.Binding.CompressRequest IS NOT NULL THEN
-            CALL req.setHeader(
-                "Content-Encoding", Endpoint.Binding.CompressRequest)
+            CALL req.setHeader("Content-Encoding", Endpoint.Binding.CompressRequest)
         END IF
 
         # Perform request

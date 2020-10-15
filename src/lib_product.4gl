@@ -23,62 +23,46 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-
-
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- For a given product, return the description
-function lookup_pr_desc(l_pr_code)
-define l_pr_code like product.pr_code
-define l_pr_desc like product.pr_desc
-    
-    select product.pr_desc
-    into l_pr_desc
-    from product
-    where product.pr_code = l_pr_code
+FUNCTION lookup_pr_desc(l_pr_code)
+    DEFINE l_pr_code LIKE product.pr_code
+    DEFINE l_pr_desc LIKE product.pr_desc
 
-    return l_pr_desc
-end function
+    SELECT product.pr_desc INTO l_pr_desc FROM product WHERE product.pr_code = l_pr_code
 
-
+    RETURN l_pr_desc
+END FUNCTION
 
 -- For a given barcode, return the product code
-function find_from_barcode(l_barcode)
-define l_barcode like product.pr_barcode
+FUNCTION find_from_barcode(l_barcode)
+    DEFINE l_barcode LIKE product.pr_barcode
 
-define l_pr_code like product.pr_code
+    DEFINE l_pr_code LIKE product.pr_code
 
     -- assumes barcode is unique in product table
-    if l_barcode is not null then
-        select pr_code 
-        into l_pr_code
-        from product
-        where pr_barcode = l_barcode
-    end if
+    IF l_barcode IS NOT NULL THEN
+        SELECT pr_code INTO l_pr_code FROM product WHERE pr_barcode = l_barcode
+    END IF
 
-    return l_pr_code
-end function
-
-
+    RETURN l_pr_code
+END FUNCTION
 
 -- Determine if a given product exists
-function exists(l_pr_code)
-define l_pr_code like product.pr_code
+FUNCTION exists(l_pr_code)
+    DEFINE l_pr_code LIKE product.pr_code
 
-    select 'x'
-    from product
-    where product.pr_code = l_pr_code
+    SELECT 'x' FROM product WHERE product.pr_code = l_pr_code
 
-    if status==notfound then
-        return false
-    end if
-    return true
-end function
+    IF status == NOTFOUND THEN
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION

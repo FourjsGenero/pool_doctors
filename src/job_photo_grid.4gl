@@ -23,178 +23,161 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
-import fgl lib_job_photo
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
+IMPORT FGL lib_job_photo
 
-schema pool_doctors
+SCHEMA pool_doctors
 
-type job_photo_type record like job_photo.*
+TYPE job_photo_type RECORD LIKE job_photo.*
 
-public define m_job_photo_rec job_photo_type  -- used to edit a single row
+PUBLIC DEFINE m_job_photo_rec job_photo_type -- used to edit a single row
 
-define m_mode string
-define m_jh_code like job_header.jh_code
+DEFINE m_mode STRING
+DEFINE m_jh_code LIKE job_header.jh_code
 
-define w ui.window
-define f ui.form
+DEFINE w ui.window
+DEFINE f ui.form
 
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
+FUNCTION add(l_jh_code)
+    DEFINE l_jh_code LIKE job_header.jh_code
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
-
-function add(l_jh_code)
-define l_jh_code like job_header.jh_code
-define l_ok boolean
-define l_error_text string
-
-    let m_jh_code = l_jh_code
-    call record_default() returning l_ok, l_error_text
-    if l_ok then
+    LET m_jh_code = l_jh_code
+    CALL record_default() RETURNING l_ok, l_error_text
+    IF l_ok THEN
         -- take photo on way into screen
-        try
-            call ui.interface.frontcall("mobile","takePhoto",[], m_job_photo_rec.jp_photo)
-        catch
+        TRY
+            CALL ui.interface.frontcall("mobile", "takePhoto", [], m_job_photo_rec.jp_photo)
+        CATCH
             -- See if we can default to selecting a file in case device does not have camera
-            try
-                call ui.Interface.frontCall("standard","openFile",["","Images","*.png *.jpg","Select photo"],m_job_photo_rec.jp_photo)
-            catch
-                let l_error_text = "An error occured taking the photo"
-            end try
-        end try
-        let l_ok = m_job_photo_rec.jp_photo is not null
-    end if
-    if l_ok then
-        let m_mode = "add"
-        call open_window()
-        call ui_edit() returning l_ok
-        if l_ok then
-            call db_insert() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("Unable to add row\n%1", l_error_text), true)
-            end if
-        end if
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+            TRY
+                CALL ui.Interface.frontCall(
+                    "standard", "openFile", ["", "Images", "*.png *.jpg", "Select photo"], m_job_photo_rec.jp_photo)
+            CATCH
+                LET l_error_text = "An error occured taking the photo"
+            END TRY
+        END TRY
+        LET l_ok = m_job_photo_rec.jp_photo IS NOT NULL
+    END IF
+    IF l_ok THEN
+        LET m_mode = "add"
+        CALL open_window()
+        CALL ui_edit() RETURNING l_ok
+        IF l_ok THEN
+            CALL db_insert() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("Unable to add row\n%1", l_error_text), TRUE)
+            END IF
+        END IF
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+FUNCTION update(l_jp_code, l_jp_idx)
+    DEFINE l_jp_code LIKE job_photo.jp_code
+    DEFINE l_jp_idx LIKE job_photo.jp_idx
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET m_job_photo_rec.jp_code = l_jp_code
+    LET m_job_photo_rec.jp_idx = l_jp_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        LET m_mode = "update"
+        CALL open_window()
+        CALL ui_edit() RETURNING l_ok
+        IF l_ok THEN
+            CALL db_update() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(SFMT("Unable to update row\n%1", l_error_text), TRUE)
+            END IF
+        END IF
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-function update(l_jp_code, l_jp_idx)
-define l_jp_code like job_photo.jp_code
-define l_jp_idx like job_photo.jp_idx
-define l_ok boolean
-define l_error_text string
+FUNCTION view(l_jp_code, l_jp_idx)
+    DEFINE l_jp_code LIKE job_photo.jp_code
+    DEFINE l_jp_idx LIKE job_photo.jp_idx
 
-    let m_job_photo_rec.jp_code = l_jp_code
-    let m_job_photo_rec.jp_idx = l_jp_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        let m_mode = "update"
-        call open_window()
-        call ui_edit() returning l_ok
-        if l_ok then
-            call db_update() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(sfmt("Unable to update row\n%1", l_error_text), true)
-            end if
-        end if
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET m_job_photo_rec.jp_code = l_jp_code
+    LET m_job_photo_rec.jp_idx = l_jp_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        CALL open_window()
+        CALL ui_view()
+        CALL close_window()
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+FUNCTION delete(l_jp_code, l_jp_idx)
+    DEFINE l_jp_code LIKE job_photo.jp_code
+    DEFINE l_jp_idx LIKE job_photo.jp_idx
 
-function view(l_jp_code, l_jp_idx)
-define l_jp_code like job_photo.jp_code
-define l_jp_idx like job_photo.jp_idx
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-define l_ok boolean
-define l_error_text string
+    DEFINE l_warning BOOLEAN
+    DEFINE l_warning_text STRING
 
-    let m_job_photo_rec.jp_code = l_jp_code
-    let m_job_photo_rec.jp_idx = l_jp_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        call open_window()
-        call ui_view()
-        call close_window()
-    end if
-    return l_ok, l_error_text
-end function
+    LET m_job_photo_rec.jp_code = l_jp_code
+    LET m_job_photo_rec.jp_idx = l_jp_idx
+    CALL db_select() RETURNING l_ok, l_error_text
+    IF l_ok THEN
+        CALL record_delete_warning() RETURNING l_warning, l_warning_text
+        IF l_warning THEN
+            CALL open_window()
+            CALL ui_display()
+            CALL ui.interface.refresh()
+            LET l_ok = lib_ui.confirm_dialog(SFMT("%1\nAre you sure you want to delete?", l_warning_text))
+            CALL close_window()
+            IF NOT l_ok THEN
+                LET l_error_text = "Delete cancelled"
+            END IF
+        END IF
+    END IF
+    IF l_ok THEN
+        CALL db_delete() RETURNING l_ok, l_error_text
+        IF NOT l_ok THEN
+            CALL lib_ui.show_error(SFMT("Unable to delete row\n%1", l_error_text), TRUE)
+        END IF
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
+PRIVATE FUNCTION open_window()
+    OPEN WINDOW job_photo_grid WITH FORM "job_photo_grid"
+    LET w = ui.window.getcurrent()
+    LET f = w.getform()
+END FUNCTION
 
+PRIVATE FUNCTION close_window()
+    CLOSE WINDOW job_photo_grid
+END FUNCTION
 
-function delete(l_jp_code, l_jp_idx)
-define l_jp_code like job_photo.jp_code
-define l_jp_idx like job_photo.jp_idx
+PRIVATE FUNCTION ui_edit()
+    DEFINE l_ok, l_error_text STRING
 
-define l_ok boolean
-define l_error_text string
+    INPUT BY NAME m_job_photo_rec.* ATTRIBUTES(UNBUFFERED, WITHOUT DEFAULTS = TRUE)
 
-define l_warning boolean
-define l_warning_text string
-
-    let m_job_photo_rec.jp_code = l_jp_code
-    let m_job_photo_rec.jp_idx = l_jp_idx
-    call db_select() returning l_ok, l_error_text
-    if l_ok then
-        call record_delete_warning() returning l_warning, l_warning_text
-        if l_warning then
-            call open_window()
-            call ui_display()
-            call ui.interface.refresh()
-            let l_ok = lib_ui.confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
-            call close_window()
-            if not l_ok then
-                let l_error_text = "Delete cancelled"
-            end if
-        end if
-    end if
-    if l_ok then
-        call db_delete() returning l_ok, l_error_text
-        if not l_ok then
-            call lib_ui.show_error(sfmt("Unable to delete row\n%1", l_error_text), true)
-        end if
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-
-private function open_window()
-    open window job_photo_grid with form "job_photo_grid"
-    let w= ui.window.getcurrent()
-    let f= w.getform()
-end function
-
-
-
-private function close_window()
-    close window job_photo_grid
-end function
-
-
-
-private function ui_edit()
-define l_ok, l_error_text string
-
-    input by name m_job_photo_rec.* attributes(unbuffered, without defaults=true)
-
-           
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \
                                     if not l_ok then \
                                         call lib_ui.show_error(l_error_text, false) \
                                         next field p1 \
-                                    end if 
+                                    end if
         after_field(jp_code)
         after_field(jp_idx)
         after_field(jp_photo)
@@ -202,19 +185,19 @@ define l_ok, l_error_text string
         after_field(jp_when)
         after_field(jp_lat)
         after_field(jp_lon)
-       
+
         &undef after_field
 
-        on action cancel
-            if dialog.getfieldtouched("*") or m_mode = "add" then
-                if not lib_ui.confirm_cancel_dialog() then
-                    let int_flag = 0
-                    continue input
-                end if
-            end if
-            exit input
+        ON ACTION cancel
+            IF dialog.getfieldtouched("*") OR m_mode = "add" THEN
+                IF NOT lib_ui.confirm_cancel_dialog() THEN
+                    LET int_flag = 0
+                    CONTINUE INPUT
+                END IF
+            END IF
+            EXIT INPUT
 
-        after input
+        AFTER INPUT
             -- test values
             &define field_valid(p1) call p1 ## _valid() returning l_ok, l_error_text \
             if not l_ok then \
@@ -223,15 +206,15 @@ define l_ok, l_error_text string
             end if
 
             -- test key
-            if m_mode = "add" then
+            IF m_mode = "add" THEN
                 field_valid(jp_code)
                 field_valid(jp_idx)
-                call record_key_valid() returning l_ok, l_error_text
-                if not l_ok then
-                    call lib_ui.show_error(l_error_text, false)
-                    next field current
-                end if
-            end if
+                CALL record_key_valid() RETURNING l_ok, l_error_text
+                IF NOT l_ok THEN
+                    CALL lib_ui.show_error(l_error_text, FALSE)
+                    NEXT FIELD CURRENT
+                END IF
+            END IF
 
             field_valid(jp_photo)
             field_valid(jp_text)
@@ -240,290 +223,231 @@ define l_ok, l_error_text string
             field_valid(jp_lon)
 
             &undef field_valid
-            
+
             -- test record
-            call record_valid() returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(l_error_text, false)
-                next field current
-            end if
-    end input
-    if int_flag then
-        let int_flag = 0
-        return false
-    end if
-    return true
-end function
+            CALL record_valid() RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(l_error_text, FALSE)
+                NEXT FIELD CURRENT
+            END IF
+    END INPUT
+    IF int_flag THEN
+        LET int_flag = 0
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION
 
+PRIVATE FUNCTION ui_view()
 
+    CALL ui_display()
+    MENU ""
+        ON ACTION cancel
+            EXIT MENU
+    END MENU
+END FUNCTION
 
-private function ui_view()
+PRIVATE FUNCTION ui_display()
 
-    call ui_display()
-    menu ""
-        on action cancel
-            exit menu
-    end menu
-end function
+    DISPLAY BY NAME m_job_photo_rec.*
+END FUNCTION
 
+PRIVATE FUNCTION record_delete_warning()
 
+    RETURN FALSE, ""
+END FUNCTION
 
-private function ui_display()
-
-    display by name m_job_photo_rec.*
-end function
-
-
-
-
-private function record_delete_warning()
-
-    return false, ""
-end function
-
-
-
-private function record_valid()
+PRIVATE FUNCTION record_valid()
 
     -- validation involving two or more fields
-    return true, ""
-end function
+    RETURN TRUE, ""
+END FUNCTION
 
-
-
-private function record_key_valid()
+PRIVATE FUNCTION record_key_valid()
 
     -- when adding, test that primary key value is unique
-    if lib_job_photo.exists(m_job_photo_rec.jp_code, m_job_photo_rec.jp_idx) then
-        return false, "Record already exists"
-    end if
-    return true, ""
-end function
+    IF lib_job_photo.exists(m_job_photo_rec.jp_code, m_job_photo_rec.jp_idx) THEN
+        RETURN FALSE, "Record already exists"
+    END IF
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION record_default()
+    DEFINE result STRING
 
+    LET m_job_photo_rec.jp_code = jp_code_default()
+    LET m_job_photo_rec.jp_idx = jp_idx_default()
 
-private function record_default()
-define result string
+    CALL ui.interface.frontcall("mobile", "getgeolocation", [], [result, m_job_photo_rec.jp_lat, m_job_photo_rec.jp_lon])
 
-    let m_job_photo_rec.jp_code = jp_code_default()
-    let m_job_photo_rec.jp_idx = jp_idx_default()
-    
-    call ui.interface.frontcall("mobile","getgeolocation",[],[result, m_job_photo_rec.jp_lat, m_job_photo_rec.jp_lon])
-       
-    let m_job_photo_rec.jp_photo = jp_photo_default()
-    let m_job_photo_rec.jp_text = jp_text_default()
-    let m_job_photo_rec.jp_when = jp_when_default()
-    return true, ""
-end function
+    LET m_job_photo_rec.jp_photo = jp_photo_default()
+    LET m_job_photo_rec.jp_text = jp_text_default()
+    LET m_job_photo_rec.jp_when = jp_when_default()
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION jp_code_default()
+    DEFINE l_default LIKE job_photo.jp_code
 
+    LET l_default = m_jh_code
+    RETURN l_default
+END FUNCTION
 
-private function jp_code_default()
-define l_default like job_photo.jp_code
+PRIVATE FUNCTION jp_code_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-    let l_default = m_jh_code
-    return l_default
-end function
+    LET l_ok = TRUE
+    IF m_job_photo_rec.jp_code IS NULL THEN
+        RETURN FALSE, "Job Code must be entered"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-
-
-private function jp_code_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    if m_job_photo_rec.jp_code is null then
-        return false, "Job Code must be entered"
-    end if
-    return l_ok, l_error_text
-end function
-
-
-
-private function jp_idx_default()
-define l_default like job_photo.jp_idx
+PRIVATE FUNCTION jp_idx_default()
+    DEFINE l_default LIKE job_photo.jp_idx
 
     -- maxmimum line number + 1
-    let l_default = nvl(lib_job_photo.jp_idx_max(m_job_photo_rec.jp_code),0) + 1
-    return l_default
-end function
+    LET l_default = NVL(lib_job_photo.jp_idx_max(m_job_photo_rec.jp_code), 0) + 1
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jp_idx_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_photo_rec.jp_idx IS NULL THEN
+        RETURN FALSE, "Job Photo Index must be entered"
+    END IF
+    IF m_job_photo_rec.jp_idx < 1 THEN
+        RETURN FALSE, "Job Photo Index must be greater than 0"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jp_idx_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION jp_photo_default()
+    DEFINE l_default LIKE job_photo.jp_photo
 
-    let l_ok = true
-    if m_job_photo_rec.jp_idx is null then
-        return false, "Job Photo Index must be entered"
-    end if
-    if m_job_photo_rec.jp_idx < 1 then
-        return false, "Job Photo Index must be greater than 0"
-    end if
-    return l_ok, l_error_text
-end function
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jp_photo_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jp_photo_default()
-define l_default like job_photo.jp_photo
+PRIVATE FUNCTION jp_text_default()
+    DEFINE l_default LIKE job_photo.jp_text
 
-    return l_default
-end function
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jp_text_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jp_photo_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    return l_ok, l_error_text
-end function
-
-
-
-private function jp_text_default()
-define l_default like job_photo.jp_text
-
-    return l_default
-end function
-
-
-
-private function jp_text_valid()
-define l_ok boolean
-define l_error_text string
-
-    let l_ok = true
-    return l_ok, l_error_text
-end function
-
-
-
-private function jp_lat_default()
-define l_default like job_photo.jp_lat
+PRIVATE FUNCTION jp_lat_default()
+    DEFINE l_default LIKE job_photo.jp_lat
 
     -- set by geoLocation frontcall
-    return l_default
-end function
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jp_lat_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_photo_rec.jp_lat < -90 OR m_job_photo_rec.jp_lat > 90 THEN
+        RETURN FALSE, "Latitude must be valid"
+    END IF
 
-private function jp_lat_valid()
-define l_ok boolean
-define l_error_text string
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-    let l_ok = true
-    if m_job_photo_rec.jp_lat < -90
-    or m_job_photo_rec.jp_lat > 90 then
-        return false, "Latitude must be valid"
-    end if
-    
-    return l_ok, l_error_text
-end function
-
-
-
-private function jp_lon_default()
-define l_default like job_photo.jp_lon
+PRIVATE FUNCTION jp_lon_default()
+    DEFINE l_default LIKE job_photo.jp_lon
 
     -- set by geoLocation frontcall
-    return l_default
-end function
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jp_lon_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    LET l_ok = TRUE
+    IF m_job_photo_rec.jp_lon < -180 OR m_job_photo_rec.jp_lon > 180 THEN
+        RETURN FALSE, "Longitude must be valid"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jp_lon_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION jp_when_default()
+    DEFINE l_default LIKE job_photo.jp_when
 
-    let l_ok = true
-    let l_ok = true
-    if m_job_photo_rec.jp_lon < -180
-    or m_job_photo_rec.jp_lon > 180 then
-        return false, "Longitude must be valid"
-    end if
-    return l_ok, l_error_text
-end function
+    LET l_default = CURRENT YEAR TO SECOND
+    RETURN l_default
+END FUNCTION
 
+PRIVATE FUNCTION jp_when_valid()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
+    LET l_ok = TRUE
+    IF m_job_photo_rec.jp_when > CURRENT THEN
+        RETURN FALSE, "When must be in the past"
+    END IF
+    RETURN l_ok, l_error_text
+END FUNCTION
 
-private function jp_when_default()
-define l_default like job_photo.jp_when
+PRIVATE FUNCTION db_select()
 
-    let l_default = current year to second
-    return l_default
-end function
+    TRY
+        SELECT * INTO m_job_photo_rec.* FROM job_photo
+            WHERE job_photo.jp_code = m_job_photo_rec.jp_code AND job_photo.jp_idx = m_job_photo_rec.jp_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION db_insert()
 
+    TRY
+        INSERT INTO job_photo VALUES(m_job_photo_rec.*)
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-private function jp_when_valid()
-define l_ok boolean
-define l_error_text string
+PRIVATE FUNCTION db_update()
 
-    let l_ok = true
-    if m_job_photo_rec.jp_when > current then
-        return false, "When must be in the past"
-    end if
-    return l_ok, l_error_text
-end function
+    TRY
+        UPDATE job_photo SET job_photo.* = m_job_photo_rec.*
+            WHERE job_photo.jp_code = m_job_photo_rec.jp_code AND job_photo.jp_idx = m_job_photo_rec.jp_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
+PRIVATE FUNCTION db_delete()
 
-
-private function db_select()
-
-    try
-        select * 
-        into m_job_photo_rec.*
-        from job_photo 
-        where job_photo.jp_code = m_job_photo_rec.jp_code
-        and   job_photo.jp_idx = m_job_photo_rec.jp_idx
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-private function db_insert()
-
-    try
-        insert into job_photo values(m_job_photo_rec.*)
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-private function db_update()
-
-    try
-        update job_photo
-        set job_photo.* = m_job_photo_rec.*
-        where job_photo.jp_code = m_job_photo_rec.jp_code
-        and   job_photo.jp_idx = m_job_photo_rec.jp_idx   
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
-
-
-
-private function db_delete()
-
-    try
-        delete 
-        from job_photo 
-        where job_photo.jp_code = m_job_photo_rec.jp_code
-        and   job_photo.jp_idx = m_job_photo_rec.jp_idx
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
+    TRY
+        DELETE FROM job_photo WHERE job_photo.jp_code = m_job_photo_rec.jp_code AND job_photo.jp_idx = m_job_photo_rec.jp_idx
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION

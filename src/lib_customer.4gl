@@ -23,40 +23,30 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- For a given customer, return the name
-function lookup_cm_name(l_cm_code)
-define l_cm_code like customer.cm_code
-define l_cm_name like customer.cm_name
-    
-    select customer.cm_name
-    into l_cm_name
-    from customer
-    where customer.cm_code = l_cm_code
+FUNCTION lookup_cm_name(l_cm_code)
+    DEFINE l_cm_code LIKE customer.cm_code
+    DEFINE l_cm_name LIKE customer.cm_name
 
-    return l_cm_name
-end function
+    SELECT customer.cm_name INTO l_cm_name FROM customer WHERE customer.cm_code = l_cm_code
 
-
+    RETURN l_cm_name
+END FUNCTION
 
 -- For a given customer, return the rep code
-function lookup_cm_rep(l_cm_code)
-define l_cm_code like customer.cm_code
-define l_cm_rep like customer.cm_rep
-    
-    select customer.cm_rep
-    into l_cm_rep
-    from customer
-    where customer.cm_code = l_cm_code
+FUNCTION lookup_cm_rep(l_cm_code)
+    DEFINE l_cm_code LIKE customer.cm_code
+    DEFINE l_cm_rep LIKE customer.cm_rep
 
-    return l_cm_rep
-end function
+    SELECT customer.cm_rep INTO l_cm_rep FROM customer WHERE customer.cm_code = l_cm_code
+
+    RETURN l_cm_rep
+END FUNCTION

@@ -21,9 +21,7 @@ TYPE tGlobalEndpointType RECORD # Rest Endpoint
     END RECORD
 END RECORD
 
-PUBLIC DEFINE Endpoint
-    tGlobalEndpointType
-    = (Address:(Uri: "http://localhost:8093/ws/r/job"))
+PUBLIC DEFINE Endpoint tGlobalEndpointType = (Address:(Uri: "http://localhost:8093/ws/r/job"))
 
 # Error codes
 PUBLIC CONSTANT C_SUCCESS = 0
@@ -128,9 +126,7 @@ PUBLIC FUNCTION uploadJob(p_body uploadJobRequestBodyType) RETURNS(INTEGER)
         CALL fullpath.append("/put")
 
         # Create request and configure it
-        LET req =
-            com.HTTPRequest.Create(
-                SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
+        LET req = com.HTTPRequest.Create(SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
         IF Endpoint.Binding.Version IS NOT NULL THEN
             CALL req.setVersion(Endpoint.Binding.Version)
         END IF
@@ -141,8 +137,7 @@ PUBLIC FUNCTION uploadJob(p_body uploadJobRequestBodyType) RETURNS(INTEGER)
             CALL req.setTimeout(Endpoint.Binding.ReadWriteTimeout)
         END IF
         IF Endpoint.Binding.CompressRequest IS NOT NULL THEN
-            CALL req.setHeader(
-                "Content-Encoding", Endpoint.Binding.CompressRequest)
+            CALL req.setHeader("Content-Encoding", Endpoint.Binding.CompressRequest)
         END IF
 
         # Perform request
@@ -176,9 +171,7 @@ END FUNCTION
 # VERB: POST
 # ID:          uploadJobPhoto
 #
-PUBLIC FUNCTION uploadJobPhoto(
-    p_l_jp_code STRING, p_l_jp_idx INTEGER, p_body STRING)
-    RETURNS(INTEGER)
+PUBLIC FUNCTION uploadJobPhoto(p_l_jp_code STRING, p_l_jp_idx INTEGER, p_body STRING) RETURNS(INTEGER)
     DEFINE fullpath base.StringBuffer
     DEFINE contentType STRING
     DEFINE req com.HTTPRequest
@@ -194,9 +187,7 @@ PUBLIC FUNCTION uploadJobPhoto(
         CALL fullpath.replace("{l_jp_idx}", p_l_jp_idx, 1)
 
         # Create request and configure it
-        LET req =
-            com.HTTPRequest.Create(
-                SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
+        LET req = com.HTTPRequest.Create(SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
         IF Endpoint.Binding.Version IS NOT NULL THEN
             CALL req.setVersion(Endpoint.Binding.Version)
         END IF
@@ -207,8 +198,7 @@ PUBLIC FUNCTION uploadJobPhoto(
             CALL req.setTimeout(Endpoint.Binding.ReadWriteTimeout)
         END IF
         IF Endpoint.Binding.CompressRequest IS NOT NULL THEN
-            CALL req.setHeader(
-                "Content-Encoding", Endpoint.Binding.CompressRequest)
+            CALL req.setHeader("Content-Encoding", Endpoint.Binding.CompressRequest)
         END IF
 
         # Perform request
@@ -240,9 +230,7 @@ END FUNCTION
 # VERB: GET
 # ID:          getJobsForRep
 #
-PUBLIC FUNCTION getJobsForRep(
-    p_l_cm_rep STRING)
-    RETURNS(INTEGER, getJobsForRepResponseBodyType)
+PUBLIC FUNCTION getJobsForRep(p_l_cm_rep STRING) RETURNS(INTEGER, getJobsForRepResponseBodyType)
     DEFINE fullpath base.StringBuffer
     DEFINE contentType STRING
     DEFINE req com.HTTPRequest
@@ -259,9 +247,7 @@ PUBLIC FUNCTION getJobsForRep(
         CALL fullpath.replace("{l_cm_rep}", p_l_cm_rep, 1)
 
         # Create request and configure it
-        LET req =
-            com.HTTPRequest.Create(
-                SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
+        LET req = com.HTTPRequest.Create(SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
         IF Endpoint.Binding.Version IS NOT NULL THEN
             CALL req.setVersion(Endpoint.Binding.Version)
         END IF
@@ -272,8 +258,7 @@ PUBLIC FUNCTION getJobsForRep(
             CALL req.setTimeout(Endpoint.Binding.ReadWriteTimeout)
         END IF
         IF Endpoint.Binding.CompressRequest IS NOT NULL THEN
-            CALL req.setHeader(
-                "Content-Encoding", Endpoint.Binding.CompressRequest)
+            CALL req.setHeader("Content-Encoding", Endpoint.Binding.CompressRequest)
         END IF
 
         # Perform request
@@ -334,9 +319,7 @@ PUBLIC FUNCTION createRandomJob(p_l_cm_rep STRING) RETURNS(INTEGER, STRING)
         CALL fullpath.replace("{l_cm_rep}", p_l_cm_rep, 1)
 
         # Create request and configure it
-        LET req =
-            com.HTTPRequest.Create(
-                SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
+        LET req = com.HTTPRequest.Create(SFMT("%1%2", Endpoint.Address.Uri, fullpath.toString()))
         IF Endpoint.Binding.Version IS NOT NULL THEN
             CALL req.setVersion(Endpoint.Binding.Version)
         END IF
@@ -347,8 +330,7 @@ PUBLIC FUNCTION createRandomJob(p_l_cm_rep STRING) RETURNS(INTEGER, STRING)
             CALL req.setTimeout(Endpoint.Binding.ReadWriteTimeout)
         END IF
         IF Endpoint.Binding.CompressRequest IS NOT NULL THEN
-            CALL req.setHeader(
-                "Content-Encoding", Endpoint.Binding.CompressRequest)
+            CALL req.setHeader("Content-Encoding", Endpoint.Binding.CompressRequest)
         END IF
 
         # Perform request

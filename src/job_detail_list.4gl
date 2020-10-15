@@ -23,209 +23,194 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
-import fgl lib_ui
+IMPORT FGL lib_error
+IMPORT FGL lib_ui
 
-import fgl lib_job_header
-import fgl lib_product
+IMPORT FGL lib_job_header
+IMPORT FGL lib_product
 
-import fgl job_detail_grid
+IMPORT FGL job_detail_grid
 
-schema pool_doctors
+SCHEMA pool_doctors
 
-type job_detail_type record like job_detail.*
-define m_job_detail_arr dynamic array of job_detail_type 
+TYPE job_detail_type RECORD LIKE job_detail.*
+DEFINE m_job_detail_arr DYNAMIC ARRAY OF job_detail_type
 
-define m_jh_code like job_header.jh_code
+DEFINE m_jh_code LIKE job_header.jh_code
 
-define w ui.window
-define f ui.form
+DEFINE w ui.window
+DEFINE f ui.form
 
-define m_arr dynamic array of record
-    major string,
-    minor string,
-    img string
-end record
+DEFINE m_arr DYNAMIC ARRAY OF RECORD
+    major STRING,
+    minor STRING,
+    img STRING
+END RECORD
 
-define m_filter string
-define m_toggle string
+DEFINE m_filter STRING
+DEFINE m_toggle STRING
 
-
-
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- TODO review this
-function maintain()
-define l_ok boolean
-define l_err_text string
+FUNCTION maintain()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_err_text STRING
 
-    let m_toggle = nvl(m_toggle,"product_code")
-    
-    open window job_detail_list with form "job_detail_list"
-    let w= ui.window.getCurrent()
-    let f = w.getForm()
-    
-    call db_populate() returning l_ok, l_err_text
-    if l_ok then
-        call ui_populate()
-        call ui_list()
-    else
-        call lib_ui.show_error(l_err_text, true)
-    end if
-    
-    close window job_detail_list
-end function
+    LET m_toggle = NVL(m_toggle, "product_code")
 
+    OPEN WINDOW job_detail_list WITH FORM "job_detail_list"
+    LET w = ui.window.getCurrent()
+    LET f = w.getForm()
 
-function maintain_job(l_jd_code)
-define l_jd_code like job_detail.jd_code
+    CALL db_populate() RETURNING l_ok, l_err_text
+    IF l_ok THEN
+        CALL ui_populate()
+        CALL ui_list()
+    ELSE
+        CALL lib_ui.show_error(l_err_text, TRUE)
+    END IF
 
-    let m_jh_code = l_jd_code
-    let m_filter = sfmt("job_detail.jd_code = '%1'", l_jd_code clipped)
-    call maintain()
-end function
+    CLOSE WINDOW job_detail_list
+END FUNCTION
 
+FUNCTION maintain_job(l_jd_code)
+    DEFINE l_jd_code LIKE job_detail.jd_code
 
+    LET m_jh_code = l_jd_code
+    LET m_filter = SFMT("job_detail.jd_code = '%1'", l_jd_code CLIPPED)
+    CALL maintain()
+END FUNCTION
 
+PRIVATE FUNCTION ui_populate()
+    DEFINE i INTEGER
 
-private function ui_populate()
-define i integer
+    CALL m_arr.clear()
+    FOR i = 1 TO m_job_detail_arr.getLength()
+        CALL ui_populate_row(i)
+    END FOR
+END FUNCTION
 
-    call m_arr.clear()
-    for i = 1 to m_job_detail_arr.getLength()
-        call ui_populate_row(i)
-    end for
-end function
+PRIVATE FUNCTION ui_populate_row(l_row)
+    DEFINE l_row INTEGER
 
+    CASE m_toggle
+        WHEN "product_code"
+            LET m_arr[l_row].major = m_job_detail_arr[l_row].jd_product CLIPPED
+            LET m_arr[l_row].minor = m_job_detail_arr[l_row].jd_qty
+            LET m_arr[l_row].img = ""
+        WHEN "product_desc"
+            LET m_arr[l_row].major = lib_product.lookup_pr_desc(m_job_detail_arr[l_row].jd_product)
+            LET m_arr[l_row].minor = m_job_detail_arr[l_row].jd_qty
+            LET m_arr[l_row].img = ""
+    END CASE
+END FUNCTION
 
+PRIVATE FUNCTION ui_list()
+    DEFINE l_ok BOOLEAN
+    DEFINE l_error_text STRING
 
-private function ui_populate_row(l_row)
-define l_row integer
+    DEFINE l_row INTEGER
+    DEFINE l_editable BOOLEAN
 
-    case m_toggle
-         when "product_code"
-            let m_arr[l_row].major = m_job_detail_arr[l_row].jd_product clipped
-            let m_arr[l_row].minor = m_job_detail_arr[l_row].jd_qty
-            let m_arr[l_row].img = ""
-        when "product_desc"
-            let m_arr[l_row].major = lib_product.lookup_pr_desc(m_job_detail_arr[l_row].jd_product)
-            let m_arr[l_row].minor = m_job_detail_arr[l_row].jd_qty
-            let m_arr[l_row].img = ""
-     end case
-end function
+    DEFINE l_popup_value_selected BOOLEAN
 
+    DISPLAY ARRAY m_arr TO scr.*
+        ATTRIBUTES(UNBUFFERED, ACCEPT = FALSE, CANCEL = TRUE, DOUBLECLICK = update, ACCESSORYTYPE = DISCLOSUREINDICATOR)
 
+        BEFORE DISPLAY
+            LET l_editable = lib_job_header.editable(m_jh_code)
+            CALL dialog.setActionActive("append", l_editable)
+            CALL dialog.setActionActive("delete", l_editable)
+            IF l_editable AND m_arr.getLength() = 0 THEN
+                CALL lib_ui.show_message("Tap + to add", FALSE)
+            END IF
 
-private function ui_list()
-define l_ok boolean
-define l_error_text string
+        BEFORE ROW
+            LET l_row = dialog.getCurrentRow("scr")
 
-define l_row integer
-define l_editable boolean
+        ON APPEND
+            CALL job_detail_grid.add(m_jh_code) RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(l_error_text, TRUE)
+                LET int_flag = TRUE
+            ELSE
+                LET m_job_detail_arr[m_job_detail_arr.getlength() + 1].* = job_detail_grid.m_job_detail_rec.*
+                CALL ui_populate_row(m_job_detail_arr.getlength())
+            END IF
 
-define l_popup_value_selected boolean
-
-    display array m_arr to scr.* attributes(unbuffered, accept=false, cancel=true, doubleclick=update, accessorytype=disclosureindicator)
-
-        before display
-            let l_editable = lib_job_header.editable(m_jh_code)
-            call dialog.setActionActive("append",l_editable)
-            call dialog.setActionActive("delete",l_editable)
-            if l_editable and m_arr.getLength() = 0 then
-                call lib_ui.show_message("Tap + to add", false)
-            end if
-            
-        before row
-            let l_row = dialog.getCurrentRow("scr")
-            
-        on append  
-            call job_detail_grid.add(m_jh_code)
-                returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(l_error_text, true)
-                let int_flag = true
-            else
-                let m_job_detail_arr[m_job_detail_arr.getlength()+1].* = job_detail_grid.m_job_detail_rec.*
-                call ui_populate_row(m_job_detail_arr.getlength())
-            end if
-            
-        on update 
-            if lib_job_header.editable(m_job_detail_arr[l_row].jd_code) then
-                call job_detail_grid.update(m_job_detail_arr[l_row].jd_code, m_job_detail_arr[l_row].jd_line)
-                    returning l_ok, l_error_text
-                if not l_ok then
-                    call lib_ui.show_error(l_error_text, true)
-                    let int_flag = true
-                end if
-                let m_job_detail_arr[l_row].* = job_detail_grid.m_job_detail_rec.*
-                call ui_populate_row(l_row)
-            else
+        ON UPDATE
+            IF lib_job_header.editable(m_job_detail_arr[l_row].jd_code) THEN
+                CALL job_detail_grid.update(m_job_detail_arr[l_row].jd_code, m_job_detail_arr[l_row].jd_line)
+                    RETURNING l_ok, l_error_text
+                IF NOT l_ok THEN
+                    CALL lib_ui.show_error(l_error_text, TRUE)
+                    LET int_flag = TRUE
+                END IF
+                LET m_job_detail_arr[l_row].* = job_detail_grid.m_job_detail_rec.*
+                CALL ui_populate_row(l_row)
+            ELSE
                 -- if we cant update, view it instead
-                call job_detail_grid.view(m_job_detail_arr[l_row].jd_code, m_job_detail_arr[l_row].jd_line)
-                   returning l_ok, l_error_text
-            end if
-           
-        on delete 
-            call job_detail_grid.delete(m_job_detail_arr[l_row].jd_code, m_job_detail_arr[l_row].jd_line)
-                returning l_ok, l_error_text
-            if not l_ok then
-                call lib_ui.show_error(l_error_text, true)
-                let int_flag = true
-            end if
-            call m_job_detail_arr.deleteElement(l_row)
+                CALL job_detail_grid.view(m_job_detail_arr[l_row].jd_code, m_job_detail_arr[l_row].jd_line)
+                    RETURNING l_ok, l_error_text
+            END IF
 
-        on action toggle
-            let l_popup_value_selected = true
-            menu "Display Detail" attributes(style="popup")
-                on action product_code attributes(text="Product Code")
-                    let m_toggle = "product_code"
-                on action product_desc attributes(text="Product Description")
-                    let m_toggle = "product_desc"
-                on action cancel
-                    let l_popup_value_selected = false
-            end menu
-            if l_popup_value_selected then
-                call ui_populate()
-            end if
-            
-    end display
-    if int_flag then
-        let int_flag = 0
-    end if
-end function
+        ON DELETE
+            CALL job_detail_grid.delete(m_job_detail_arr[l_row].jd_code, m_job_detail_arr[l_row].jd_line)
+                RETURNING l_ok, l_error_text
+            IF NOT l_ok THEN
+                CALL lib_ui.show_error(l_error_text, TRUE)
+                LET int_flag = TRUE
+            END IF
+            CALL m_job_detail_arr.deleteElement(l_row)
 
+        ON ACTION toggle
+            LET l_popup_value_selected = TRUE
+            MENU "Display Detail" ATTRIBUTES(STYLE = "popup")
+                ON ACTION product_code ATTRIBUTES(TEXT = "Product Code")
+                    LET m_toggle = "product_code"
+                ON ACTION product_desc ATTRIBUTES(TEXT = "Product Description")
+                    LET m_toggle = "product_desc"
+                ON ACTION cancel
+                    LET l_popup_value_selected = FALSE
+            END MENU
+            IF l_popup_value_selected THEN
+                CALL ui_populate()
+            END IF
 
+    END DISPLAY
+    IF int_flag THEN
+        LET int_flag = 0
+    END IF
+END FUNCTION
 
-private function db_populate()
-define l_sql string
-define l_rec job_detail_type
+PRIVATE FUNCTION db_populate()
+    DEFINE l_sql STRING
+    DEFINE l_rec job_detail_type
 
-    try
-        call m_job_detail_arr.clear()
-        let l_sql = "select * from job_detail"
-        if m_filter.getLength() > 0 then
-            let l_sql = l_sql, " where ", m_filter
-        end if
+    TRY
+        CALL m_job_detail_arr.clear()
+        LET l_sql = "select * from job_detail"
+        IF m_filter.getLength() > 0 THEN
+            LET l_sql = l_sql, " where ", m_filter
+        END IF
 
-        declare job_detail_list_curs cursor from l_sql
-        foreach job_detail_list_curs into l_rec.*
-            let m_job_detail_arr[m_job_detail_arr.getLength()+1].* = l_rec.*
-        end foreach
-    catch
-        return false, sqlca.sqlerrm
-    end try
-    return true, ""
-end function
+        DECLARE job_detail_list_curs CURSOR FROM l_sql
+        FOREACH job_detail_list_curs INTO l_rec.*
+            LET m_job_detail_arr[m_job_detail_arr.getLength() + 1].* = l_rec.*
+        END FOREACH
+    CATCH
+        RETURN FALSE, sqlca.sqlerrm
+    END TRY
+    RETURN TRUE, ""
+END FUNCTION
 
-
-
--- there is a bug in dependency diagram which doesn't show links well if the 
+-- there is a bug in dependency diagram which doesn't show links well if the
 -- called function has the same name in two different import fgl modules
 -- workaround by adding a functon with a unique name
 -- this function can be removed when bug GST-12511 fixed
-function job_detail_list()
+FUNCTION job_detail_list()
     # do nothing,  never executed
-end function
+END FUNCTION

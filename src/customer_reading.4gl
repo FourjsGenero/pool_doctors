@@ -23,7 +23,6 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-
 IMPORT util
 IMPORT FGL lib_error
 IMPORT FGL lib_ui
@@ -32,7 +31,6 @@ IMPORT FGL lib_settings
 
 IMPORT FGL fglsvgcanvas
 SCHEMA pool_doctors
-
 
 PUBLIC TYPE gaugeType RECORD
     x, y INTEGER,
@@ -62,26 +60,22 @@ PUBLIC TYPE gaugeType RECORD
     END RECORD
 END RECORD
 
-
 PRIVATE FUNCTION exception()
     WHENEVER ANY ERROR CALL lib_error.serious_error
 END FUNCTION
 
 FUNCTION show(l_cm_code, l_cm_name)
-define l_cm_code like customer.cm_code
-define l_cm_name like customer.cm_name
-
+    DEFINE l_cm_code LIKE customer.cm_code
+    DEFINE l_cm_name LIKE customer.cm_name
 
     DEFINE g gaugeType
 
     DEFINE i, j INTEGER
     DEFINE a, a1, a2 FLOAT
 
-
-
     DEFINE root_svg, child_node om.DomNode
     DEFINE canvas_id INTEGER
-    OPEN WINDOW w WITH FORM "customer_reading" ATTRIBUTES(TEXT="Reading")
+    OPEN WINDOW w WITH FORM "customer_reading" ATTRIBUTES(TEXT = "Reading")
 
     INITIALIZE g.* TO NULL
     LET g.x = 500
@@ -98,15 +92,13 @@ define l_cm_name like customer.cm_name
     LET g.min_value = 25
     LET g.max_value = 30
 
-    LET g.value.text = 26.8  -- TODO - From Web service
+    LET g.value.text = 26.8 -- TODO - From Web service
     LET g.value.x = 500
     LET g.value.y = 680
 
     LET g.major_ticks.number = 11
 
-
     LET g.minor_ticks.number = 4
-
 
     LET g.band[1].min = 25
     LET g.band[1].max = 25.5
@@ -124,7 +116,7 @@ define l_cm_name like customer.cm_name
     LET g.band[3].max = 28.5
     LET g.band[3].depth1 = 0.8
     LET g.band[3].depth2 = 1.0
-    LET g.band[3].fill_color= "green"
+    LET g.band[3].fill_color = "green"
 
     LET g.band[4].min = 28.5
     LET g.band[4].max = 29.5
@@ -136,7 +128,7 @@ define l_cm_name like customer.cm_name
     LET g.band[5].max = 30.0
     LET g.band[5].depth1 = 0.8
     LET g.band[5].depth2 = 1.0
-    LET g.band[5].fill_color= "red"
+    LET g.band[5].fill_color = "red"
 
     CALL fglsvgcanvas.initialize()
 
@@ -152,23 +144,22 @@ define l_cm_name like customer.cm_name
     LET child_node = fglsvgcanvas.circle(g.x, g.y, g.r1)
     CALL child_node.setAttribute(SVGATT_STYLE, 'stroke:black;fill:white')
     CALL root_svg.appendChild(child_node)
-   
 
     -- Draw Arc
     LET child_node = fglsvgcanvas.path(path_4_arc(g.x, g.y, g.r2, g.r2, g.arc_start, g.arc_end))
     CALL child_node.setAttribute(SVGATT_STYLE, 'stroke:black;fill:white')
     CALL root_svg.appendChild(child_node)
 
-
     -- Draw Colour Band
     FOR i = 1 TO g.band.getLength()
         LET a1 = g.arc_start + (g.arc_end - g.arc_start) * g.band[i].min / (g.max_value - g.min_value)
         LET a2 = g.arc_start + (g.arc_end - g.arc_start) * g.band[i].max / (g.max_value - g.min_value)
 
-        LET child_node = fglsvgcanvas.path(
-                    path_4_donut(
-                        g.x, g.y, g.band[i].depth1 * g.r2, g.band[i].depth1 * g.r2, g.band[i].depth2 * g.r2,
-                        g.band[i].depth2 * g.r2, a1, a2))
+        LET child_node =
+            fglsvgcanvas.path(
+                path_4_donut(
+                    g.x, g.y, g.band[i].depth1 * g.r2, g.band[i].depth1 * g.r2, g.band[i].depth2 * g.r2, g.band[i].depth2 * g.r2,
+                    a1, a2))
         CALL child_node.setAttribute(SVGATT_STYLE, SFMT('stroke:black;fill:%1', g.band[i].fill_color))
         CALL root_svg.appendChild(child_node)
 
@@ -208,7 +199,7 @@ define l_cm_name like customer.cm_name
     IF g.title.text IS NOT NULL THEN
         LET child_node = fglsvgcanvas.text(g.title.x, g.title.y, g.title.text, "")
         CALL child_node.setAttribute(SVGATT_STYLE, 'stroke:black;fill:black')
-        CALL child_node.setAttribute("text-anchor","middle")
+        CALL child_node.setAttribute("text-anchor", "middle")
         CALL child_node.setAttribute("font-size", 48)
         CALL root_svg.appendChild(child_node)
     END IF
@@ -217,7 +208,7 @@ define l_cm_name like customer.cm_name
     IF g.value.text IS NOT NULL THEN
         LET child_node = fglsvgcanvas.text(g.value.x, g.value.y, g.value.text, "")
         CALL child_node.setAttribute(SVGATT_STYLE, 'stroke:black;fill:black')
-        CALL child_node.setAttribute("text-anchor","middle")
+        CALL child_node.setAttribute("text-anchor", "middle")
         CALL child_node.setAttribute("font-size", 48)
         CALL root_svg.appendChild(child_node)
     END IF
@@ -235,7 +226,7 @@ define l_cm_name like customer.cm_name
     CALL fglsvgcanvas.display(canvas_id)
 
     MENU ""
-       
+
         ON ACTION cancel
             EXIT MENU
 

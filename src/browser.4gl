@@ -23,33 +23,24 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
+FUNCTION browser(l_title, l_url)
+    DEFINE l_title STRING
+    DEFINE l_url STRING
 
+    OPEN WINDOW browser WITH FORM "browser" ATTRIBUTES(TEXT = l_title)
 
-function browser(l_title, l_url)
-define l_title string
-define l_url string
+    DISPLAY BY NAME l_url
+    MENU ""
+        ON ACTION cancel
+            EXIT MENU
+    END MENU
 
-    open window browser with form "browser" attributes(text=l_title)
-
-    --input by name l_url attributes(unbuffered, without defaults=true, accept=false)
-    --    after input
-    --        if int_flag then
-    --            exit input
-    --        end if
-    --end input
-
-    display l_url to l_url
-    menu ""
-    on action cancel
-    exit menu
-    end menu
-    
-    close window browser
-    let int_flag = 0
-end function
+    CLOSE WINDOW browser
+    LET int_flag = 0
+END FUNCTION

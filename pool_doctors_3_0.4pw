@@ -240,8 +240,6 @@
         <File filePath="src/job_settings.per"/>
       </VirtualFolder>
       <VirtualFolder label="98_home">
-        <File filePath="help/help.docx"/>
-        <File filePath="help/help.pdf"/>
         <File excludeFromLink="true" filePath="src/home.4gl"/>
         <File filePath="src/home.per"/>
       </VirtualFolder>
@@ -258,8 +256,6 @@
     <Library binaryName="Resources" id="159917928" label="Resources">
       <VirtualFolder label="ActionDefaults">
         <File filePath="resources/pool_doctors.4ad"/>
-        <File filePath="resources/pool_doctors_android.4ad"/>
-        <File filePath="resources/pool_doctors_ios.4ad"/>
       </VirtualFolder>
       <VirtualFolder label="Images">
         <VirtualFolder label="address">

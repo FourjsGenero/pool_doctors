@@ -23,65 +23,51 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl lib_error
+IMPORT FGL lib_error
 
-schema "pool_doctors"
+SCHEMA "pool_doctors"
 
-
-
-private function exception()
-    whenever any error call lib_error.serious_error
-end function
-
-
+PRIVATE FUNCTION exception()
+    WHENEVER ANY ERROR CALL lib_error.serious_error
+END FUNCTION
 
 -- For a given job code, return the number of job detail lines
-function count(l_jn_code)
-define l_jn_code like job_note.jn_code
+FUNCTION count(l_jn_code)
+    DEFINE l_jn_code LIKE job_note.jn_code
 
-define l_count integer
+    DEFINE l_count INTEGER
 
-define l_sql string
+    DEFINE l_sql STRING
 
-    let l_sql = "select count(*) from job_note where jn_code = ? "
-    
-    declare job_note_count_curs cursor from l_sql
-    open job_note_count_curs using l_jn_code
-    fetch job_note_count_curs into l_count
-    
-    return l_count
-end function
+    LET l_sql = "select count(*) from job_note where jn_code = ? "
 
+    DECLARE job_note_count_curs CURSOR FROM l_sql
+    OPEN job_note_count_curs USING l_jn_code
+    FETCH job_note_count_curs INTO l_count
 
+    RETURN l_count
+END FUNCTION
 
 -- For a given job code, return the maximum job note line number
-function jn_idx_max(l_jn_code)
-define l_jn_code like job_note.jn_code
+FUNCTION jn_idx_max(l_jn_code)
+    DEFINE l_jn_code LIKE job_note.jn_code
 
-define l_jn_idx like job_note.jn_idx
+    DEFINE l_jn_idx LIKE job_note.jn_idx
 
-    select max(jn_idx)
-    into l_jn_idx
-    from job_note
-    where jn_code = l_jn_code
+    SELECT MAX(jn_idx) INTO l_jn_idx FROM job_note WHERE jn_code = l_jn_code
 
-    return l_jn_idx
-end function
-
-
+    RETURN l_jn_idx
+END FUNCTION
 
 -- Determine if a given job note line exists
-function exists(l_jn_code, l_jn_idx)
-define l_jn_code like job_note.jn_code
-define l_jn_idx  like job_note.jn_idx
+FUNCTION exists(l_jn_code, l_jn_idx)
+    DEFINE l_jn_code LIKE job_note.jn_code
+    DEFINE l_jn_idx LIKE job_note.jn_idx
 
-    select 'x'
-    from job_note
-    where job_note.jn_code = l_jn_code
-    and   job_note.jn_idx = l_jn_idx 
+    SELECT 'x' FROM job_note WHERE job_note.jn_code = l_jn_code AND job_note.jn_idx = l_jn_idx
 
-    if status==notfound then
-        return false
-    end if
-    return true
-end function
+    IF status == NOTFOUND THEN
+        RETURN FALSE
+    END IF
+    RETURN TRUE
+END FUNCTION
