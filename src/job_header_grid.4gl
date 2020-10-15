@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 import fgl lib_customer
 import fgl lib_job_detail
 import fgl lib_job_note
@@ -48,7 +51,7 @@ define f ui.form
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -66,17 +69,17 @@ define l_err_text string
         display ui.Interface.getFrontEndName()
         -- Seperate form for Android due to bug of stack+buttonedit+noentry
         -- Remove when bug fixed
-        if ui.Interface.getFrontEndName() = "GMA" then
-            open window job_header_grid with form "job_header_grid_android"
-        else
+     #   if ui.Interface.getFrontEndName() = "GMA" then
+     #       open window job_header_grid with form "job_header_grid_android"
+     #  else
             open window job_header_grid with form "job_header_grid"
-        end if
+     #   end if
         let w= ui.Window.getCurrent()
         let f= w.getForm()
         call ui_view()
         close window job_header_grid
     else
-        call show_error("Job Record not found", TRUE)
+        call lib_ui.show_error("Job Record not found", TRUE)
     end if
     return l_ok, l_err_text
 end function
@@ -91,7 +94,10 @@ define l_err_text string
 
 define n om.DomNode
 
+define lines_count, notes_count, photos_count, timesheet_count  string
 
+define jh_day_created DATe
+define jh_time_created DATETIME HOUR TO SECOND
     --let n = f.findNode("Button","lines")
     --call n.setAttribute("text",SFMT(" %1 Parts",lib_job_detail.count(m_job_header_rec.jh_code)))
 --
@@ -104,20 +110,37 @@ define n om.DomNode
     --let n = f.findNode("Button","time")
     --call n.setAttribute("text",SFMT(" %1 Timesheet Lines",lib_job_timesheet.count(m_job_header_rec.jh_code)))
 
-   display by name m_job_header_rec.jh_code, m_job_header_rec.jh_customer, m_job_header_rec.jh_date_created
+    display by name m_job_header_rec.jh_code, m_job_header_rec.jh_customer
 
-   display sfmt("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code)) to lines_count
-   display sfmt("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code)) to notes_count
-   display sfmt("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code)) to photos_count
-   display sfmt("%1 Timesheet Lines", lib_job_timesheet.count(m_job_header_rec.jh_code)) to timesheet_count
-
-    display sfmt("%1 (%2)",lib_customer.lookup_cm_name(m_job_header_rec.jh_customer) ,m_job_header_rec.jh_customer clipped) to jh_customer
+    -- datetime does not fit in target screen so split into two lines
+    let jh_day_created = m_job_header_rec.jh_date_created
+    let jh_time_created = m_job_header_rec.jh_date_created
+    display by name jh_day_created
+    display by name jh_time_created
     
-    menu ""
+    display sfmt("%1 (%2)",lib_customer.lookup_cm_name(m_job_header_rec.jh_customer) ,m_job_header_rec.jh_customer clipped) to jh_customer
+   
+
+    display sfmt("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code)) to lines_count
+    display sfmt("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code)) to notes_count
+    display sfmt("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code)) to photos_count
+    display sfmt("%1 Timesheet Lines", lib_job_timesheet.count(m_job_header_rec.jh_code)) to timesheet_count
+
+  #  let lines_count = sfmt("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code))
+  #  let notes_count = sfmt("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code))
+  #  let photos_count =  sfmt("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code))
+  #  let timesheet_count =  sfmt("%1 Timesheet Lines",lib_job_timesheet.count(m_job_header_rec.jh_code))
+
+    #input by name  m_job_header_rec.jh_customer, lines_count, notes_count, photos_count, timesheet_count attributes(without defaults=true, accept=false)
+    #before input
+    #    on action customer
+    #end input
+    menu
         before menu
             call state(dialog)
 
         on action cancel
+            #exit input
             exit menu
 
         on action customer  
@@ -128,7 +151,7 @@ define n om.DomNode
                 call job_detail_list.maintain_job(m_job_header_rec.jh_code)
                 display sfmt("%1 Parts", lib_job_detail.count(m_job_header_rec.jh_code)) to lines_count
             else
-                call show_message("Tap Start before entering job data", true)
+                call lib_ui.show_message("Tap Start before entering job data", true)
             end if
             
         on action photo  
@@ -136,7 +159,7 @@ define n om.DomNode
                 call job_photo_list.maintain_job(m_job_header_rec.jh_code)
                 display sfmt("%1 Photos", lib_job_photo.count(m_job_header_rec.jh_code)) to photos_count
             else
-                call show_message("Tap Start before entering job data", true)
+                call lib_ui.show_message("Tap Start before entering job data", true)
             end if
 
         on action notes  
@@ -144,7 +167,7 @@ define n om.DomNode
                 call job_note_list.maintain_job(m_job_header_rec.jh_code)
                 display sfmt("%1 Notes", lib_job_note.count(m_job_header_rec.jh_code)) to notes_count
              else
-                call show_message("Tap Start before entering job data", true)
+                call lib_ui.show_message("Tap Start before entering job data", true)
             end if
             
         on action time 
@@ -152,13 +175,13 @@ define n om.DomNode
                 call job_timesheet_list.maintain_job(m_job_header_rec.jh_code)
                 display sfmt("%1 Timesheet Lines", lib_job_timesheet.count(m_job_header_rec.jh_code)) to timesheet_count
             else
-                call show_message("Tap Start before entering job data", true)
+                call lib_ui.show_message("Tap Start before entering job data", true)
             end if
 
         on action start  
             call db_update_start() returning l_ok, l_err_text
             if not l_ok then
-                call show_error(sfmt("Error starting job %1", l_err_text), true)
+                call lib_ui.show_error(sfmt("Error starting job %1", l_err_text), true)
             end if
             call state(dialog)
             
@@ -166,6 +189,7 @@ define n om.DomNode
             call job_header_complete.complete(m_job_header_rec.jh_code) returning 
                l_ok, l_err_text
             if not l_ok then
+                #continue input
                 continue menu
             end if
             call db_select() returning l_ok, l_err_text
@@ -174,6 +198,7 @@ define n om.DomNode
             end if
             call state(dialog)
             
+    #end input
     end menu
 end function
 
@@ -221,14 +246,3 @@ end function
 
 
 
--- there is a bug in dependency diagram which doesn't show links well if the 
--- called function has the same name in two different import fgl modules
--- workaround by adding a functon with a unique name
--- this function gets arund that by adding unused calls with unique names
--- this function can be removed when bug GST-12511 fixed
-private function bug_fix_12511()
-    call job_detail_list.job_detail_list()
-    call job_note_list.job_note_list()
-    call job_photo_list.job_photo_list()
-    call job_timesheet_list.job_timesheet_list()
-end function

@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 import fgl lib_customer
 import fgl job_header_grid
 
@@ -46,7 +49,7 @@ define m_orderby string
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -59,7 +62,6 @@ function list()
     open window job_header_list with form "job_header_list"
     let w= ui.Window.getCurrent()
     let f = w.getform()
-    call f.loadToolBar("pool_doctors_list")
     
     call db_populate() 
     call ui_populate()
@@ -109,7 +111,7 @@ define l_popup_value_select boolean
 
         before display
             if m_arr.getlength() = 0 then
-                call show_message("No jobs loaded.  Return to front screen and sync data", true)
+                call lib_ui.show_message("No jobs loaded.  Return to front screen and sync data", true)
             end if
             
         on action select 
@@ -121,7 +123,7 @@ define l_popup_value_select boolean
                 call db_populate() 
                 call ui_populate()
             else
-                call show_error(l_err_text, TRUE)
+                call lib_ui.show_error(l_err_text, TRUE)
             end if
             
 
@@ -150,7 +152,7 @@ define l_popup_value_select boolean
                     let m_filter = "jh_status = 'I'"
                 on action new_inprogress attributes(text="New and in-progress")
                     let m_filter = "jh_status != 'X'"
-                on action complete attributes(text="Complete")
+                on action complete attributes(text="Complete", image="") -- TODO, added image so no iamge defined, then it aligns
                     let m_filter = "jh_status = 'X'"
                 on action cancel
                     let l_popup_value_select = false
@@ -191,13 +193,9 @@ define s char(1)
 
     -- Map job status to an image
     case 
-        when s="O" and frontend() = "GMI" return "clock-1"
-        when s="I" and frontend() = "GMI" return "clock-2"
-        when s="X" and frontend() = "GMI" return "clock-3"
-
-        when s="O" and frontend() = "GMA" return "clock-1"
-        when s="I" and frontend() = "GMA" return "clock-2"
-        when s="X" and frontend() = "GMA" return "clock-3"
+        when s="O" return "clock-1"
+        when s="I" return "clock-2"
+        when s="X" return "clock-3"
         otherwise
             return null
     end case

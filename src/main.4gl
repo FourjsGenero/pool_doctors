@@ -23,28 +23,31 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
-import fgl splash
+import fgl lib_error
+import fgl lib_ui
+
+import fgl lib_settings
+
+import fgl home
 
 main
     options field order form
     options input no wrap 
-    
-    call start_errorlog("pool_doctors.log")
-    whenever any error call serious_error
+        
+    call lib_error.start_errorlog("pool_doctors.log")
+    whenever any error call lib_error.serious_error
     
     call ui.Interface.setText("Pool Doctors")
-    call ui.Interface.setImage("logo_transparent")
+    call ui.Interface.setImage("splash_320x480") -- Not logo_transparent as hard to see in chromeBar
     
     call ui.Interface.loadStyles("pool_doctors")
-    case frontend() 
-        when "GMA"   call ui.Interface.loadActionDefaults("pool_doctors_android")
-        when "GMI"   call ui.Interface.loadActionDefaults("pool_doctors_ios")
-        otherwise    call ui.Interface.loadActionDefaults("pool_doctors")
-    end case
+    call ui.Interface.loadActionDefaults("pool_doctors")
     
     call init_database()
 
-    call splash.execute()
+    call lib_settings.populate()
+    close window screen
+    call home.execute()
 
 end main
 
@@ -75,7 +78,7 @@ define ch base.channel
     -- If get to there, there is no database, need to create it
     -- Warning if in development mode
     if not base.Application.isMobile() then
-        if not confirm_dialog("About to create database.  Are you sure?") then
+        if not lib_ui.confirm_dialog("About to create database.  Are you sure?") then
             call errorlog("User cancelled database creation")
             exit program 1
         end if
@@ -161,7 +164,6 @@ define ch base.channel
         jp_when datetime year to minute,
         jp_lat decimal(11,5),
         jp_lon decimal(11,5),
-        jp_photo_data byte,
         jp_text varchar(10000),
         constraint sqlite_autoindex_job_photo_1 primary key(jp_code, jp_idx),
         constraint fk_job_photo_job_header_1 foreign key(jp_code)
@@ -181,6 +183,10 @@ define ch base.channel
         pr_desc varchar(255) not null,
         pr_barcode varchar(30),
         constraint sqlite_autoindex_product_1 primary key(pr_code))"
+    execute immediate "create table job_settings (
+        js_url char(40),
+        js_group char(40),
+        js_map smallint)"
 
     execute immediate "create unique index idx_customer_pk on customer(cm_code)"
     execute immediate "create index idx_customer_name on customer(cm_name)"
@@ -195,4 +201,7 @@ define ch base.channel
     execute immediate "create index idx_product_name on product(pr_desc)"
 
     -- insert initial data if required
+    #insert into job_settings(js_url, js_group) values("https://demo.4js.com/gas","pool_doctors_server")
+    insert into job_settings(js_url, js_group, js_map) values("https://demo.4js.com/gas","pool_doctors_server",1)
+    
 end function

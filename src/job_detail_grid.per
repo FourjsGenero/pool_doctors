@@ -23,14 +23,51 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 layout (text="Job Detail Line")
-stack
-group
-edit formonly.jd_code, justify=right, title="Job Code";
-edit formonly.jd_line, justify=right, title="Line Number";
-button barcode;
-buttonedit formonly.jd_product, action=jd_product.zoom, noteditable, justify=right, title="Product";
-edit formonly.jd_qty, justify=right, title="Quantity";
-combobox formonly.jd_status, not null, justify=right, title="Status";
-end
-end
-end
+GROUP
+GRID
+{
+[l01   |f01               ]
+[l02   |f02               ]
+[b01                      ]
+[l03   |f03               ]
+[l04   |f04               ]
+[l05   |f05               ]
+[b02                      ]
+[z                        ]
+}
+END
+END
+END
+ATTRIBUTES
+
+LABEL l01: TEXT="Job Code", STYLE="title";
+LABEL l02: TEXT="Line Number", STYLE="title";
+LABEL l03: TEXT="Product", STYLE="title";
+LABEL l04: TEXT="Quantity", STYLE="title";
+LABEL l05: TEXT="Status", STYLE="title";
+
+EDIT f01 = formonly.jd_code;
+EDIT f02 = formonly.jd_line;
+BUTTONEDIT f03 = formonly.jd_product, ACTION=jd_product.zoom;
+SPINEDIT f04 = formonly.jd_qty;
+COMBOBOX f05 = formonly.jd_status, NOT NULL;
+
+BUTTON b01: barcode;
+BUTTON b02: accept;
+
+IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
+
+
+
+--stack
+--group
+--edit formonly.jd_code, justify=right, title="Job Code";
+--edit formonly.jd_line, justify=right, title="Line Number";
+--button barcode;
+--buttonedit formonly.jd_product, action=jd_product.zoom, noteditable, justify=right, title="Product";
+--edit formonly.jd_qty, justify=right, title="Quantity";
+--combobox formonly.jd_status, not null, justify=right, title="Status";
+--BUTTON accept;
+--end
+--end
+--end

@@ -25,3 +25,5 @@
 
 dbi.default.driver = "dbmsqt"
 dbi.database.pool_doctors.source = "pool_doctors.db"
+
+#gui.rendering = "universal"

@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 import fgl lib_job_header
 import fgl lib_product
 
@@ -49,7 +52,7 @@ define m_filter string
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -61,14 +64,13 @@ define l_err_text string
     open window job_note_list with form "job_note_list"
     let w= ui.window.getcurrent()
     let f = w.getform()
-    call f.loadtoolbar("pool_doctors_list")
     
     call db_populate() returning l_ok, l_err_text
     if l_ok then
         call ui_populate()
         call ui_list()
     else
-        call show_error(l_err_text, true)
+        call lib_ui.show_error(l_err_text, true)
     end if
     
     close window job_note_list
@@ -121,7 +123,7 @@ define l_editable boolean
             call dialog.setActionActive("append",l_editable)
             call dialog.setActionActive("delete",l_editable)
             if l_editable and m_arr.getLength() = 0 then
-                call show_message("Tap + to add", false)
+                call lib_ui.show_message("Tap + to add", false)
             end if
             
         before row
@@ -131,7 +133,7 @@ define l_editable boolean
             call job_note_grid.add(m_jh_code)
                 returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, true)
+                call lib_ui.show_error(l_error_text, true)
                 let int_flag = true
             else
                 let m_job_note_arr[m_job_note_arr.getlength()+1].* = job_note_grid.m_job_note_rec.*
@@ -143,7 +145,7 @@ define l_editable boolean
                 call job_note_grid.update(m_job_note_arr[l_row].jn_code, m_job_note_arr[l_row].jn_idx)
                     returning l_ok, l_error_text
                 if not l_ok then
-                    call show_error(l_error_text, true)
+                    call lib_ui.show_error(l_error_text, true)
                     let int_flag = true
                 end if
                 let m_job_note_arr[l_row].* = job_note_grid.m_job_note_rec.*
@@ -158,7 +160,7 @@ define l_editable boolean
             call job_note_grid.delete(m_job_note_arr[l_row].jn_code, m_job_note_arr[l_row].jn_idx)
                 returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, true)
+                call lib_ui.show_error(l_error_text, true)
                 let int_flag = true
             end if
             call m_job_note_arr.deleteElement(l_row)

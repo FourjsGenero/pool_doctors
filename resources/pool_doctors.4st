@@ -25,20 +25,43 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
  -->
-
 <StyleList>
- <Style name="Window">
-     <StyleAttribute name="windowType" value="normal" />
-     <StyleAttribute name="materialFABActionList" value="append" />
-  </Style>
-  <!-- Used by select/zoom windows to animage up from bottom of window -->
-  <Style name="Window.dialog">
-     <StyleAttribute name="windowType" value="modal" />
-  </Style>
-  <!-- Used by Toolbar on iOS devices to streatch across device rather -->
-  <!-- than being packed together -->
-  <Style name="ToolBarSeparator">
-    <StyleAttribute name="iosSeparatorStretch" value="1"/>
-  </Style>
-  
+    <Style name="Window">
+        <StyleAttribute name="windowType" value="normal"/>
+        <StyleAttribute name="toolBarPosition" value="bottom"/>
+        <StyleAttribute name="actionPanelPosition" value="chrome"/>
+        <StyleAttribute name="ringMenuPosition" value="chrome"/>
+    </Style>
+
+    <!-- Used by select/zoom windows to animage up from bottom of window -->
+    <Style name="Window.dialog">
+        <StyleAttribute name="windowType" value="modal"/>
+    </Style>
+
+    <!-- Used by Toolbar on iOS devices to streatch across device rather -->
+    <!-- than being packed together -->
+    <Style name="ToolBarSeparator">
+        <StyleAttribute name="iosSeparatorStretch" value="1"/>
+    </Style>
+    
+    <Style name="Image">
+        <StyleAttribute name="border" value="no"/>
+        <StyleAttribute name="alignment" value="center"/>
+    </Style>
+    <Style name="Table">
+        <StyleAttribute name="tableType" value="listView"/>
+        <StyleAttribute name="reduceFilter" value="no"/>
+    </Style>
+    <Style name="ButtonEdit">
+        <StyleAttribute name="scaleIcon" value="yes"/>
+    </Style>
+    <Style name="Button">
+        <StyleAttribute name="scaleIcon" value="yes"/>
+    </Style>
+    <Style name="Image.noborder">
+        <StyleAttribute name="border" value="none"/>
+    </Style>
+    <Style name="Label.title">
+        <StyleAttribute name="fontWeight" value="semibold"/>
+    </Style>
 </StyleList>

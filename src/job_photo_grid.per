@@ -24,17 +24,63 @@
 #       THE SOFTWARE.
 
 layout (text="Job Photo")
-stack
-group
-edit formonly.jp_code, title="Job Code";
-edit formonly.jp_idx, title="Line Number";
+GROUP
+GRID
+{
+{
+[l01   |f01               ]
+[l02   |f02               ]
+[l03   |f03               ]
+       [                  ]
+       [                  ]
+       [                  ]   
+[l04   |f04               ]
+[l05   |f05               ]
+[l06   |f06               ]
+[l07   |f07               ]
+       [                  ]
+[b01                      ]
+[z                        ]
+}
+END
+END
+END
+ATTRIBUTES
 
-image formonly.jp_photo, autoscale, sizepolicy=fixed, height=4, title="Photo" ;
-datetimeedit formonly.jp_when, title="When";
-edit formonly.jp_lat, title="Latitude";
-edit formonly.jp_lon, title="Longitude";
-textedit formonly.jp_text, height=2, title="Notes";
-phantom formonly.jp_photo_data;
-end
-end
-end
+LABEL l01: TEXT="Job Code", STYLE="title";
+LABEL l02: TEXT="Line Number", STYLE="title";
+LABEL l03: TEXT="Photo", STYLE="title";
+LABEL l04: TEXT="When", STYLE="title";
+LABEL l05: TEXT="Latitude", STYLE="title";
+LABEL l06: TEXT="Longitude", STYLE="title";
+LABEL l07: TEXT="Notes", STYLE="title";
+
+EDIT f01 = formonly.jp_code;
+EDIT f02 = formonly.jp_idx;
+IMAGE f03 = formonly.jp_photo, autoscale, sizepolicy=fixed, height=4;
+DATETIMEEDIT f04 = formonly.jp_when;
+EDIT f05 = formonly.jp_lat;
+EDIT f06 = formonly.jp_lon;
+TEXTEDIT f07 = formonly.jp_text;
+
+BUTTON b01: accept;
+
+
+IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
+
+
+--stack
+--group
+--edit formonly.jp_code, title="Job Code";
+--edit formonly.jp_idx, title="Line Number";
+--
+--image formonly.jp_photo, autoscale, sizepolicy=fixed, height=4, title="Photo" ;
+--datetimeedit formonly.jp_when, title="When";
+--edit formonly.jp_lat, title="Latitude";
+--edit formonly.jp_lon, title="Longitude";
+--textedit formonly.jp_text, height=2, title="Notes";
+--phantom formonly.jp_photo_data;
+--BUTTON accept;
+--end
+--end
+--end

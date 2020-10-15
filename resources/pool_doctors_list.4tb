@@ -28,7 +28,7 @@
 
 <!-- Used in list screens to get append, toggle, order, filter buttons --> 
 <!-- appearing consistently across device -->
-<ToolBar>
+<ToolBar buttonTextHidden="1">
     <ToolBarItem name="append" />
     <ToolBarSeparator/>
     <ToolBarItem name="toggle" />

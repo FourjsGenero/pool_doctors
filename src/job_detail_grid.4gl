@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 import fgl product_list
 
 import fgl lib_product
@@ -42,7 +45,7 @@ define f ui.form
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -62,7 +65,7 @@ define l_error_text string
         if l_ok then
             call db_insert() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(sfmt("Unable to add row\n%1", l_error_text), true)
+                call lib_ui.show_error(sfmt("Unable to add row\n%1", l_error_text), true)
             end if
         end if
         call close_window()
@@ -89,7 +92,7 @@ define l_error_text string
         if l_ok then
             call db_update() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(sfmt("Unable to update row\n%1", l_error_text),true)
+                call lib_ui.show_error(sfmt("Unable to update row\n%1", l_error_text),true)
             end if
         end if
         call close_window()
@@ -138,7 +141,7 @@ define l_warning_text string
             call open_window()
             call ui_display()
             call ui.interface.refresh()
-            let l_ok = confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
+            let l_ok = lib_ui.confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
             call close_window()
             if not l_ok then
                 let l_error_text = "Delete Cancelled"
@@ -148,7 +151,7 @@ define l_warning_text string
     if l_ok then
         call db_delete() returning l_ok, l_error_text
         if not l_ok then
-            call show_error(sfmt("Unable to delete row\n%1", l_error_text),true)
+            call lib_ui.show_error(sfmt("Unable to delete row\n%1", l_error_text),true)
         end if
     end if
     return l_ok, l_error_text
@@ -183,7 +186,7 @@ define l_ok, l_error_text string
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \
                                     if not l_ok then \
-                                        call show_error(l_error_text,false) \
+                                        call lib_ui.show_error(l_error_text,false) \
                                         next field p1 \
                                     end if 
                                     
@@ -205,7 +208,7 @@ define l_ok, l_error_text string
 
         on action cancel
             if dialog.getfieldtouched("*") then
-                if not confirm_cancel_dialog() then
+                if not lib_ui.confirm_cancel_dialog() then
                     let int_flag = 0
                     continue input
                 end if
@@ -216,7 +219,7 @@ define l_ok, l_error_text string
             -- test values
             &define field_valid(p1) call p1 ## _valid() returning l_ok, l_error_text \
             if not l_ok then \
-                call show_error(l_error_text, false) \
+                call lib_ui.show_error(l_error_text, false) \
                 next field p1 \
             end if
 
@@ -226,7 +229,7 @@ define l_ok, l_error_text string
                 field_valid(jd_line)
                 call record_key_valid() returning l_ok, l_error_text
                 if not l_ok then
-                    call show_error(l_error_text, false)
+                    call lib_ui.show_error(l_error_text, false)
                     next field current
                 end if
             end if
@@ -241,7 +244,7 @@ define l_ok, l_error_text string
             -- test record
             call record_valid() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, false)
+                call lib_ui.show_error(l_error_text, false)
                 next field current
             end if
     end input
@@ -294,10 +297,10 @@ define l_barcode_type string
         let l_pr_code = lib_product.find_from_barcode(l_pr_barcode)
         if l_pr_code is not null then
             let l_pr_desc = lib_product.lookup_pr_desc(l_pr_code)
-            call show_message(sfmt("Barcode read is %1\nproduct is %2(%3)",l_pr_barcode, l_pr_code, l_pr_desc),true)
+            call lib_ui.show_message(sfmt("Barcode read is %1\nproduct is %2(%3)",l_pr_barcode, l_pr_code, l_pr_desc),true)
             let m_job_detail_rec.jd_product = l_pr_code
         else
-            call show_error("Barcode is not in database",true)
+            call lib_ui.show_error("Barcode is not in database",true)
         end if
     end if
 end function

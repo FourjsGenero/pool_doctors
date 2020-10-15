@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Schema gstVersion="3001d" id="{6e0dcbbf-11f6-4a25-94a0-4381743de95a}" version="3.0">
+<Schema gstVersion="31408" id="{6e0dcbbf-11f6-4a25-94a0-4381743de95a}" version="4.0">
   <AGSettings version="1.1">
     <DynamicProperties version="2">
       <DynamicProperty description="Associated label when generating form" initialValue="" isDefaultInherited="false" isHidden="false" label="Label" name="label" readOnly="false" type="TEXT"/>
@@ -14,7 +14,7 @@
     <ExtractionOptions casens="LowerCase" cvmeth="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" ignerr="true" systab="false" type="SQLite"/>
   </ExtractionSettings>
   <GenerationSettings>
-    <GenerationOptions casens="LowerCase" generate="true" genidx="true" genpk="1" genuq="1" national="false" populate="false" version="SQLite"/>
+    <GenerationOptions casens="LowerCase" generate="true" genidx="true" genpk="1" genuq="1" national="false" nobackup="false" populate="false" version="SQLite"/>
   </GenerationSettings>
   <Table active="false" name="charge_code" status="R" uuid="db/table255">
     <Column fglLength="2" fglType="0" name="cc_id" notNull="true" order="1" status="R" uuid="db/column1867"/>
@@ -83,7 +83,7 @@
     <Column fglLength="3080" fglType="10" name="jp_when" notNull="false" order="4" status="U" uuid="db/column1947"/>
     <Column fglLength="2821" fglType="5" name="jp_lat" notNull="false" order="5" status="U" uuid="db/column1949"/>
     <Column fglLength="2821" fglType="5" name="jp_lon" notNull="false" order="6" status="U" uuid="db/column1951"/>
-    <Column fglLength="56" fglType="11" name="jp_photo_data" notNull="false" order="7" status="U" uuid="db/column1953"/>
+    <Column fglLength="56" fglType="11" name="jp_photo_data" notNull="false" order="7" status="R" uuid="db/column1953"/>
     <Column fglLength="160" fglType="13" name="jp_text" notNull="false" order="8" status="A" uuid="db/column470"/>
     <Index indexColumns="jp_code, jp_idx" indexConstraint="uniqueIndex" name="idx_job_photo_pk" status="U" uuid="db/index406"/>
     <Index indexColumns="jp_code, jp_idx" indexConstraint="primaryKey" name="sqlite_autoindex_job_photo_1" status="U" uuid="db/index408"/>
@@ -113,6 +113,11 @@
     <Column fglLength="1" fglType="0" name="zz_map" notNull="false" order="4" status="R" uuid="db/column1979"/>
     <Column fglLength="2" fglType="0" name="zz_charge_code_id" notNull="false" order="5" status="R" uuid="db/column1981"/>
   </Table>
+  <Table active="true" name="job_settings" status="A" uuid="db/table56">
+    <Column fglLength="40" fglType="0" name="js_url" notNull="false" order="1" status="A" uuid="db/column362"/>
+    <Column fglLength="40" fglType="0" name="js_group" notNull="false" order="2" status="A" uuid="db/column608"/>
+    <Column fglLength="4" fglType="2" name="js_map" notNull="false" order="3" status="A" uuid="db/column127"/>
+  </Table>
   <ForeignKey cascadeDelete="false" fkColumns="jd_code" fkRefColumns="jh_code" name="fk_job_detail_job_header_1" refTable="job_header" status="U" table="job_detail" uuid="db/foreignkey140"/>
   <ForeignKey cascadeDelete="false" fkColumns="jd_product" fkRefColumns="pr_code" name="fk_job_detail_product_2" refTable="product" status="U" table="job_detail" uuid="db/foreignkey142"/>
   <ForeignKey cascadeDelete="false" fkColumns="jh_customer" fkRefColumns="cm_code" name="fk_job_header_customer_1" refTable="customer" status="U" table="job_header" uuid="db/foreignkey144"/>
@@ -122,7 +127,7 @@
   <Views ActiveView="View-1" showLabels="true">
     <View Name="View-1">
       <Layout>
-        <![CDATA[AAAAAgAAABYAZABiAC8AdABhAGIAbABlADIANgA5QIIQAAAAAABAgLAAAAAAAD/RN0vGp++hAQAAABYAZABiAC8AdABhAGIAbABlADIANQA3QIFQAAAAAABAUYAAAAAAAD/RR64UeuFLAQAAABYAZABiAC8AdABhAGIAbABlADIANQA5QF9AAAAAAABAfYAAAAAAAD/G6XjU/fO7AQAAABYAZABiAC8AdABhAGIAbABlADIANwAxQKLAAAAAAABANAAAAAAAAD9ok3S8an76AAAAABYAZABiAC8AdABhAGIAbABlADIANgAxwHyQAAAAAABATQAAAAAAAD/NcKPXCj13AQAAABYAZABiAC8AdABhAGIAbABlADIANgAzQGAAAAAAAABAh0AAAAAAAD/GZmZmZmZrAQAAABYAZABiAC8AdABhAGIAbABlADIANgA1QF+AAAAAAABAjaAAAAAAAD/SsCDEm6XnAQAAABYAZABiAC8AdABhAGIAbABlADIANgA3QGAAAAAAAABAk/gAAAAAAD/AAAAAAAADAQAAABYAZABiAC8AdABhAGIAbABlADIANQA1AAAAAAAAAABANAAAAAAAAD9gYk3S8an8AA==]]>
+        <![CDATA[AAAAAgAAABYAZABiAC8AdABhAGIAbABlADIANgA3QGAAAAAAAABAk/gAAAAAAD/AAAAAAAADAQAAABQAZABiAC8AdABhAGIAbABlADUANkCQiAAAAAAAQHBQAAAAAAA/1LxqfvnbJwEAAAAWAGQAYgAvAHQAYQBiAGwAZQAyADUAOUBfQAAAAAAAQH2AAAAAAAA/xul41P3zuwEAAAAWAGQAYgAvAHQAYQBiAGwAZQAyADYANUBfgAAAAAAAQI2gAAAAAAA/1O2RaHKwJQEAAAAWAGQAYgAvAHQAYQBiAGwAZQAyADUAN0CBUAAAAAAAQFGAAAAAAAA/0UeuFHrhSwEAAAAWAGQAYgAvAHQAYQBiAGwAZQAyADUANQAAAAAAAAAAQDQAAAAAAAA/YGJN0vGp/AAAAAAWAGQAYgAvAHQAYQBiAGwAZQAyADYAOUCCEAAAAAAAQICwAAAAAAA/0TdLxqfvoQEAAAAWAGQAYgAvAHQAYQBiAGwAZQAyADYAM0BgAAAAAAAAQIdAAAAAAAA/xmZmZmZmawEAAAAWAGQAYgAvAHQAYQBiAGwAZQAyADcAMUCiwAAAAAAAQDQAAAAAAAA/aJN0vGp++gAAAAAWAGQAYgAvAHQAYQBiAGwAZQAyADYAMcB8kAAAAAAAQE0AAAAAAAA/zXCj1wo9dwE=]]>
       </Layout>
     </View>
   </Views>

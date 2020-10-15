@@ -1,0 +1,69 @@
+#
+#       (c) Copyright 2014, Blue J Software - www.bluejs.com
+#
+#       MIT License (http://www.opensource.org/licenses/mit-license.php)
+#
+#       Permission is hereby granted, free of charge, to any person
+#       obtaining a copy of this software and associated documentation
+#       files (the "Software"), to deal in the Software without restriction,
+#       including without limitation the rights to use, copy, modify, merge,
+#       publish, distribute, sublicense, and/or sell copies of the Software,
+#       and to permit persons to whom the Software is furnished to do so,
+#       subject to the following conditions:
+#
+#       The above copyright notice and this permission notice shall be
+#       included in all copies or substantial portions of the Software.
+#
+#       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+#       EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+#       OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#       NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+#       BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+#       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+#       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#       THE SOFTWARE.
+LAYOUT (TEXT="Settings")
+GROUP
+GRID
+{
+[l01  |f01            ]
+[l02  |f02            ]
+[l03  |f03            ]
+[b01                  ]
+[z                    ]
+}
+END
+END
+END
+
+ATTRIBUTES
+LABEL l01: TEXT="URL Base", STYLE="title";
+LABEL l02: TEXT="URL Group", STYLE="title";
+LABEL l03: TEXT="Map", STYLE="title";
+EDIT f01 = formonly.js_url,  SCROLL;
+EDIT f02 = formonly.js_group, SCROLL;
+COMBOBOX f03 = formonly.js_map, NOT NULL, INITIALIZER= combo_populate_map_settings;
+
+BUTTON b01: accept;
+IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE b : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE c : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE d : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE e : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE f : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE g : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE h : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE i : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE j : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE k : IMAGE="", STRETCH=X, STYLE="noborder";
+--IMAGE l : IMAGE="", STRETCH=X, STYLE="noborder";
+
+
+--stack
+--group
+--edit formonly.js_url, title="Base URL";
+--edit formonly.js_group, title="Group";
+--BUTTON accept;
+--end
+--end
+--end

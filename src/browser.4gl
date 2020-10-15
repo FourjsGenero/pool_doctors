@@ -23,8 +23,10 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -34,13 +36,19 @@ define l_title string
 define l_url string
 
     open window browser with form "browser" attributes(text=l_title)
-    
-    input by name l_url attributes(unbuffered, without defaults=true, accept=false)
-        after input
-            if int_flag then
-                exit input
-            end if
-    end input
+
+    --input by name l_url attributes(unbuffered, without defaults=true, accept=false)
+    --    after input
+    --        if int_flag then
+    --            exit input
+    --        end if
+    --end input
+
+    display l_url to l_url
+    menu ""
+    on action cancel
+    exit menu
+    end menu
     
     close window browser
     let int_flag = 0

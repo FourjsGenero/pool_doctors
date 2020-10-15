@@ -23,7 +23,11 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+# no import fgl here, this module needs to be as foolproof as possible
+import os
+
 define m_been_here_before boolean
+define m_test_mode boolean
 define m_filename string
 
 
@@ -42,28 +46,53 @@ end function
 
 
 
-function serious_error()
-define l_exit boolean
+function clear_errorlog()
+define l_ok boolean
+define l_error_text string
+    let l_ok = os.Path.delete(m_filename) 
+    let l_error_text = iif(l_ok, "Errorlog deleted", "Unable to delete errorlog")
+    call startlog(m_filename)
+    return l_ok, l_error_text
+end function
+
+
+
+function view_errorlog()
 define l_text text
+
+    locate l_text in file m_filename   
+    menu "Error Log" attributes(style="dialog", comment=l_text)
+        on action accept
+            exit menu
+    end menu
+end function
+
+
+function test_mode(l_test_mode)
+define l_test_mode boolean
+    let m_test_mode = l_test_mode
+end function
+
+
+
+function serious_error()
 
     -- Prevent endless loop occuring
     if m_been_here_before then
-        exit program 1
+        exit program 2
     end if
     let m_been_here_before = true
     
-    let l_exit = false
-    while not l_exit
-        menu "Error" attributes(style="dialog", comment="An unexpected error has occured")
-            on action accept
-                let l_exit = true
-                exit menu
-                
-            on action viewlog attributes(text="View log")
-                locate l_text in file m_filename              
-                call show_message(l_text, true)
-        end menu
-    end while
+    menu "Error" attributes(style="dialog", comment="An unexpected error has occured")
+        on action accept
+            
+        on action viewlog attributes(text="View log")
+            call view_errorlog()                        
+    end menu
 
-    exit program 1
+    if m_test_mode then
+        let m_been_here_before = false
+    else
+        exit program 1
+    end if
 end function

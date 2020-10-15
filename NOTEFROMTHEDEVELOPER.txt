@@ -40,7 +40,7 @@ Unless handled by TRY/CATCH, errors and exception handling are catered for
 by ...
 
 PRIVATE FUNCTION exception()
-    WHENEVER ANY ERROR CALL serious_error
+    WHENEVER ANY ERROR CALL lib_error.serious_error
 END FUNCTION
 
 ... which will call the function serious_error in lib_error.4gl if an

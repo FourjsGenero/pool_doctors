@@ -24,6 +24,7 @@
 #       THE SOFTWARE.
 
 layout (text="Job Photos")
+vbox
 table tab_job_photo_list
 {
 [f01       |f02       ]
@@ -37,11 +38,23 @@ table tab_job_photo_list
 [f01       |f02       ]
 [f01       |f02       ]
 }
+END
+GRID
+{
+[b01|b02|b03|b04]
+[z              ]
+}
+END
 end
 end
 attributes
 edit f01 = formonly.major, imagecolumn=img;
 edit f02 = formonly.minor;
 phantom formonly.img;
+BUTTON b01: append;
+BUTTON b02: toggle;
+BUTTON b03: order;
+BUTTON b04: filter;
+IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
 instructions
 screen record scr(major, minor,img)

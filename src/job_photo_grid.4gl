@@ -23,6 +23,8 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
 import fgl lib_job_photo
 
 schema pool_doctors
@@ -40,7 +42,7 @@ define f ui.form
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -57,7 +59,12 @@ define l_error_text string
         try
             call ui.interface.frontcall("mobile","takePhoto",[], m_job_photo_rec.jp_photo)
         catch
-            let l_error_text = "An error occured taking the photo"
+            -- See if we can default to selecting a file in case device does not have camera
+            try
+                call ui.Interface.frontCall("standard","openFile",["","Images","*.png *.jpg","Select photo"],m_job_photo_rec.jp_photo)
+            catch
+                let l_error_text = "An error occured taking the photo"
+            end try
         end try
         let l_ok = m_job_photo_rec.jp_photo is not null
     end if
@@ -68,7 +75,7 @@ define l_error_text string
         if l_ok then
             call db_insert() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(sfmt("Unable to add row\n%1", l_error_text), true)
+                call lib_ui.show_error(sfmt("Unable to add row\n%1", l_error_text), true)
             end if
         end if
         call close_window()
@@ -94,7 +101,7 @@ define l_error_text string
         if l_ok then
             call db_update() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(sfmt("Unable to update row\n%1", l_error_text), true)
+                call lib_ui.show_error(sfmt("Unable to update row\n%1", l_error_text), true)
             end if
         end if
         call close_window()
@@ -143,7 +150,7 @@ define l_warning_text string
             call open_window()
             call ui_display()
             call ui.interface.refresh()
-            let l_ok = confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
+            let l_ok = lib_ui.confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
             call close_window()
             if not l_ok then
                 let l_error_text = "Delete cancelled"
@@ -153,7 +160,7 @@ define l_warning_text string
     if l_ok then
         call db_delete() returning l_ok, l_error_text
         if not l_ok then
-            call show_error(sfmt("Unable to delete row\n%1", l_error_text), true)
+            call lib_ui.show_error(sfmt("Unable to delete row\n%1", l_error_text), true)
         end if
     end if
     return l_ok, l_error_text
@@ -187,7 +194,7 @@ define l_ok, l_error_text string
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \
                                     if not l_ok then \
-                                        call show_error(l_error_text, false) \
+                                        call lib_ui.show_error(l_error_text, false) \
                                         next field p1 \
                                     end if 
         after_field(jp_code)
@@ -202,7 +209,7 @@ define l_ok, l_error_text string
 
         on action cancel
             if dialog.getfieldtouched("*") or m_mode = "add" then
-                if not confirm_cancel_dialog() then
+                if not lib_ui.confirm_cancel_dialog() then
                     let int_flag = 0
                     continue input
                 end if
@@ -213,7 +220,7 @@ define l_ok, l_error_text string
             -- test values
             &define field_valid(p1) call p1 ## _valid() returning l_ok, l_error_text \
             if not l_ok then \
-                call show_error(l_error_text, false) \
+                call lib_ui.show_error(l_error_text, false) \
                 next field p1 \
             end if
 
@@ -223,7 +230,7 @@ define l_ok, l_error_text string
                 field_valid(jp_idx)
                 call record_key_valid() returning l_ok, l_error_text
                 if not l_ok then
-                    call show_error(l_error_text, false)
+                    call lib_ui.show_error(l_error_text, false)
                     next field current
                 end if
             end if
@@ -239,7 +246,7 @@ define l_ok, l_error_text string
             -- test record
             call record_valid() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, false)
+                call lib_ui.show_error(l_error_text, false)
                 next field current
             end if
     end input
@@ -306,7 +313,6 @@ define result string
     call ui.interface.frontcall("mobile","getgeolocation",[],[result, m_job_photo_rec.jp_lat, m_job_photo_rec.jp_lon])
        
     let m_job_photo_rec.jp_photo = jp_photo_default()
-    initialize m_job_photo_rec.jp_photo_data to null
     let m_job_photo_rec.jp_text = jp_text_default()
     let m_job_photo_rec.jp_when = jp_when_default()
     return true, ""
@@ -470,7 +476,6 @@ end function
 
 private function db_select()
 
-    locate m_job_photo_rec.jp_photo_data in file
     try
         select * 
         into m_job_photo_rec.*
@@ -486,9 +491,6 @@ end function
 
 
 private function db_insert()
-
-    call fgl_getfile(m_job_photo_rec.jp_photo,"photo.tmp")
-    locate m_job_photo_rec.jp_photo_data in file "photo.tmp"
 
     try
         insert into job_photo values(m_job_photo_rec.*)

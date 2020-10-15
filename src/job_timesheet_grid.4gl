@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 import fgl lib_job_timesheet
 
 schema pool_doctors
@@ -40,7 +43,7 @@ define f ui.form
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -59,7 +62,7 @@ define l_error_text string
         if l_ok then
             call db_insert() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(sfmt("unable to add row\n%1", l_error_text), true)
+                call lib_ui.show_error(sfmt("unable to add row\n%1", l_error_text), true)
             end if
         end if
         call close_window()
@@ -85,7 +88,7 @@ define l_error_text string
         if l_ok then
             call db_update() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(sfmt("Unable to update row\n%1", l_error_text),true)
+                call lib_ui.show_error(sfmt("Unable to update row\n%1", l_error_text),true)
             end if
         end if
         call close_window()
@@ -134,7 +137,7 @@ define l_warning_text string
             call open_window()
             call ui_display()
             call ui.interface.refresh()
-            let l_ok = confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
+            let l_ok = lib_ui.confirm_dialog(sfmt("%1\nAre you sure you want to delete?",l_warning_text))
             call close_window()
             if not l_ok then
                 let l_error_text = "Delete cancelled"
@@ -144,7 +147,7 @@ define l_warning_text string
     if l_ok then
         call db_delete() returning l_ok, l_error_text
         if not l_ok then
-            call show_error(sfmt("Unable to delete row\n%1", l_error_text),true)
+            call lib_ui.show_error(sfmt("Unable to delete row\n%1", l_error_text),true)
         end if
     end if
     return l_ok, l_error_text
@@ -180,7 +183,7 @@ define l_ok, l_error_text string
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \
                                     if not l_ok then \
-                                        call show_error(l_error_text, false) \
+                                        call lib_ui.show_error(l_error_text, false) \
                                         next field p1 \
                                     end if 
         after_field(jt_code)
@@ -194,7 +197,7 @@ define l_ok, l_error_text string
         
         on action cancel
             if dialog.getFieldTouched("*") then
-                if not confirm_cancel_dialog() then
+                if not lib_ui.confirm_cancel_dialog() then
                     let int_flag = 0
                     continue input
                 end if
@@ -205,7 +208,7 @@ define l_ok, l_error_text string
             -- test values
             &define field_valid(p1) call p1 ## _valid() returning l_ok, l_error_text \
             if not l_ok then \
-                call show_error(l_error_text, false) \
+                call lib_ui.show_error(l_error_text, false) \
                 next field p1 \
             end if
 
@@ -215,7 +218,7 @@ define l_ok, l_error_text string
                 field_valid(jt_idx)
                 call record_key_valid() returning l_ok, l_error_text
                 if not l_ok then
-                    call show_error(l_error_text, false)
+                    call lib_ui.show_error(l_error_text, false)
                     next field current
                 end if
             end if
@@ -230,7 +233,7 @@ define l_ok, l_error_text string
             -- test record
             call record_valid() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, false)
+                call lib_ui.show_error(l_error_text, false)
                 next field current
             end if
 
@@ -511,4 +514,11 @@ private function db_delete()
         return false, sqlca.sqlerrm
     end try
     return true, ""
+end function
+
+function populate_charge_code_id(cb ui.combobox)
+    call cb.clear()
+    call cb.addItem("S","S-Standard")
+    call cb.addItem("F","F-FOC")
+    call cb.addItem("O","O-Overtime")
 end function

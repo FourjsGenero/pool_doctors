@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 schema "pool_doctors"
 
 type product_type record like product.*
@@ -44,7 +47,7 @@ define m_orderby string
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -60,14 +63,13 @@ define l_err_text string
     open window product_list with form "product_list" attributes(type=popup)#style="dialog")
     let w= ui.window.getcurrent()
     let f = w.getform()
-    call f.loadtoolbar("pool_doctors_list")
 
     call db_populate() returning l_ok, l_err_text
     if l_ok then
         call ui_populate()
         let l_pr_code = ui_list()
     else
-        call show_error(l_err_text, true)
+        call lib_ui.show_error(l_err_text, true)
     end if
     
     close window product_list
@@ -111,7 +113,7 @@ define l_err_text string
 
 define l_popup_value_select boolean
 
-    display array m_arr to scr.* attributes(unbuffered,  accessorytype=checkmark, doubleclick=accept)
+    display array m_arr to scr.* attributes(unbuffered, accessorytype=checkmark, doubleclick=accept)
 
         on action toggle
             let l_popup_value_select = true
@@ -142,7 +144,7 @@ define l_popup_value_select boolean
                 if l_ok then
                     call ui_populate()
                 else
-                    call show_error(l_err_text, true)
+                    call lib_ui.show_error(l_err_text, true)
                 end if
             end if
             

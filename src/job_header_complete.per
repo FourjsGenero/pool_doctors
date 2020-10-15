@@ -23,10 +23,45 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 layout (text="Job Complete")
-stack
-group
-edit formonly.jh_name_signed, title="Name";
-webcomponent formonly.jh_signature,componenttype="signature", HEIGHT=10 LINES;
-end
-end
-end
+GROUP
+GRID
+{
+[l01   |f01               ]
+[l02   |f02               ]
+       [                  ]
+       [                  ]
+       [                  ]
+       [                  ] 
+       [                  ] 
+       [                  ]
+       [                  ]
+       [                  ] 
+       [                  ] 
+[b01                      ]
+[z                        ]
+}
+END
+END
+END
+ATTRIBUTES
+
+LABEL l01: TEXT="Name", STYLE="title";
+LABEL l02: TEXT="Signature", STYLE="title";
+
+
+EDIT f01 = formonly.jh_name_signed, scroll;
+WEBCOMPONENT f02 =  formonly.jh_signature,componenttype="signature";
+
+
+BUTTON b01: accept;
+
+
+IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
+--stack
+--group
+--edit formonly.jh_name_signed, title="Name";
+--webcomponent formonly.jh_signature,componenttype="signature", HEIGHT=10 LINES;
+--BUTTON accept;
+--end
+--end
+--end

@@ -23,13 +23,51 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 layout (text="Job Note")
-stack
-group
-edit formonly.jn_code, justify=right, title="Job Code";
-edit formonly.jn_idx, justify=right, title="Line Number";
-textedit formonly.jn_note, title="Note";
-datetimeedit formonly.jn_when, justify=right, title="When";
-end
-end
-end
+GROUP
+GRID
+{
+[l01   |f01               ]
+[l02   |f02               ]
+[l03   |f03               ]
+       [                  ]
+       [                  ]
+       [                  ] 
+       [                  ] 
+[l04   |f04               ]
+[b01                      ]
+[z                        ]
+}
+END
+END
+END
+ATTRIBUTES
+
+LABEL l01: TEXT="Job Code", STYLE="title";
+LABEL l02: TEXT="Line Number", STYLE="title";
+LABEL l03: TEXT="Note", STYLE="title";
+LABEL l04: TEXT="When", STYLE="title";
+
+EDIT f01 = formonly.jn_code;
+EDIT f02 = formonly.jn_idx;
+TEXTEDIT f03 = formonly.jn_note;
+DATETIMEEDIT f04 = formonly.jn_when;
+
+BUTTON b01: accept;
+
+
+IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
+
+
+
+
+--stack
+--group
+--edit formonly.jn_code, justify=right, title="Job Code";
+--edit formonly.jn_idx, justify=right, title="Line Number";
+--textedit formonly.jn_note, title="Note", HEIGHT=5;
+--datetimeedit formonly.jn_when, justify=right, title="When";
+--BUTTON accept;
+--end
+--end
+--end
 

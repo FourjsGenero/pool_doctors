@@ -23,7 +23,14 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
+import fgl lib_settings
+
 import fgl browser
+
+import fgl customer_reading
 
 schema pool_doctors
 
@@ -36,7 +43,7 @@ define f ui.form
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -57,7 +64,7 @@ define l_err_text string
         call ui_view()
         close window customer_grid
     else
-        call show_error(l_err_text, true)
+        call lib_ui.show_error(l_err_text, true)
     end if
     return l_ok, l_err_text
 end function
@@ -71,15 +78,20 @@ end function
 private function ui_view()
 define result string
 
-define l_front_end string
 define l_url string
+
 
     display by name m_customer_rec.cm_code, m_customer_rec.cm_name, m_customer_rec.cm_email, m_customer_rec.cm_phone
     display sfmt("%1\n%2\n%3\n%4",  m_customer_rec.cm_addr1, m_customer_rec.cm_addr2, m_customer_rec.cm_addr3, m_customer_rec.cm_addr4) to cm_address
 
     menu "" 
+        before menu
+            call dialog.setActionActive("map",lib_settings.js_map>0)
         on action cancel
             exit menu
+
+        on action readings
+            call customer_reading.show(m_customer_rec.cm_code, m_customer_rec.cm_name)
 
         on action call
             let result = 0
@@ -89,26 +101,44 @@ define l_url string
                 let result = 1
             end try
             if result > 0 then
-                call show_error("Unable to call", true)
+                call lib_ui.show_error("Unable to call", true)
             end if
             
         on action sms
             try
                 call ui.interface.frontcall("mobile","composeSMS",[m_customer_rec.cm_phone,""],result)
             catch
-                call show_error("Unable to SMS", true)
+                call lib_ui.show_error("Unable to SMS", true)
             end try
             
         on action email
             try
                 call ui.interface.frontcall("mobile","composeMail",[m_customer_rec.cm_email,"",""],result)
             catch
-                call show_error("Unable to email", true)
+                try
+                    call ui.interface.frontcall("standard","launchUrl", [SFMT("mailto:%1", m_customer_rec.cm_email)],[])
+                catch
+                    call lib_ui.show_error("Unable to email", true)
+                end try
             end try
 
         on action map
-            let l_url = sfmt("http://maps.google.com/maps?q=%1,%2",m_customer_rec.cm_lat, m_customer_rec.cm_lon)
-            call browser.browser(m_customer_rec.cm_name, l_url)
+            -- There are many different ways to launch a map tool...
+
+
+            case lib_settings.js_map
+                when 1
+                    let l_url = sfmt("geo:q=%1,%2", m_customer_rec.cm_lat, m_customer_rec.cm_lon)
+                    call ui.interface.frontCall("standard","launchUrl", l_url,[])
+                when 2
+                    let l_url = sfmt("https://www.google.com/maps/@%1,%2,12z", m_customer_rec.cm_lat, m_customer_rec.cm_lon)
+                    call ui.interface.frontCall("standard","launchUrl", l_url,[])
+                when 3
+                    let l_url = sfmt("comgooglemapsurl://maps.google.com/?q=@%1,%2",m_customer_rec.cm_lat, m_customer_rec.cm_lon)
+                    call ui.interface.frontCall("standard","launchUrl", l_url,[])
+                otherwise
+                    call lib_ui.not_implemented_dialog()
+            end case
     end menu
 end function
 

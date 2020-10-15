@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 import fgl lib_job_header
 import fgl lib_product
 
@@ -50,7 +53,7 @@ define m_toggle string
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -63,14 +66,13 @@ define l_err_text string
     open window job_timesheet_list with form "job_timesheet_list"
     let w= ui.window.getCurrent()
     let f = w.getForm()
-    call f.loadToolBar("pool_doctors_list")
     
     call db_populate() returning l_ok, l_err_text
     if l_ok then
         call ui_populate()
         call ui_list()
     else
-        call show_error(l_err_text, true)
+        call lib_ui.show_error(l_err_text, true)
     end if
     close window job_timesheet_list
 end function
@@ -130,7 +132,7 @@ define l_editable boolean
             call dialog.setActionActive("append",l_editable)
             call dialog.setActionActive("delete",l_editable)
             if l_editable and m_arr.getLength() = 0 then
-                call show_message("Tap + to add", false)
+                call lib_ui.show_message("Tap + to add", false)
             end if
  
         before row
@@ -140,7 +142,7 @@ define l_editable boolean
             call job_timesheet_grid.add(m_jh_code)
                 returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, true)
+                call lib_ui.show_error(l_error_text, true)
                 let int_flag = true
             else
                 let m_job_timesheet_arr[m_job_timesheet_arr.getLength()+1].* = job_timesheet_grid.m_job_timesheet_rec.*
@@ -152,7 +154,7 @@ define l_editable boolean
                 call job_timesheet_grid.update(m_job_timesheet_arr[l_row].jt_code, m_job_timesheet_arr[l_row].jt_idx)
                     returning l_ok, l_error_text
                 if not l_ok then
-                    call show_error(l_error_text, true)
+                    call lib_ui.show_error(l_error_text, true)
                     let int_flag = true
                 end if
                 let m_job_timesheet_arr[l_row].* = job_timesheet_grid.m_job_timesheet_rec.*
@@ -167,7 +169,7 @@ define l_editable boolean
             call job_timesheet_grid.delete(m_job_timesheet_arr[l_row].jt_code, m_job_timesheet_arr[l_row].jt_idx)
                 returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, true)
+                call lib_ui.show_error(l_error_text, true)
                 let int_flag = true
             end if
             call m_job_timesheet_arr.deleteElement(l_row)

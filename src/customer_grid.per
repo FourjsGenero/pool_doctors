@@ -23,20 +23,85 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 layout (text="Customer Details")
-stack
-group
-edit formonly.cm_code, justify=right, title="Customer Code";
-edit formonly.cm_name, justify=right, title="Name";
-textedit formonly.cm_address, height = 2, title="Address";
-button map, text="Map";
-edit formonly.cm_phone, justify=right, title="Phone";
-button call, text="Call";
-button sms, text="SMS";
-edit formonly.cm_email, justify=right, title="E-mail";
-button email, text="Mail";
-end
-end
-end
+GRID
+{
+<G g1                 >
+[l01  |f01            ]
+[l02  |f02            ]
+[b01                  ]
+<                     >
+<G g2                 >
+[l11  |f11            ]
+      [               ]
+      [               ]
+[b11                  ]
+<                     >
+<G g3                 >
+[l21  |f21            ]
+[b21      |b22        ]
+<                     >
+<G g4                 >
+[l31  |f31            ]
+[b31                  ]
+<                     >
+[z                    ]
+}
+END
+END
+ATTRIBUTES
+GROUP g1: TEXT="Customer", GRIDCHILDRENINPARENT;
+GROUP g2: TEXT="Address", GRIDCHILDRENINPARENT;
+GROUP g3: TEXT="Phone", GRIDCHILDRENINPARENT;
+GROUP g4: TEXT="E-mail", GRIDCHILDRENINPARENT;
+
+LABEL l01: TEXT="Code", STYLE="title";
+LABEL l02: TEXT="Name", STYLE="title";
+LABEL l11: TEXT="Physical", STYLE="title";
+LABEL l21: TEXT="Number", STYLE="title";
+LABEL l31: TEXT="Address", STYLE="title";
+
+EDIT f01 = formonly.cm_code, SCROLL;
+EDIT f02 = formonly.cm_name, SCROLL;
+
+TEXTEDIT f11 = formonly.cm_address;
+
+EDIT f21 = formonly.cm_phone, SCROLL;
+EDIT f31 = formonly.cm_email, SCROLL;
+
+
+BUTTON b01: readings, TEXT="Readings";
+
+BUTTON b11: map,  TEXT="Map";
+BUTTON b21: call,  TEXT="Call";
+BUTTON b22: sms,  TEXT="SMS";
+BUTTON b31: email,  TEXT="E-mail";
+
+
+IMAGE z : IMAGE="", STRETCH=X, STYLE="noborder";
+
+
+
+--stack
+--GROUP (TEXT="Customer")
+--edit formonly.cm_code, justify=right, title="Code";
+--edit formonly.cm_name, justify=right, title="Name";
+--END
+--GROUP (TEXT="Address")
+--textedit formonly.cm_address, height = 5;
+--button map, text="Map";
+--END
+--GROUP (TEXT="Phone")
+--edit formonly.cm_phone, justify=right;
+--button call, text="Call";
+--button sms, text="SMS";
+--END
+--GROUP (TEXT="E-mail")
+--edit formonly.cm_email, justify=right;
+--button email, text="Mail";
+--END
+--end
+--end
+
 
 instructions
 screen record scr(cm_code, cm_name, cm_phone, cm_email);

@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 import fgl lib_job_header
 import fgl lib_product
 
@@ -50,7 +53,7 @@ define m_toggle string
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -64,14 +67,13 @@ define l_err_text string
     open window job_photo_list with form "job_photo_list"
     let w= ui.window.getCurrent()
     let f = w.getForm()
-    call f.loadToolBar("pool_doctors_list")
     
     call db_populate() returning l_ok, l_err_text
     if l_ok then
         call ui_populate()
         call ui_list()
     else
-        call show_error(l_err_text, true)
+        call lib_ui.show_error(l_err_text, true)
     end if
     close window job_photo_list
 end function
@@ -122,7 +124,7 @@ define l_editable boolean
             call dialog.setActionActive("append",l_editable)
             call dialog.setActionActive("delete",l_editable)
             if l_editable and m_arr.getLength() = 0 then
-                call show_message("Tap + to add", false)
+                call lib_ui.show_message("Tap + to add", false)
             end if
  
         before row
@@ -132,10 +134,9 @@ define l_editable boolean
             call job_photo_grid.add(m_jh_code)
                 returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, true)
+                call lib_ui.show_error(l_error_text, true)
                 let int_flag = true
             else
-                locate m_job_photo_arr[m_job_photo_arr.getlength()+1].jp_photo_data in file
                 let m_job_photo_arr[m_job_photo_arr.getlength()].* = job_photo_grid.m_job_photo_rec.*
                 call ui_populate_row(m_job_photo_arr.getlength())
             end if
@@ -145,7 +146,7 @@ define l_editable boolean
                 call job_photo_grid.update(m_job_photo_arr[l_row].jp_code, m_job_photo_arr[l_row].jp_idx)
                     returning l_ok, l_error_text
                 if not l_ok then
-                    call show_error(l_error_text, true)
+                    call lib_ui.show_error(l_error_text, true)
                     let int_flag = true
                 end if
                 let m_job_photo_arr[l_row].* = job_photo_grid.m_job_photo_rec.*
@@ -163,7 +164,6 @@ define l_editable boolean
                 call show_error(l_error_text, true)
                 let int_flag = true
             end if
-            free m_job_photo_arr[l_row].jp_photo_data
             call m_job_photo_arr.deleteElement(l_row)
 
     end display
@@ -187,10 +187,8 @@ define i integer
         end if
 
         declare job_photo_list_curs cursor from l_sql
-        locate m_job_photo_arr[i+1].jp_photo_data in file
         foreach job_photo_list_curs into m_job_photo_arr[i+1].*
             let i = i + 1
-            locate m_job_photo_arr[i+1].jp_photo_data in file
         end foreach
         -- the locale creates extra element before foreach that have to delete
         call m_job_photo_arr.deleteElement(i+1)

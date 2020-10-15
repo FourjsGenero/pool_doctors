@@ -23,6 +23,9 @@
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
 
+import fgl lib_error
+import fgl lib_ui
+
 schema pool_doctors
 
 define m_job_header_rec record
@@ -36,7 +39,7 @@ end record
 
 
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
@@ -73,7 +76,7 @@ define l_ok, l_error_text string
         &define after_field(p1) after field p1 \
                                     call p1 ## _valid() returning l_ok, l_error_text \
                                     if not l_ok then \
-                                        call show_error(l_error_text,false) \
+                                        call lib_ui.show_error(l_error_text,false) \
                                         next field p1 \
                                     end if 
                                     
@@ -83,7 +86,7 @@ define l_ok, l_error_text string
 
         on action cancel
             if dialog.getfieldtouched("*") then
-                if not confirm_cancel_dialog() then
+                if not lib_ui.confirm_cancel_dialog() then
                     let int_flag = 0
                     continue input
                 end if
@@ -94,7 +97,7 @@ define l_ok, l_error_text string
             -- test values
             &define field_valid(p1) call p1 ## _valid() returning l_ok, l_error_text \
             if not l_ok then \
-                call show_error(l_error_text, false) \
+                call lib_ui.show_error(l_error_text, false) \
                 next field p1 \
             end if
 
@@ -106,7 +109,7 @@ define l_ok, l_error_text string
             -- test record
             call record_valid() returning l_ok, l_error_text
             if not l_ok then
-                call show_error(l_error_text, false)
+                call lib_ui.show_error(l_error_text, false)
                 next field current
             end if
     end input

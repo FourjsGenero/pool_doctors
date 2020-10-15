@@ -39,8 +39,10 @@ job_photo^jp_photo^201^160^3^
 job_photo^jp_when^10^3080^4^
 job_photo^jp_lat^5^2821^5^
 job_photo^jp_lon^5^2821^6^
-job_photo^jp_photo_data^11^56^7^
-job_photo^jp_text^13^16^8^
+job_photo^jp_text^13^160^7^
+job_settings^js_url^0^40^1^
+job_settings^js_group^0^40^2^
+job_settings^js_map^2^4^3^
 job_timesheet^jt_code^256^10^1^
 job_timesheet^jt_idx^258^4^2^
 job_timesheet^jt_start^10^3080^3^

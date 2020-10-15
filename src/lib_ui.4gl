@@ -22,19 +22,18 @@
 #       ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #       CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #       THE SOFTWARE.
+
+import fgl lib_error
+
+
  
 private function exception()
-    whenever any error call serious_error
+    whenever any error call lib_error.serious_error
 end function
 
 
 
--- Return the frontend, GMI or GMA
-function frontend()
-define l_frontend string
-    call ui.Interface.frontCall("standard","feinfo","fename",l_frontend)
-    return l_frontend
-end function
+
 
 
 
@@ -46,8 +45,7 @@ define l_acknowledge boolean
 
     if l_acknowledge then
         if l_message_text.getlength() > 0 then
-            #call fgl_winmessage("Info", l_message_text,"info")
-            menu "Info" attributes(style="dialog", comment=l_message_text)
+            menu "Info" attributes(style="dialog", comment=l_message_text, image="fa-info")
                on action accept
                   exit menu
             end menu
@@ -68,7 +66,10 @@ define l_acknowledge boolean
 
     if l_acknowledge then
         if l_error_text.getlength() > 0 then
-            call fgl_winmessage("Error", l_error_text,"stop")
+            menu "Error" attributes(style="dialog", comment=l_error_text, image="fa-stop")
+               on action accept
+                  exit menu
+            end menu
         end if
     else
         error l_error_text
@@ -86,10 +87,19 @@ end function
 
 function confirm_dialog(l_text)
 define l_text string
+define l_ok boolean
 
     -- yes, no dialog with default answer = no, i.e. user has to
     -- explicitly choose yes to do something destructive
-    return fgl_winquestion("Warning", l_text,"no","no|yes","",0) == "yes"
+
+    let l_ok = false
+    menu "Warning" attributes(style="dialog", comment=l_text, image="fa-warning")
+        command "No"
+            let l_ok = false
+        command "Yes"
+            let l_ok = True
+    end menu
+    return l_ok
 end function
     
 
