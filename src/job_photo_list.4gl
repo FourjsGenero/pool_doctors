@@ -126,7 +126,7 @@ PRIVATE FUNCTION ui_list()
                 CALL lib_ui.show_error(l_error_text, TRUE)
                 LET int_flag = TRUE
             ELSE
-                LET m_job_photo_arr[m_job_photo_arr.getlength()].* = job_photo_grid.m_job_photo_rec.*
+                LET m_job_photo_arr[m_job_photo_arr.getlength()+1].* = job_photo_grid.m_job_photo_rec.*
                 CALL ui_populate_row(m_job_photo_arr.getlength())
             END IF
 
