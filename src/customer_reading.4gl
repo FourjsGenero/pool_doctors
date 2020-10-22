@@ -26,6 +26,7 @@
 IMPORT util
 IMPORT FGL lib_error
 IMPORT FGL lib_ui
+IMPORT FGL ws_customer
 
 IMPORT FGL lib_settings
 
@@ -75,9 +76,23 @@ FUNCTION show(l_cm_code, l_cm_name)
 
     DEFINE root_svg, child_node om.DomNode
     DEFINE canvas_id INTEGER
+
+    DEFINE pool_data ws_customer.pool_dataResponseBodyType
+    DEFINE wsstatus INTEGER
+
+     INITIALIZE g.* TO NULL
+    
     OPEN WINDOW w WITH FORM "customer_reading" ATTRIBUTES(TEXT = "Reading")
 
-    INITIALIZE g.* TO NULL
+    CALL ws_customer.pool_data(l_cm_code) RETURNING wsstatus, pool_data.*
+    IF wsstatus = ws_customer.C_SUCCESS THEN
+        LET g.value.text = pool_data.temperature
+    ELSE
+        CALL show_error("Unable to read pool data", TRUE)
+        RETURN
+    END IF
+
+   
     LET g.x = 500
     LET g.y = 500
     LET g.r1 = 400
@@ -92,7 +107,6 @@ FUNCTION show(l_cm_code, l_cm_name)
     LET g.min_value = 25
     LET g.max_value = 30
 
-    LET g.value.text = 26.8 -- TODO - From Web service
     LET g.value.x = 500
     LET g.value.y = 680
 
