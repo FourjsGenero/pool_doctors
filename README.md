@@ -1,6 +1,6 @@
 # pool_doctors
 
-The Pool Doctors GeneroMobile demo application.  This is intended to be used in conjunection with the https://github.com/FourjsGenero/pool_doctors_server repository that will contain the back end database and web services that support the mobile application.
+The Pool Doctors GeneroMobile demo application.  This is intended to be used in conjunction with the https://github.com/FourjsGenero/pool_doctors_server repository that will contain the back end database and web services that support the mobile application.
 
 ## Introduction
 
@@ -24,25 +24,23 @@ Use as many device features as possible
 * GPS + Map
 * Phone/SMS/Email
 * Signature Capture
-* Database + Synchronization
-
-Incorporate 4gl syntax including INPUT+Grid, INPUT+Web Component, DISPLAY ARRAY+Table or ScrollGrid, MENU, MENU STYLE="dialog"
-
-Include a number of different widgets including DATEEDIT, COMBOBOX, CHECKBOX
+* Database + Synchronization via Web Services
+* 4gl syntax including INPUT+Grid, INPUT+Web Component, DISPLAY ARRAY+Table or ScrollGrid, MENU, MENU STYLE="dialog"
+* Include a number of different widgets including DATEEDIT, COMBOBOX, CHECKBOX to demonstrate the use of Native widgets.
 
 ## Business Process
 
 The basic business process of the application is
-* customer makes contact with head office and requests work done
+* customer makes contact with head office and requests some work to be done, a job is created
 * job is assigned to technician
-* technician uses sync process on device to get jobs allocated to them
-* they use device to make contact with the customer and navigate to the site
-* use device to record the work done
-* use device to record the labour involved
-* use device to document the work done with photos
-* use device to document the work done with notes
-* use device to get the customer to sign off on the work
-* technician uses sync process on device to get jobs back to central server. 
+* technician uses sync process (Web Services) on device to get the jobs that have been allocated to them
+* they use device to make contact (phone, email and/ot text) with the customer and navigate to the site
+* use the device to record the work done
+* use the device to record the labour involved
+* use the device to document the work done with photos
+* use the device to document the work done with notes
+* use the device to get the customer to sign off on the job
+* technician uses sync process on device (Web Services) to get the job data uplaoded to the central server. 
 
 
 
